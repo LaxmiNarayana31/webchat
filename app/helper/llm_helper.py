@@ -27,14 +27,26 @@ class GoogleGeminiEmbeddings(Embeddings):
 # Custom LLM class to get response from Google Gemini
 class GoogleGeminiLLM(LLM):
     def _call(self, prompt, stop=None):
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(prompt).text
-        return response
+        models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"]
+        errors = []
+
+        for model_name in models:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt).text
+                return response
+            except Exception as e:
+                errors.append(f"{model_name}: {str(e)}")
+                continue
+        
+        # If all models fail, raise an exception with all errors
+        error_msg = "\n".join(errors)
+        raise Exception(f"All Gemini models failed:\n{error_msg}")
 
     @property
     def _identifying_params(self):
-        return {"model_name": "Gemini 1.5 Flash"}
+        return {"model_name": "Gemini Multi-Model Fallback"}
 
     @property
     def _llm_type(self):
-        return "gemini"
+        return "gemini_fallback"
