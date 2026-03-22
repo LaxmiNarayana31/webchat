@@ -1,4 +1,5 @@
 import time
+import os
 import streamlit as st
 import requests
 from urllib.parse import urlparse
@@ -44,7 +45,8 @@ class Helper:
 
             # Try to fetch the URL to verify it's accessible
             try:
-                response = requests.head(url, timeout=5)
+                headers = {'User-Agent': os.getenv('USER_AGENT', 'WebChat/1.0')}
+                response = requests.head(url, headers=headers, timeout=5)
                 if response.status_code >= 400:
                     return (False, f"Unable to access the website. Status code: {response.status_code}",)
             except requests.RequestException as e:
