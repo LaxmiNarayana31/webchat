@@ -1,47 +1,66 @@
-import google.generativeai as genai
+from google import genai
 from langchain.llms.base import LLM
 from langchain_core.embeddings import Embeddings
+from typing import Any, List
+from pydantic import Field
 
 
+# ---------------- Embeddings ----------------
 class GoogleGeminiEmbeddings(Embeddings):
+    def __init__(self, api_key):
+        super().__init__()
+        self.client = genai.Client(api_key=api_key)
+        self.model = "gemini-embedding-001"
+        self.output_dim = 768
+
     def embed_documents(self, texts):
-        embeddings = []
-        for text in texts:
-            result = genai.embed_content(
-                model="models/text-embedding-004",
-                content=text,
-                task_type="retrieval_document",
-            )
-            embeddings.append(result["embedding"])
-        return embeddings
+        response = self.client.models.embed_content(
+            model=self.model,
+            contents=texts,   # batch call
+            config={
+                "task_type": "RETRIEVAL_DOCUMENT",
+                "output_dimensionality": self.output_dim
+            }
+        )
+        return [emb.values for emb in response.embeddings]
 
     def embed_query(self, query):
-        result = genai.embed_content(
-            model="models/text-embedding-004",
-            content=query,
-            task_type="retrieval_query",
+        response = self.client.models.embed_content(
+            model=self.model,
+            contents=query,
+            config={
+                "task_type": "RETRIEVAL_QUERY",
+                "output_dimensionality": self.output_dim
+            }
         )
-        return result["embedding"]
+        return response.embeddings[0].values
 
 
-# Custom LLM class to get response from Google Gemini
+# ---------------- LLM ----------------
 class GoogleGeminiLLM(LLM):
+    client: Any = None
+    models: List[str] = ["gemini-3.1-flash-lite-preview", "gemini-3-flash-preview"]
+
+    def __init__(self, api_key):
+        super().__init__()
+        # Use object.__setattr__ to set attributes in a Pydantic model (LLM)
+        object.__setattr__(self, 'client', genai.Client(api_key=api_key))
+
     def _call(self, prompt, stop=None):
-        models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"]
         errors = []
 
-        for model_name in models:
+        for model_name in self.models:
             try:
-                model = genai.GenerativeModel(model_name)
-                response = model.generate_content(prompt).text
-                return response
+                response = self.client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
+                return response.text
             except Exception as e:
                 errors.append(f"{model_name}: {str(e)}")
                 continue
-        
-        # If all models fail, raise an exception with all errors
-        error_msg = "\n".join(errors)
-        raise Exception(f"All Gemini models failed:\n{error_msg}")
+
+        raise Exception(f"All Gemini models failed:\n" + "\n".join(errors))
 
     @property
     def _identifying_params(self):
