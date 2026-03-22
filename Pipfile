@@ -12,6 +12,7 @@ langchain-core = "*"
 langchain = "==0.3.8"
 faiss-cpu = "*"
 google-generativeai = "*"
+google-genai = "*"
 
 [dev-packages]
 
