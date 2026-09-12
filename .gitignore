@@ -1,0 +1,88 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables & Secrets (preserve template files)
+.env
+.env.*
+!.env.example
+!backend/.env.example
+!.env.template
+*.pem
+*.key
+
+# Streamlit secrets & runtime (preserve .streamlit/config.toml)
+.streamlit/secrets.toml
+.streamlit/runtime/
+
+# Model & embedding caches
+.fastembed_cache/
+
+# Local databases & SQLite
+*.db
+*.sqlite
+*.sqlite3
+webchat.db
+
+# Application runtime storage, vector stores & caches (preserve data directory)
+data/*
+!data/.gitkeep
+data/vector_storage/
+data/qdrant_storage/
+data/semantic_cache/
+data/mem0_storage/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Linters & formatters
+.ruff_cache/
+.mypy_cache/
+
+# Build & packaging
+build/
+dist/
+*.egg-info/
+
+# Logs & temporary files
+*.log
+logs/
+*.tmp
+*.temp
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# IDE & Editor settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Frontend / Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
