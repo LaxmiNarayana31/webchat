@@ -35,7 +35,7 @@ graph TB
         ASGI["Uvicorn ASGI Server (:8000)"]
         MW_CORS["CORSMiddleware (Configurable Origins)"]
         MW_Sec["SecurityHeadersMiddleware<br/>(nosniff, DENY, XSS, strict-origin)"]
-        
+    
         subgraph Services ["Application Routing & Services"]
             H_Front["Frontend Service<br/>• Single-Page Web Application<br/>• Static Asset Delivery (/css, /js)"]
             H_Chat["Chat & Ingestion Service<br/>• User URL Scraping & Paywall Bypass<br/>• Domain Crawling & PDF Ingestion<br/>• Real-Time Token Streaming Engine"]
@@ -62,7 +62,7 @@ graph TB
     subgraph LLM_Cascade ["5. Resilient Multi-Provider LLM Engine"]
         SVC_LLM["LLMService / ResilientLLMClient"]
         Limiter["Rate Limiting & Cooldown Protection<br/>• TokenBucket Rate Limiters<br/>• SlidingWindowTracker (RPM)<br/>• CooldownTracker (Exponential Backoff + Jitter)"]
-        
+    
         subgraph Providers ["Fallback Model Priority Chain"]
             M_Gemini["Google Gemini (google-genai SDK)<br/>• gemini-3.6-flash (Primary)<br/>• gemini-3.5-flash<br/>• gemini-3.5-flash-lite<br/>• gemini-3.1-flash-lite<br/>• gemini-2.5-flash"]
             M_Groq["Groq Cloud (groq SDK)<br/>• openai/gpt-oss-120b<br/>• groq/compound<br/>• openai/gpt-oss-20b<br/>• groq/compound-mini"]
@@ -170,7 +170,7 @@ sequenceDiagram
     User->>UI: Enter Target Web URL & Research Question
     UI->>Gateway: Submit Request (User URL + Query)
     Gateway->>ChatSvc: Process Chat Query
-    
+  
     %% Quota Verification
     ChatSvc->>UserSvc: Verify Quota (Email / Client ID)
     UserSvc->>DB: Check & Increment Usage Record
@@ -196,14 +196,14 @@ sequenceDiagram
     else Cache Miss
         ChatSvc->>Agent: Run Agentic RAG Pipeline
         Agent->>LangGraph: Execute State Machine Workflow
-        
+    
         %% RAG Pipeline
         LangGraph->>LangGraph: Classify Intent (Direct vs Web vs Document)
         LangGraph->>LangGraph: Decompose Complex Questions
         LangGraph->>VectorDB: Retrieve Context Chunks (User URL)
         VectorDB-->>LangGraph: Relevant Document Chunks
         LangGraph->>LangGraph: Grade Relevance (CRAG)
-        
+    
         opt Insufficient Context
             LangGraph->>LangGraph: Rewrite Query & Query DuckDuckGo / Wikipedia
         end
@@ -262,11 +262,11 @@ stateDiagram-v2
         decompose: decompose_and_expand_node<br/>(Split complex comparative queries)
         retrieve: retrieve_node<br/>(Qdrant Cloud Dense + BM25 Sparse + FlashRank Rerank)
         grade_docs: grade_documents_node<br/>(CRAG Cross-Encoder Relevance Grading)
-        
+    
         state grade_docs <<choice>>
         grade_docs --> Pass: Confidence >= 0.5
         grade_docs --> Fallback: Ambiguous / Low Context
-        
+    
         Fallback --> transform_query: transform_query_node (LLM query rewrite)
         transform_query --> retrieve: Retry retrieval with rewritten query
         Fallback --> web_fallback: web_search_node (DuckDuckGo fallback)
@@ -293,7 +293,7 @@ stateDiagram-v2
     state grade_hallucination <<choice>>
     grade_hallucination --> Grounded: Answer supported by context
     grade_hallucination --> Regenerate: Hallucination detected (attempt 1)
-    
+  
     Regenerate --> generate_answer: Re-prompt with strict grounding
     Grounded --> END: Complete Response Output
     END --> [*]
@@ -304,6 +304,7 @@ stateDiagram-v2
 ## Key Capabilities
 
 ### Chat with Any User URL
+
 - **Instant Web Intelligence**: Users enter any public URL to scrape, clean, chunk, embed, and chat with the page contents in real time.
 - **Paywall & Gating Bypass**:
   - Direct scraping with realistic browser headers via `Trafilatura` and `BeautifulSoup4`.
@@ -314,6 +315,7 @@ stateDiagram-v2
 - **Deep Domain Crawling**: Breadth-First Search (BFS) crawler using `concurrent.futures.ThreadPoolExecutor` to crawl and index entire documentation domains.
 
 ### LangGraph Agentic RAG & Hybrid Retrieval
+
 - **Cyclic StateGraph**: Orchestrates routing, query decomposition, retrieval, grading, query rewriting, and hallucination evaluation.
 - **Hybrid Search with RRF**: Combines 3072-dimensional dense embeddings (`GeminiEmbeddings`) and sparse lexical search (`rank-bm25`) using Reciprocal Rank Fusion ($k=60$).
 - **Cross-Encoder Reranking**: Low-latency local cross-encoder scoring via FlashRank (`ms-marco-TinyBERT-L-2-v2`).
@@ -321,6 +323,7 @@ stateDiagram-v2
 - **Self-RAG Groundedness**: Verifies generated answers against source text to prevent hallucinations.
 
 ### 10-Tier Resilient LLM Cascade
+
 - Automatic priority fallback between Google Gemini and Groq if rate limits or provider issues occur:
   - `gemini-3.6-flash` (Primary)
   - `openai/gpt-oss-120b` (Groq Fallback)
@@ -334,11 +337,13 @@ stateDiagram-v2
 - **Circuit Breakers**: TokenBucket rate limiting, sliding-window RPM monitoring, and exponential backoff with jitter.
 
 ### Persistent Semantic Memory (Memori Labs)
+
 - **Automatic Interception**: Connects with the LLM client to record conversations and identify facts automatically.
 - **User Attribution**: Links memory graphs and preferences to the user identity.
 - **Cloud Schema**: Structured relational entities, sessions, messages, and knowledge graph facts stored in Aiven PostgreSQL.
 
 ### Tiered Quotas & Security
+
 - **Guest Tier**: 5 queries tracked by client device UUID.
 - **Registered User Tier**: 50 queries per day tracked by email, automatically reset at `00:00:00 UTC`.
 - **Hardened HTTP Headers**: Injected via `SecurityHeadersMiddleware` (`nosniff`, `DENY`, `X-XSS-Protection`, strict referrer policy).
@@ -411,7 +416,7 @@ graph TB
         Lifespan["Application Lifespan<br/>• Database connection & table setup<br/>• Memori Labs BYODB storage build<br/>• Semantic & vector cache pre-warming"]
         Static_Mounts["Static Asset Mounts<br/>• /css -> frontend/css<br/>• /js -> frontend/js<br/>• /static -> frontend/"]
         App_Services["Application Core Services<br/>• Chat & Ingestion Engine<br/>• User & Quota Management<br/>• Single-Page Web Application UI"]
-        
+    
         Backend_Proc --> Lifespan
         Lifespan --> Static_Mounts
         Lifespan --> App_Services
@@ -443,11 +448,13 @@ graph TB
 ## Installation & Setup (New User Quickstart)
 
 ### 1. Prerequisites
+
 - **Python**: Version `3.11`, `3.12`, or `3.13` installed.
 - **Git**: Installed.
 - **Package Manager**: [Astral UV](https://docs.astral.sh/uv/) (Recommended for ultra-fast setup) or standard `pip`.
 
 ### 2. Clone the Repository
+
 ```bash
 git clone https://github.com/LaxmiNarayana31/webchat.git
 cd webchat
@@ -456,6 +463,7 @@ cd webchat
 ### 3. Create Virtual Environment & Install Dependencies
 
 #### Using Astral UV (Recommended)
+
 ```bash
 cd backend
 uv sync
@@ -463,7 +471,9 @@ cd ..
 ```
 
 #### Using Standard Python `venv` & `pip`
+
 **On Windows (PowerShell):**
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -471,6 +481,7 @@ pip install -r backend/requirements.txt
 ```
 
 **On Linux / macOS:**
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -482,16 +493,19 @@ pip install -r backend/requirements.txt
 Copy the template file to `backend/.env` (or root `.env`):
 
 **On Windows (PowerShell):**
+
 ```powershell
 Copy-Item backend/.env.example backend/.env
 ```
 
 **On Linux / macOS:**
+
 ```bash
 cp backend/.env.example backend/.env
 ```
 
 Generate your secure `URL_HASH_SECRET` with Python:
+
 ```bash
 python -c "import secrets; print(secrets.token_hex(32))"
 ```
@@ -525,6 +539,7 @@ URL_HASH_SECRET=your_32_byte_generated_hex_secret
 ### 5. Pre-flight Verification & Database Initialization
 
 Run the pre-flight verification command to test your environment and initialize database tables:
+
 ```bash
 # Verify backend imports and initialize tables:
 python -c "from backend.config.database import init_db; init_db(); print('Environment and database ready!')"
@@ -566,6 +581,7 @@ python backend/main.py streamlit
 ## Quality & Architectural Standards
 
 The codebase adheres strictly to enterprise Python best practices:
+
 - **Zero `__init__.py` Files**: Modern namespace packages across all internal subdirectories.
 - **Deterministic Imports**: Strictly top-level module imports; zero inline imports or guarded try-except import blocks.
 - **Robust Exception Handling**: Start-to-end `try...except` exception boundaries in all functions with contextual logging.
