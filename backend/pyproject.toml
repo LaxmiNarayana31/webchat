@@ -1,0 +1,52 @@
+[project]
+name = "webchat"
+version = "2.0.0"
+description = "Intelligent AI web conversational system with paywall bypass, multi-provider LLM fallback, and dual Streamlit & Web interfaces."
+readme = "../README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "duckduckgo-search>=8.1.1",
+    "faiss-cpu>=1.9.0",
+    "fastapi>=0.115.0",
+    "flashrank>=0.2.10",
+    "google-genai>=1.0.0",
+    "google-generativeai>=0.8.3",
+    "groq>=0.13.0",
+    "httpx>=0.28.0",
+    "langchain>=0.3.10",
+    "langchain-community>=0.3.10",
+    "langchain-core>=0.3.20",
+    "langgraph>=0.2.0",
+    "lxml>=5.3.0",
+    "memori>=3.3.0",
+    "psycopg2-binary>=2.9.12",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.6.0",
+    "pypdf>=6.17.0",
+    "python-dotenv>=1.0.1",
+    "qdrant-client>=1.19.0",
+    "rank-bm25>=0.2.2",
+    "requests>=2.32.0",
+    "sqlalchemy>=2.0.52",
+    "streamlit>=1.40.0",
+    "trafilatura>=2.0.0",
+    "uvicorn[standard]>=0.32.0",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.8.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [".", ".."]
+testpaths = ["tests"]
+
+[tool.pyright]
+extraPaths = ["..", "."]
