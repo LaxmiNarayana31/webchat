@@ -1,5 +1,13 @@
+import logging
 import sys
+import warnings
 from pathlib import Path
+
+# Suppress google_genai SDK automatic function calling warning
+warnings.filterwarnings("ignore", message=".*Automatic Function Calling.*")
+warnings.filterwarnings("ignore", message=".*Direct use of automatic function calling.*")
+logging.getLogger("google_genai").setLevel(logging.ERROR)
+logging.getLogger("google_genai.models").setLevel(logging.ERROR)
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -13,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
+from backend.app.api.agent_routes import router as agent_router
 from backend.app.api.chat_routes import router as chat_router
 from backend.app.api.frontend_routes import FRONTEND_DIR, router as frontend_router
 from backend.app.api.user_routes import router as user_router
@@ -72,6 +81,27 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Memori Labs storage build warning during startup: {e}")
 
+    # Verify mandatory Qdrant Cloud connection
+    try:
+        from backend.app.services.qdrant_service import qdrant_service
+        _ = qdrant_service.client
+        logger.info(f"Qdrant Vector DB: Connected (Mandatory - {settings.QDRANT_URL[:40]}...)")
+    except Exception as qdrant_err:
+        logger.error(f"Qdrant connection verification failed: {qdrant_err}")
+        raise RuntimeError(f"Mandatory Qdrant connection failed: {qdrant_err}") from qdrant_err
+
+    # Pre-warm FlashRank neural reranker model to eliminate query latency
+    try:
+        from backend.app.services.rerank_service import rerank_service
+        _ = rerank_service.ranker
+        logger.info("FlashRank Reranker: Pre-warmed & cached in memory.")
+    except Exception as rerank_err:
+        logger.warning(f"FlashRank reranker pre-warm warning: {rerank_err}")
+
+    # Suppress SDK warning logs
+    import warnings
+    warnings.filterwarnings("ignore", category=UserWarning)
+
     yield
 
     logger.info(f"Shutting down {settings.PROJECT_NAME}...")
@@ -127,20 +157,29 @@ def health_check():
         )
 
 
-# Mount Frontend Static Assets
-if FRONTEND_DIR.exists():
-    css_dir = FRONTEND_DIR / "css"
-    js_dir = FRONTEND_DIR / "js"
-    if css_dir.exists():
-        app.mount("/css", StaticFiles(directory=str(css_dir)), name="frontend_css")
-    if js_dir.exists():
-        app.mount("/js", StaticFiles(directory=str(js_dir)), name="frontend_js")
-    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
-
-# Mount Domain Routers (Chat, Users & Frontend)
+# Mount Domain Routers FIRST (Agent, Chat, Users & Frontend)
+app.include_router(agent_router, prefix=settings.API_V1_STR)
 app.include_router(chat_router, prefix=settings.API_V1_STR)
 app.include_router(user_router, prefix=settings.API_V1_STR)
 app.include_router(frontend_router)
+
+# Mount Frontend Static Assets AFTER Routers
+if FRONTEND_DIR.exists():
+    dist_dir = FRONTEND_DIR / "dist"
+    if dist_dir.exists():
+        assets_dir = dist_dir / "assets"
+        if assets_dir.exists():
+            app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="frontend_assets")
+        app.mount("/static", StaticFiles(directory=str(dist_dir), html=True), name="static")
+    else:
+        # Fallback to serving the legacy frontend if dist is missing
+        css_dir = FRONTEND_DIR / "css"
+        js_dir = FRONTEND_DIR / "js"
+        if css_dir.exists():
+            app.mount("/css", StaticFiles(directory=str(css_dir)), name="frontend_css")
+        if js_dir.exists():
+            app.mount("/js", StaticFiles(directory=str(js_dir)), name="frontend_js")
+
 
 
 def main():
