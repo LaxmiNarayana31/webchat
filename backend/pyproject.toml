@@ -6,12 +6,10 @@ readme = "../README.md"
 requires-python = ">=3.11"
 dependencies = [
     "beautifulsoup4>=4.12.3",
-    "duckduckgo-search>=8.1.1",
     "faiss-cpu>=1.9.0",
     "fastapi>=0.115.0",
     "flashrank>=0.2.10",
     "google-genai>=1.0.0",
-    "google-generativeai>=0.8.3",
     "groq>=0.13.0",
     "httpx>=0.28.0",
     "langchain>=0.3.10",
@@ -31,6 +29,7 @@ dependencies = [
     "sqlalchemy>=2.0.52",
     "streamlit>=1.40.0",
     "trafilatura>=2.0.0",
+    "upstash-redis>=1.8.0",
     "uvicorn[standard]>=0.32.0",
 ]
 
