@@ -26,6 +26,8 @@ venv.bak/
 # Streamlit secrets & runtime (preserve .streamlit/config.toml)
 .streamlit/secrets.toml
 .streamlit/runtime/
+streamlit_app/.streamlit/secrets.toml
+streamlit_app/.streamlit/runtime/
 
 # Model & embedding caches
 .fastembed_cache/
