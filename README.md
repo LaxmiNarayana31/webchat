@@ -1,5 +1,4 @@
-# WebChat
-
+<h1 align="center">WebChat</h1>
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.12%20%7C%203.13-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python Version" />
   <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
@@ -7,8 +6,10 @@
   <img src="https://img.shields.io/badge/LangGraph-0.2+-orange?style=for-the-badge&logo=langchain&logoColor=white" alt="LangGraph" />
   <img src="https://img.shields.io/badge/Streamlit-1.40+-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit" />
 </p>
+<h3 align="center">Chat with any webpage in real time</h3>
+<p align="center">Paste any public link like technical docs, blog posts, news, or articles and ask questions with streaming answers and citations.</p>
 
-Chat with any webpage. Paste any public URL—technical documentation, blog posts, news, or articles—and ask questions with real-time streaming answers and citations.
+---
 
 Under the hood, WebChat uses LangGraph for agentic retrieval, hybrid vector + keyword search, multi-model fallback across Gemini and Groq, and persistent memory.
 
@@ -106,16 +107,20 @@ URL_HASH_SECRET=
 From the `backend/` directory:
 
 **Option A: Web Client & API**
+
 ```bash
 uv run main.py --reload
 ```
+
 - Web UI: http://localhost:8000
 - Swagger docs: http://localhost:8000/docs
 
 **Option B: Streamlit Dashboard**
+
 ```bash
 uv run main.py streamlit
 ```
+
 - Dashboard: http://localhost:8501
 
 ### 4. Run with Docker
@@ -123,11 +128,13 @@ uv run main.py streamlit
 Run from the project root directory:
 
 **Full stack with Docker Compose:**
+
 ```bash
 docker compose up --build
 ```
 
 **Backend only:**
+
 ```bash
 docker build -t webchat-backend -f backend/Dockerfile .
 docker run -d -p 8000:8000 --env-file backend/.env webchat-backend
