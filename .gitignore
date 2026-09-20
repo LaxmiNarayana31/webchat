@@ -44,8 +44,8 @@ data/*
 data/vector_storage/
 data/qdrant_storage/
 data/semantic_cache/
-data/mem0_storage/
-backend
+backend/data/*
+!backend/data/.gitkeep
 
 # Testing & Coverage
 .pytest_cache/
