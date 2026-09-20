@@ -6,11 +6,10 @@ from typing import Any
 
 from backend.app.agents.supervisor_agent import supervisor_agent
 from backend.app.cache.vector_cache import vector_store_cache
-from backend.app.core.errors import ValidationException, VectorStoreException
+from backend.app.core.errors import ValidationException
 from backend.app.core.logging import logger
 from backend.app.dtos.chat_dto import ChatMessageDto, ChatResponseDto, CitationItemDto
 from backend.app.helpers.url_helper import compute_url_hash
-from backend.app.services.agentic_rag_service import agentic_rag_service
 from backend.app.services.llm_service import llm_service
 from backend.app.services.memory_service import memory_service
 from backend.app.services.rag_service import rag_service
@@ -26,11 +25,54 @@ class WebChatAgent:
             self.llm = llm_service
             self.vector_cache = vector_store_cache
             self.memory = memory_service
-            self.agentic_rag = agentic_rag_service
             self.supervisor = supervisor_agent
         except Exception as e:
             logger.error(f"Error initializing WebChatAgent: {e}", exc_info=True)
             raise
+
+    def _resolve_vector_store(
+        self,
+        vector_store: Any | None,
+        url: str | None,
+        document_content: str | None,
+        document_metadata: dict[str, Any] | None = None,
+    ) -> tuple[Any | None, dict[str, Any] | None]:
+        """Resolves vector store and metadata from parameter, RAM cache, or persistent database cache."""
+        vs = vector_store
+        meta = document_metadata
+        if not vs and url:
+            url_hash = compute_url_hash(url)
+            vs = self.vector_cache.get(url) or self.vector_cache.get(url_hash)
+            meta = meta or self.vector_cache.get_metadata(url) or self.vector_cache.get_metadata(url_hash)
+            if not vs:
+                try:
+                    from backend.app.repositories.url_cache_repository import url_cache_repository
+                    cache_entry = url_cache_repository.get_by_hash(url_hash)
+                    if cache_entry:
+                        meta = meta or cache_entry.get("metadata") or {
+                            "url": url,
+                            "title": cache_entry.get("title", ""),
+                            "images": cache_entry.get("images", []),
+                        }
+                        vec_sid = cache_entry.get("vector_session_id")
+                        if vec_sid:
+                            vs = self.rag.get_session_index(session_id=vec_sid, metadata=meta)
+                            if vs:
+                                self.vector_cache.set(url_hash, vs, metadata=meta)
+                except Exception as hydrate_err:
+                    logger.warning(f"WebChatAgent: Could not re-hydrate vector store from persistent cache: {hydrate_err}")
+
+        if not vs and document_content:
+            try:
+                vs, err = self.rag.build_vectorstore(
+                    document_content, metadata=meta or {"url": url or "", "title": "Provided Document"}
+                )
+                if not err and vs and url:
+                    self.vector_cache.set(compute_url_hash(url), vs, metadata=meta)
+            except Exception as build_err:
+                logger.warning(f"WebChatAgent: Failed to build on-the-fly vector store: {build_err}")
+
+        return vs, meta
 
     async def answer_query_async(
         self,
@@ -48,16 +90,7 @@ class WebChatAgent:
             if not query or not query.strip():
                 raise ValidationException("Query parameter cannot be empty.")
 
-            vs = vector_store
-            if not vs and url:
-                vs = self.vector_cache.get(url) or self.vector_cache.get(compute_url_hash(url))
-
-            # if not vs and document_content:
-            #     vs, err = self.rag.build_vectorstore(
-            #         document_content, metadata={"url": url or "", "title": "Provided Document"}
-            #     )
-            #     if err:
-            #         raise VectorStoreException(f"Failed to build vector index: {err}")
+            vs, document_metadata = self._resolve_vector_store(vector_store, url, document_content, document_metadata)
 
             # Run supervisor multi-agent workflow
             result = await self.supervisor.run_workflow_async(
@@ -157,16 +190,7 @@ class WebChatAgent:
             if not query or not query.strip():
                 raise ValidationException("Query parameter cannot be empty.")
 
-            vs = vector_store
-            if not vs and url:
-                vs = self.vector_cache.get(url) or self.vector_cache.get(compute_url_hash(url))
-
-            if not vs and document_content:
-                vs, err = self.rag.build_vectorstore(
-                    document_content, metadata={"url": url or "", "title": "Provided Document"}
-                )
-                if err:
-                    raise VectorStoreException(f"Failed to build vector index: {err}")
+            vs, document_metadata = self._resolve_vector_store(vector_store, url, document_content, document_metadata)
 
             # Stream Supervisor multi-agent reasoning steps (including Self-RAG reflection)
             final_prompt = ""
@@ -281,16 +305,7 @@ class WebChatAgent:
             if not query or not query.strip():
                 raise ValidationException("Query parameter cannot be empty.")
 
-            vs = vector_store
-            if not vs and url:
-                vs = self.vector_cache.get(url) or self.vector_cache.get(compute_url_hash(url))
-
-            # if not vs and document_content:
-            #     vs, err = self.rag.build_vectorstore(
-            #         document_content, metadata={"url": url or "", "title": "Provided Document"}
-            #     )
-            #     if err:
-            #         raise VectorStoreException(f"Failed to build vector index: {err}")
+            vs, document_metadata = self._resolve_vector_store(vector_store, url, document_content, document_metadata)
 
             # Orchestrate via Supervisor
             context_chunks, prompt, system_instruction, telemetry, trace = await self.supervisor.orchestrate_async(

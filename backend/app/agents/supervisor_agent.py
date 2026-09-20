@@ -425,60 +425,9 @@ class SupervisorAgent:
             "status": "done",
         }
 
-        # ---- Self-RAG Reflection in Streaming Path ----
-        # Generate initial answer for reflection check
-        try:
-            gen_resp = await self.llm.generate_response_async(
-                prompt=prompt, system_instruction=system_instruction,
-                selected_model=selected_model, temperature=0.4,
-            )
-            initial_answer = gen_resp.get("text", "")
-
-            yield {
-                "type": "step", "step": "generate", "icon": "•",
-                "title": "Initial Response Generation",
-                "detail": "Generated provisional answer for Self-RAG reflection",
-                "status": "done",
-            }
-
-            # Self-RAG reflection
-            selfrag_result = await self.critic.grade_hallucination_async(
-                query=query, answer=initial_answer,
-                context_chunks=exported_chunks, trace=trace,
-            )
-            grounded = selfrag_result.output.get("grounded", True)
-            useful = selfrag_result.output.get("useful", True)
-            critique = selfrag_result.output.get("critique")
-
-            if grounded and useful:
-                yield {
-                    "type": "step", "step": "grade_hallucination", "icon": "•",
-                    "title": "Self-RAG Reflection",
-                    "detail": "Verified groundedness and utility of generated response",
-                    "status": "done",
-                }
-            else:
-                yield {
-                    "type": "step", "step": "grade_hallucination", "icon": "•",
-                    "title": "Self-RAG Reflection",
-                    "detail": "Hallucination or poor utility detected. Regenerating with critique...",
-                    "status": "done",
-                }
-                # Inject critique and regenerate
-                revised_prompt = prompt + f"\n\n[CRITIQUE FROM PREVIOUS ATTEMPT (DO NOT HALLUCINATE OR IGNORE INTENT)]: {critique}"
-
-                # Update prompt for final streaming so the critique-informed version is used
-                prompt = revised_prompt
-
-                yield {
-                    "type": "step", "step": "regenerate", "icon": "•",
-                    "title": "Critique-Informed Regeneration",
-                    "detail": "Regenerating answer with Self-RAG critique feedback incorporated",
-                    "status": "done",
-                }
-
-        except Exception as gen_err:
-            logger.warning(f"SupervisorAgent: Self-RAG pre-generation skipped: {gen_err}")
+        # ---- Skip Self-RAG Reflection in Streaming Path ----
+        # In streaming mode, we skip generating a full provisional answer and hallucination grading
+        # to avoid double-generation and reduce time-to-first-token latency.
 
         # Build telemetry
         telemetry = {
@@ -491,8 +440,8 @@ class SupervisorAgent:
             "documents_count": len(doc_chunks),
             "web_results_count": len(web_chunks),
             "agent_handoffs": trace.agent_handoffs,
-            "self_rag_evaluated": True,
-            "self_rag_grounded": grounded if "grounded" in dir() else True,
+            "self_rag_evaluated": False,
+            "self_rag_grounded": True,
         }
 
         trace.finalize()

@@ -14,6 +14,10 @@ from typing import Any
 from backend.app.agents.protocols import AgentResult, AgentRole, AgentTrace
 from backend.app.core.logging import logger
 from backend.app.services.agentic_rag_service import is_overview_or_summary_query
+from backend.app.services.agentic_rag_service import (
+    is_diagram_or_image_query,
+    is_overview_or_summary_query,
+)
 
 _CRAG_GRADING_PROMPT = """User Query: {query}
 
@@ -87,22 +91,23 @@ class CriticAgent:
                 execution_time_ms=duration_ms,
             )
 
-        # Overview/summary queries — document chunks are relevant by definition
-        if is_overview_or_summary_query(orig_q):
+        # Overview/summary queries or diagram/image inquiries — document chunks are relevant by definition
+        if is_overview_or_summary_query(orig_q) or is_diagram_or_image_query(orig_q):
             duration_ms = (time.time() - start) * 1000
-            logger.info("CriticAgent [CRAG]: Overview query detected, all documents relevant by definition.")
+            reason = "Diagram/image query" if is_diagram_or_image_query(orig_q) else "Overview query"
+            logger.info(f"CriticAgent [CRAG]: {reason} detected, all documents relevant by definition.")
             if trace:
                 trace.add_step(
                     agent_role=AgentRole.CRITIC,
-                    action="crag_grade_overview",
+                    action="crag_grade_overview_or_visual",
                     input_summary=orig_q[:60],
-                    output_summary=f"All {len(documents)} docs relevant (overview)",
+                    output_summary=f"All {len(documents)} docs relevant ({reason})",
                     duration_ms=duration_ms,
                 )
             return AgentResult(
                 task_id=task_id,
                 agent_role=AgentRole.CRITIC,
-                output={"is_relevant": True, "confidence": 1.0, "filtered_documents": documents, "reasoning": "Overview query"},
+                output={"is_relevant": True, "confidence": 1.0, "filtered_documents": documents, "reasoning": reason},
                 execution_time_ms=duration_ms,
             )
 

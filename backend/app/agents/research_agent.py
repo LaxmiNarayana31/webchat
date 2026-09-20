@@ -15,6 +15,10 @@ import requests
 from backend.app.agents.protocols import AgentResult, AgentRole, AgentTrace
 from backend.app.core.logging import logger
 from backend.app.services.agentic_rag_service import is_overview_or_summary_query
+from backend.app.services.agentic_rag_service import (
+    is_diagram_or_image_query,
+    is_overview_or_summary_query,
+)
 
 
 class ResearchAgent:
@@ -80,23 +84,75 @@ class ResearchAgent:
                             "rerank_score": 1.0,
                         })
 
-        # Retrieve across sub-queries using hybrid search
-        for sq in sub_queries:
-            try:
-                chunks = self.rag.retrieve_context(
-                    index_or_store=vector_store,
-                    query=sq,
-                    top_k=3,
-                    use_expansion=True,
-                    use_rerank=True,
-                )
-                for c in chunks:
+        # If it's a diagram/image query, inject all visual image diagram chunks
+        if is_diagram_or_image_query(orig_q) and vector_store:
+            if hasattr(vector_store, "documents") and vector_store.documents:
+                for doc in vector_store.documents:
+                    if doc.metadata.get("is_image") or "[Visual Content Image Diagram" in doc.page_content:
+                        content = doc.metadata.get("parent_text") or doc.page_content
+                        text_hash = content[:100]
+                        if text_hash not in seen_texts:
+                            seen_texts.add(text_hash)
+                            all_chunks.append({
+                                "content": content,
+                                "chunk_index": doc.metadata.get("chunk_index", 0),
+                                "parent_id": doc.metadata.get("parent_id", ""),
+                                "url": doc.metadata.get("url", ""),
+                                "title": doc.metadata.get("title", ""),
+                                "rerank_score": 1.0,
+                            })
+
+            meta = getattr(vector_store, "metadata", None) or {}
+            images = meta.get("images") or []
+            for img in images:
+                img_url = img.get("url")
+                if img_url:
+                    img_doc_content = (
+                        f"[Visual Content Image Diagram / Illustration]\n"
+                        f"Diagram Title: {img.get('alt', 'Architecture Diagram')}\n"
+                        f"Image URL: {img_url}\n"
+                        f"Caption & Architectural Context: {img.get('context') or img.get('alt')}"
+                    )
+                    text_hash = img_doc_content[:100]
+                    if text_hash not in seen_texts:
+                        seen_texts.add(text_hash)
+                        all_chunks.append({
+                            "content": img_doc_content,
+                            "chunk_index": len(all_chunks),
+                            "parent_id": f"img_direct_{len(all_chunks)}",
+                            "url": meta.get("url", ""),
+                            "title": meta.get("title", ""),
+                            "rerank_score": 1.0,
+                        })
+
+        effective_sub_queries = list(sub_queries)
+        if is_diagram_or_image_query(orig_q) and not any("diagram" in sq.lower() for sq in effective_sub_queries):
+            effective_sub_queries.append("visual content image diagrams and architectural illustrations")
+
+        # Retrieve across sub-queries using hybrid search in parallel
+        tasks = [
+            asyncio.to_thread(
+                self.rag.retrieve_context,
+                index_or_store=vector_store,
+                query=sq,
+                top_k=3,
+                use_expansion=True,
+                use_rerank=True,
+            )
+            for sq in effective_sub_queries
+        ]
+        
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        for sq, result in zip(effective_sub_queries, results):
+            if isinstance(result, Exception):
+                logger.warning(f"ResearchAgent: Retrieval error for sub-query '{sq[:40]}': {result}")
+            else:
+                for c in result:
                     text_hash = c.get("content", "")[:100]
                     if text_hash not in seen_texts:
                         seen_texts.add(text_hash)
                         all_chunks.append(c)
-            except Exception as e:
-                logger.warning(f"ResearchAgent: Retrieval error for sub-query '{sq[:40]}': {e}")
 
         duration_ms = (time.time() - start) * 1000
         logger.info(f"ResearchAgent: Retrieved {len(all_chunks)} unique chunks across {len(sub_queries)} sub-queries ({duration_ms:.1f}ms)")
