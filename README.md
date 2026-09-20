@@ -69,41 +69,146 @@
 
 ## Architecture
 
+### System Architecture Flowchart
+
+```mermaid
+flowchart TD
+    subgraph ClientLayer ["1. Client Layer"]
+        ReactUI["React 19 SPA (SSE Streaming + Diagrams)"]
+        StreamlitUI["Streamlit Analytics Dashboard"]
+    end
+
+    subgraph GatewayLayer ["2. API Gateway & Security"]
+        Gateway["FastAPI Gateway (/api/chat)"]
+        DDoS["Anti-DDoS Sliding Window (>12 req/5s per IP)"]
+        Quota["Dual-Layer Quota (Client ID + IP / 50 daily)"]
+        SemanticCache{"Upstash Redis\nSemantic Cache"}
+    end
+
+    subgraph AgenticCore ["3. Multi-Agent Supervisor Orchestrator"]
+        Router{"Router Agent\n(Intent Classification)"}
+        DirectChat["Direct Conversation Flow"]
+        WebSearchAgent["Web Search Workflow"]
+
+        subgraph CRAGPipeline ["Corrective RAG (CRAG) Pipeline"]
+            Planner["Planner Agent\n(Query Decomposition)"]
+            Researcher["Research Agent\n(Parallel Hybrid Search)"]
+            DenseSearch[("Qdrant / FAISS\nDense Vectors")]
+            SparseSearch[("BM25\nSparse Keywords")]
+            FlashRank["FlashRank Cross-Encoder\nReranker"]
+            CriticCRAG{"Critic Agent\nCRAG Document Grading"}
+            RePlanner["Planner Agent\n(Feedback Query Rewriting)"]
+        end
+
+        Synthesizer["Synthesis Agent\n(Context Compression & Diagram Extraction)"]
+    end
+
+    subgraph ResilientLLMLayer ["4. Resilient Multi-Provider LLM Engine"]
+        LLMOrchestrator["Model Catalog & Token-Bucket Limiter"]
+        PrimaryLLM["Primary: Gemini 2.5 / 3.6 Flash"]
+        FallbackLLM["Fallback: Groq LLaMA 3.3 70B / Ollama"]
+    end
+
+    subgraph OutputAndStorage ["5. Output Generation & Persistence"]
+        SSEGen["SSE Token Streamer (Real-Time Tokens)"]
+        SelfRAG{"Critic Agent: Self-RAG\n(Groundedness Reflection)"}
+        PostgresDB[("PostgreSQL Database\n(Sessions, Turns & Usage)")]
+    end
+
+    ClientLayer --> Gateway
+    Gateway --> DDoS
+    DDoS --> Quota
+    Quota --> SemanticCache
+    SemanticCache -- "Cache Hit" --> ClientLayer
+    SemanticCache -- "Cache Miss" --> Router
+
+    Router -- "DIRECT_CHAT" --> DirectChat
+    Router -- "WEB_SEARCH" --> WebSearchAgent
+    Router -- "DOCUMENT_RAG / COMPLEX_ANALYTIC" --> Planner
+
+    DirectChat --> Synthesizer
+    WebSearchAgent --> Synthesizer
+
+    Planner --> Researcher
+    Researcher --> DenseSearch & SparseSearch
+    DenseSearch & SparseSearch --> FlashRank
+    FlashRank --> CriticCRAG
+    CriticCRAG -- "Low Confidence (<0.4)" --> RePlanner
+    RePlanner --> Researcher
+    CriticCRAG -- "Verified Passages" --> Synthesizer
+
+    Synthesizer --> LLMOrchestrator
+    LLMOrchestrator --> PrimaryLLM
+    PrimaryLLM -. "Failover on 429/Outage" .-> FallbackLLM
+
+    PrimaryLLM & FallbackLLM --> SSEGen
+    PrimaryLLM & FallbackLLM --> SelfRAG
+    SelfRAG -- "Verified & Grounded" --> PostgresDB
+    SSEGen --> ClientLayer
+    SSEGen --> PostgresDB
 ```
-                                 [ Client Request ]
-                                         │
-                                         ▼
-                            [ FastAPI API Gateway ]
-                         (Anti-DDoS & IP Rate Limiting)
-                                         │
-                                         ▼
-                               [ Router Agent ]
-                       (Intent Classification & Routing)
-                                         │
-                   ┌─────────────────────┴─────────────────────┐
-                   │                                           │
-         [ Direct Conversation ]                    [ Supervisor Agent ]
-                   │                         (Multi-Agent Workflow Orchestrator)
-                   │                                           │
-                   │                     ┌─────────────────────┼─────────────────────┐
-                   │                     │                     │                     │
-                   │             [ Planner Agent ]     [ Research Agent ]     [ Critic Agent ]
-                   │           (Query Decomposition)  (Hybrid Search + Rerank)  (CRAG & Self-RAG)
-                   │                     │                     │                     │
-                   │                     └─────────────────────┼─────────────────────┘
-                   │                                           │
-                   │                                           ▼
-                   │                                 [ Synthesis Agent ]
-                   │                              (Context & Diagram Merge)
-                   │                                           │
-                   └─────────────────────┬─────────────────────┘
-                                         │
-                                         ▼
-                         [ Resilient Multi-Provider LLM ]
-                       (Gemini / Groq / Ollama / DeepSeek)
-                                         │
-                                         ▼
-                        [ SSE Real-Time Token Stream ]
+
+### End-to-End Data Pipeline
+
+```
+                              [ Client Layer: React 19 SPA / Streamlit ]
+                                                  │
+                                                  ▼
+                                     [ FastAPI API Gateway ]
+                              ┌───────────────────────────────────┐
+                              │ • In-Memory Anti-DDoS (>12 req/5s)│
+                              │ • Dual-Layer Quota (IP + CID)     │
+                              │ • Upstash Redis Semantic Cache    │
+                              └─────────────────┬─────────────────┘
+                                                │ (Cache Miss)
+                                                ▼
+                                        [ Router Agent ]
+                                (Sub-50ms Intent Classification)
+                                                │
+         ┌──────────────────────────────────────┼──────────────────────────────────────┐
+         ▼                                      ▼                                      ▼
+  [ DIRECT_CHAT ]                        [ WEB_SEARCH ]                    [ DOCUMENT_RAG / COMPLEX ]
+         │                                      │                                      │
+         │                               [ Web Search ]                        [ Planner Agent ]
+         │                                      │                         (Sub-Query Decomposition)
+         │                                      │                                      │
+         │                                      │                                      ▼
+         │                                      │                             [ Research Agent ]
+         │                                      │                     ┌────────────────────────────────┐
+         │                                      │                     │ • Qdrant / FAISS Dense Vectors │
+         │                                      │                     │ • BM25 Sparse Keyword Search   │
+         │                                      │                     │ • FlashRank Cross-Encoder      │
+         │                                      │                     └───────────────┬────────────────┘
+         │                                      │                                     ▼
+         │                                      │                            [ Critic Agent: CRAG ]
+         │                                      │                            (Doc Relevance Grading)
+         │                                      │                                     │
+         │                                      │                     ┌───────────────┴────────────────┐
+         │                                      │    (Low Confidence) │                                │ (Pass)
+         │                                      │    [Query Rewrite] ◄┘                                │
+         │                                      │                                                      │
+         └──────────────────────────────────────┼──────────────────────────────────────────────────────┘
+                                                ▼
+                                      [ Synthesis Agent ]
+                         (Context Compression + Diagram Extraction)
+                                                │
+                                                ▼
+                                [ Resilient LLM Engine ]
+                         ┌─────────────────────────────────────┐
+                         │ • Token-Bucket Rate Limiter (RPM)   │
+                         │ • Primary: Gemini 2.5 / 3.6 Flash   │
+                         │ • Fallback: Groq LLaMA 3.3 70B / ... │
+                         └──────────────────┬──────────────────┘
+                                            │
+                    ┌───────────────────────┴───────────────────────┐
+                    ▼                                               ▼
+     [ SSE Real-Time Streaming ]                        [ Non-Streaming Self-RAG ]
+     (Sub-Second Token Generator)                       (Hallucination & Utility Check)
+                    │                                               │
+                    └───────────────────────┬───────────────────────┘
+                                            ▼
+                           [ PostgreSQL Session Storage ]
+                         (Chat History, Citations & Turns)
 ```
 
 ---
