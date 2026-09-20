@@ -28,7 +28,7 @@ venv.bak/
 .streamlit/runtime/
 streamlit_app/.streamlit/secrets.toml
 streamlit_app/.streamlit/runtime/
-
+.streamlit/
 # Model & embedding caches
 .fastembed_cache/
 
@@ -45,6 +45,7 @@ data/vector_storage/
 data/qdrant_storage/
 data/semantic_cache/
 data/mem0_storage/
+backend
 
 # Testing & Coverage
 .pytest_cache/
