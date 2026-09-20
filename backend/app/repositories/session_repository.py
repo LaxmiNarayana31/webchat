@@ -155,8 +155,16 @@ class DatabaseSessionRepository:
                     if not user:
                         return []
                     query = session.query(ChatSessionEntity).options(joinedload(ChatSessionEntity.user)).filter(ChatSessionEntity.user_id == user.id)
-                elif guest_client_id and guest_client_id.strip():
-                    query = session.query(ChatSessionEntity).filter(ChatSessionEntity.guest_client_id == guest_client_id.strip())
+                elif guest_client_id:
+                    if isinstance(guest_client_id, (list, tuple, set)):
+                        clean_cids = [str(c).strip() for c in guest_client_id if str(c).strip()]
+                        if not clean_cids:
+                            return []
+                        query = session.query(ChatSessionEntity).filter(ChatSessionEntity.guest_client_id.in_(clean_cids))
+                    elif isinstance(guest_client_id, str) and guest_client_id.strip():
+                        query = session.query(ChatSessionEntity).filter(ChatSessionEntity.guest_client_id == guest_client_id.strip())
+                    else:
+                        return []
                 else:
                     return []
 

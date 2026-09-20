@@ -24,10 +24,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Main container comfortable reading width */
-.main .block-container {
-    max-width: 900px !important;
-    padding-top: 1rem !important;
+.main .block-container,
+[data-testid="stAppViewBlockContainer"] {
+    max-width: 680px !important;
+    padding-top: 2rem !important;
     padding-bottom: 2rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
     margin: 0 auto !important;
 }
 
@@ -400,6 +403,63 @@ div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button:hover 
     letter-spacing: 0.01em !important;
     padding: 8px 12px !important;
     line-height: 1.4 !important;
+}
+
+/* Sidebar Session Delete Button: compact, borderless trash icon */
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button,
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button {
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    padding: 0 !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #64748b !important;
+    opacity: 0.7 !important;
+    margin: 0 auto !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+/* Material icon inside the delete button */
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button span,
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button span {
+    font-size: 16px !important;
+    color: #64748b !important;
+}
+
+/* Hover state */
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button:hover,
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button:hover {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #ef4444 !important;
+    opacity: 1 !important;
+    transform: scale(1.1) !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button:hover span,
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div[data-testid="stButton"] > button:hover span {
+    color: #ef4444 !important;
+}
+
+/* Center the delete column container */
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div:last-child,
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 /* Sidebar User Account Card */

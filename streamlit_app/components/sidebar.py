@@ -9,8 +9,44 @@ from backend.app.services.rag_service import rag_service
 from backend.app.services.user_service import user_service
 
 
+@st.dialog("Delete Chat")
+def _confirm_delete_dialog(s_id: str, title: str):
+    """Centered modal dialog to confirm session deletion."""
+    st.write(f'Delete **"{title}"**?')
+    st.caption("This action cannot be undone.")
+    col_cancel, col_confirm = st.columns(2)
+    with col_cancel:
+        if st.button("Cancel", use_container_width=True, key="dlg_cancel_del"):
+            del st.session_state["_pending_delete_sid"]
+            del st.session_state["_pending_delete_title"]
+            st.rerun()
+    with col_confirm:
+        if st.button("Delete", use_container_width=True, type="primary", key="dlg_confirm_del", icon=":material/delete_forever:"):
+            try:
+                session_repository.delete_session(s_id)
+                if st.session_state.get("session_id") == s_id:
+                    st.query_params["sid"] = "new"
+                    st.session_state.session_id = str(uuid.uuid4())
+                    st.session_state.current_chat = []
+                    st.session_state.vector_store = None
+                    st.session_state.site_metadata = None
+            except Exception as del_err:
+                st.error(f"Delete failed: {del_err}")
+                return
+            del st.session_state["_pending_delete_sid"]
+            del st.session_state["_pending_delete_title"]
+            st.rerun()
+
+
 def render_sidebar():
     """Renders the sidebar: Document-aware New Chat, Session Search, Persistent History, and Quota Card."""
+    # Show delete confirmation dialog if pending
+    if "_pending_delete_sid" in st.session_state:
+        _confirm_delete_dialog(
+            st.session_state["_pending_delete_sid"],
+            st.session_state.get("_pending_delete_title", "this chat"),
+        )
+
     try:
         with st.sidebar:
             client_id = st.session_state.get("client_id")
@@ -47,10 +83,8 @@ def render_sidebar():
                     use_container_width=True,
                     help="Clear document and return to URL ingestion landing page",
                 ):
-                    new_sid = str(uuid.uuid4())
-                    st.session_state.session_id = new_sid
-                    if "sid" in st.query_params:
-                        del st.query_params["sid"]
+                    st.query_params["sid"] = "new"
+                    st.session_state.session_id = str(uuid.uuid4())
                     st.session_state.current_chat = []
                     st.session_state.vector_store = None
                     st.session_state.site_metadata = None
@@ -64,10 +98,8 @@ def render_sidebar():
                     use_container_width=True,
                     type="primary",
                 ):
-                    new_sid = str(uuid.uuid4())
-                    st.session_state.session_id = new_sid
-                    if "sid" in st.query_params:
-                        del st.query_params["sid"]
+                    st.query_params["sid"] = "new"
+                    st.session_state.session_id = str(uuid.uuid4())
                     st.session_state.current_chat = []
                     st.session_state.vector_store = None
                     st.session_state.site_metadata = None
@@ -114,11 +146,11 @@ def render_sidebar():
                 for s in filtered_sessions:
                     s_id = s["session_id"]
                     raw_title = (s.get("title") or s.get("url") or "Untitled Chat").strip()
-                    display_title = raw_title[:26] + "..." if len(raw_title) > 26 else raw_title
+                    display_title = raw_title[:30] + "..." if len(raw_title) > 30 else raw_title
                     active = (st.session_state.get("session_id") == s_id)
                     btn_type = "primary" if active else "secondary"
 
-                    col_sess, col_del = st.columns([5.2, 1.2], gap="small", vertical_alignment="center")
+                    col_sess, col_del = st.columns([5.8, 0.8], gap="small", vertical_alignment="center")
                     with col_sess:
                         if st.button(display_title, key=f"dbsess_btn_{s_id}", use_container_width=True, type=btn_type):
                             full_s = session_repository.get_session(s_id)
@@ -162,20 +194,10 @@ def render_sidebar():
                                 st.rerun()
 
                     with col_del:
-                        if st.button("🗑️", key=f"dbsess_del_{s_id}", help="Delete this session"):
-                            try:
-                                session_repository.delete_session(s_id)
-                                if st.session_state.get("session_id") == s_id:
-                                    new_sid = str(uuid.uuid4())
-                                    st.session_state.session_id = new_sid
-                                    if "sid" in st.query_params:
-                                        del st.query_params["sid"]
-                                    st.session_state.current_chat = []
-                                    st.session_state.vector_store = None
-                                    st.session_state.site_metadata = None
-                                st.rerun()
-                            except Exception as del_err:
-                                st.error(f"Delete failed: {del_err}")
+                        if st.button("", key=f"dbsess_del_{s_id}", help="Delete", icon=":material/delete:"):
+                            st.session_state["_pending_delete_sid"] = s_id
+                            st.session_state["_pending_delete_title"] = raw_title
+                            st.rerun()
 
             # --- Compact Quota Footer ---
             st.markdown("<div style='flex-grow: 1; min-height: 16px;'></div>", unsafe_allow_html=True)

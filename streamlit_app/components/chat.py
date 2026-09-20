@@ -294,10 +294,8 @@ def render_chat():
                         st.rerun()
                 with col_btn_cu:
                     if st.button("✕ Change URL", key="banner_btn_cu", use_container_width=True, help="Return to home screen to ingest a new website"):
-                        new_sid = str(uuid.uuid4())
-                        st.session_state.session_id = new_sid
-                        if "sid" in st.query_params:
-                            del st.query_params["sid"]
+                        st.query_params["sid"] = "new"
+                        st.session_state.session_id = str(uuid.uuid4())
                         st.session_state.current_chat = []
                         st.session_state.vector_store = None
                         st.session_state.site_metadata = None
@@ -388,6 +386,7 @@ def render_chat():
 
             session_id = st.session_state.get("session_id") or str(uuid.uuid4())
             st.session_state.session_id = session_id
+            st.query_params["sid"] = session_id
 
             # Save user turn in DB
             session_repository.append_message(
@@ -492,6 +491,7 @@ def render_chat():
                             "steps": recorded_steps,
                         }
                         st.session_state.current_chat.append(assistant_msg)
+                        st.query_params["sid"] = session_id
 
                         if st.session_state.get("selected_chat_index") is not None:
                             idx = st.session_state.selected_chat_index

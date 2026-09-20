@@ -1,3 +1,4 @@
+import hashlib
 import os
 from pathlib import Path
 import sys
@@ -76,21 +77,50 @@ st.set_page_config(
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 
+def get_persistent_client_id() -> str:
+    """Returns a stable, device-bound client_id across browser refreshes and tab reloads."""
+    try:
+        # 1. Check URL query parameters
+        qp_cid = st.query_params.get("cid")
+        if qp_cid and str(qp_cid).strip():
+            return str(qp_cid).strip()
+
+        # 2. Check in-memory session state
+        if "client_id" in st.session_state and st.session_state.client_id:
+            return str(st.session_state.client_id).strip()
+
+        # 3. Check Streamlit cookie if available
+        if hasattr(st, "context") and hasattr(st.context, "cookies"):
+            cookie_cid = st.context.cookies.get("webchat_cid") or st.context.cookies.get("_webchat_cid")
+            if cookie_cid and str(cookie_cid).strip():
+                return str(cookie_cid).strip()
+
+        # 4. Generate persistent fingerprint from client IP and User-Agent
+        if hasattr(st, "context"):
+            headers = getattr(st.context, "headers", {}) or {}
+            ip = getattr(st.context, "ip_address", None)
+            if not ip:
+                ip = headers.get("x-forwarded-for", "").split(",")[0].strip() or headers.get("remote-addr", "")
+            ua = headers.get("user-agent", "")
+            if ip or ua:
+                raw_fp = f"{ip}|{ua}"
+                fp_hash = hashlib.sha256(raw_fp.encode("utf-8")).hexdigest()[:16]
+                return f"guest_{fp_hash}"
+    except Exception:
+        pass
+
+    # 5. Fallback random UUID
+    return f"streamlit_{uuid.uuid4().hex[:12]}"
+
+
 def init_session():
     """Initializes Streamlit session state and restores client/session persistence across browser refreshes."""
     try:
-        # 1. Restore or create persistent client_id via st.query_params (mirroring localStorage in React)
-        qp_cid = st.query_params.get("cid")
-        if qp_cid and str(qp_cid).strip():
-            client_id = str(qp_cid).strip()
-        elif "client_id" in st.session_state and st.session_state.client_id:
-            client_id = st.session_state.client_id
-            st.query_params["cid"] = client_id
-        else:
-            client_id = f"streamlit_{uuid.uuid4().hex[:12]}"
-            st.query_params["cid"] = client_id
-
+        # 1. Restore or create persistent client_id (survives browser refresh and iframe reloads)
+        client_id = get_persistent_client_id()
         st.session_state.client_id = client_id
+        if st.query_params.get("cid") != client_id:
+            st.query_params["cid"] = client_id
 
         if "user_email" not in st.session_state:
             st.session_state.user_email = ""
@@ -101,11 +131,31 @@ def init_session():
         if "selected_model_override" not in st.session_state:
             st.session_state.selected_model_override = None
 
-        # 2. Check if we need to restore an active session from query parameters
+        # 2. Check if we need to restore an active session
         qp_sid = st.query_params.get("sid")
         target_sid = str(qp_sid).strip() if (qp_sid and str(qp_sid).strip()) else None
 
-        # Re-hydrate the target session only if explicitly requested in URL query params
+        # If user explicitly requested a fresh landing page (e.g. Ingest New URL / Change URL)
+        if target_sid == "new":
+            st.session_state.session_id = str(uuid.uuid4())
+            st.session_state.current_chat = []
+            st.session_state.vector_store = None
+            st.session_state.site_metadata = None
+            return
+
+        # On browser refresh / page reload without sid, restore user's most recent active session
+        if not target_sid:
+            try:
+                user_email = (st.session_state.get("user_email") or "").strip().lower() or None
+                recent_list = session_repository.list_sessions(email=user_email, guest_client_id=client_id, limit=1)
+                if recent_list and len(recent_list) > 0:
+                    target_sid = recent_list[0].get("session_id")
+                    if target_sid:
+                        st.query_params["sid"] = target_sid
+            except Exception:
+                pass
+
+        # Re-hydrate the target session
         if target_sid:
             st.session_state.session_id = target_sid
             if ("vector_store" not in st.session_state or not st.session_state.vector_store) and (
@@ -177,11 +227,47 @@ def ensure_database_initialized():
         return False
 
 
+def sync_local_storage_client_id():
+    """Syncs client_id with browser localStorage (unified with React frontend)."""
+    try:
+        active_cid = st.session_state.get("client_id", "")
+        sync_script = f"""
+        <script>
+        (function() {{
+            try {{
+                var storedCid = localStorage.getItem("webchat_client_id");
+                var currentCid = "{active_cid}";
+                
+                if (storedCid && storedCid.trim()) {{
+                    var parentUrl = new URL(window.parent.location.href);
+                    if (parentUrl.searchParams.get("cid") !== storedCid) {{
+                        parentUrl.searchParams.set("cid", storedCid);
+                        window.parent.location.replace(parentUrl.toString());
+                    }}
+                }} else if (currentCid && currentCid.trim()) {{
+                    localStorage.setItem("webchat_client_id", currentCid);
+                }}
+            }} catch (err) {{
+                // Cross-origin iframe fallback
+            }}
+        }})();
+        </script>
+        """
+        if hasattr(st, "iframe"):
+            st.iframe(sync_script, height=0, width=0)
+        else:
+            import streamlit.components.v1 as components
+            components.html(sync_script, height=0, width=0)
+    except Exception:
+        pass
+
+
 def main():
     """Streamlit Application Entrypoint."""
     try:
         ensure_database_initialized()
         init_session()
+        sync_local_storage_client_id()
         render_sidebar()
         render_chat()
     except Exception as e:
