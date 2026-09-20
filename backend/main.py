@@ -33,6 +33,7 @@ from backend.app.core.errors import (
     webchat_exception_handler,
 )
 from backend.app.core.logging import logger
+from backend.app.core.rate_limiter import RateLimitMiddleware
 from backend.app.core.security import SecurityHeadersMiddleware
 from backend.app.dtos.common_dto import HealthResponseDto
 from backend.app.helpers.service_launcher import launch_streamlit
@@ -118,6 +119,8 @@ app = FastAPI(
 )
 
 # Custom Security Headers Middleware
+# Custom Security & Rate Limiting Middlewares
+app.add_middleware(RateLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 
 # CORS Middleware
