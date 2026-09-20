@@ -1,12 +1,10 @@
-# WebChat AI — System Architecture & Technical Design
+# WebChat AI: System Architecture and Technical Design
 
-This document provides a comprehensive, production-grade architectural analysis of the **WebChat AI** platform based strictly on the actual codebase implementation.
-
----
+This document provides a comprehensive architectural analysis of the WebChat platform based on the codebase implementation.
 
 ## 1. High-Level System Architecture
 
-WebChat AI provides a dual-interface conversational AI platform supporting both a **single-page web application (SPA)** and a **Streamlit analytical dashboard**. The backend is built with **FastAPI** and orchestrates an **Agentic RAG (Retrieval-Augmented Generation)** pipeline driven by **LangGraph**, utilizing hybrid retrieval (dense vectors + sparse BM25 + reciprocal rank fusion + cross-encoder reranking), multi-provider LLM fallback cascades (Google Gemini & Groq), persistent user semantic memory (Memori Labs), multi-tier paywall bypassing, and structured relational persistence via PostgreSQL/SQLite.
+WebChat provides a dual-interface conversational AI platform supporting both a React 19 single-page application and a Streamlit analytical dashboard. The backend is built with FastAPI and orchestrates an asynchronous multi-agent supervisor pipeline with hybrid retrieval (dense vectors, sparse BM25, and FlashRank cross-encoder reranking), multi-provider LLM fallback cascades (Google Gemini, Groq, and Ollama), semantic caching, and relational persistence via PostgreSQL.
 
 ```mermaid
 graph TB
@@ -50,14 +48,12 @@ graph TB
         CACHE_Redis[("Upstash Cloud Redis (Two-Tier Semantic Cache)")]
     end
 
-    %% Client & Gateway Connections
     UI_SPA --> FastAPI
     UI_Streamlit --> FastAPI
     FastAPI --> DDoS
     DDoS --> Quota
     Quota --> CACHE_Redis
 
-    %% Cache Miss to Multi-Agent Supervisor
     CACHE_Redis -->|Cache Miss| Supervisor
     Supervisor --> Router
     Supervisor --> Planner
@@ -65,28 +61,23 @@ graph TB
     Supervisor --> Critic
     Supervisor --> Synthesizer
 
-    %% Intelligence Layer
     Researcher --> SVC_RAG
     Researcher --> SVC_Rerank
     Supervisor --> SVC_Scraper
     Supervisor --> SVC_Memory
 
-    %% LLM Cascade
     Synthesizer --> SVC_LLM
     SVC_LLM --> M_Gemini
     SVC_LLM --> M_Groq
     SVC_LLM --> M_Ollama
 
-    %% Storage & Persistence Layer
     CACHE_Redis -->|Tier 1 Exact & Tier 2 Vector| UI_SPA
     Supervisor --> DB_Relational
     SVC_RAG --> DB_Vector
     SVC_Memory --> DB_Relational
 ```
 
----
-
-### 2. End-to-End Data & Request Flow
+## 2. End-to-End Data and Request Flow
 
 The diagram below maps the complete lifecycle of a chat request from the client interface down to security middleware, quota checks, multi-agent orchestration, hybrid retrieval, streaming generation, and persistence.
 
@@ -116,13 +107,11 @@ sequenceDiagram
         Shield->>API: Forward request with client_ip
         API->>ChatSvc: handle_chat_stream_async(req, client_ip)
 
-        %% Dual-Layer Quota Verification
         ChatSvc->>UserSvc: check_and_consume_quota(client_id, ip_address)
         UserSvc->>DB: Check & increment quota in webchat_guest_usage
         DB-->>UserSvc: Quota Approved (50 daily limit per IP + CID)
         UserSvc-->>ChatSvc: allowed=True, quota_info
 
-        %% Semantic Cache Lookup
         ChatSvc->>CacheSvc: get_cached_answer(query, context_hash)
         alt Tier 1 / Tier 2 Cache Hit (Similarity >= 0.92)
             CacheSvc-->>ChatSvc: cached_answer, citations
@@ -130,7 +119,6 @@ sequenceDiagram
         else Cache Miss
             ChatSvc->>Supervisor: orchestrate_stream_async(query, vector_store, ...)
 
-            %% Multi-Agent Pipeline
             Supervisor->>Router: classify_intent_async(query)
             Router-->>Supervisor: Intent Decision (DOCUMENT_RAG)
 
@@ -158,14 +146,12 @@ sequenceDiagram
             Supervisor-->>ChatSvc: yield {"type": "ready", prompt, citations}
             ChatSvc-->>User: SSE Event: reasoning steps & citations
 
-            %% Resilient LLM Streaming
             ChatSvc->>LLMEngine: generate_stream_async(prompt, system_instruction)
             loop Token Generation
                 LLMEngine-->>ChatSvc: token chunk
                 ChatSvc-->>User: SSE Event: text chunk
             end
 
-            %% Persistence
             ChatSvc->>DB: append_message(role='user', content=query)
             ChatSvc->>DB: append_message(role='assistant', content=answer, citations)
             ChatSvc->>CacheSvc: set_cached_answer(query, answer, citations)
@@ -174,11 +160,9 @@ sequenceDiagram
     end
 ```
 
----
+## 3. Detailed AI and Agentic RAG Pipeline (Multi-Agent Supervisor Workflow)
 
-## 3. Detailed AI & Agentic RAG Pipeline (Multi-Agent Supervisor Workflow)
-
-The core intelligence layer operates as an asynchronous multi-agent supervisor architecture implementing **Corrective RAG (CRAG)**, **Self-RAG reflection**, and **Parallel Hybrid Retrieval**.
+The core intelligence layer operates as an asynchronous multi-agent supervisor architecture implementing Corrective RAG (CRAG), Self-RAG reflection, and Parallel Hybrid Retrieval.
 
 ```mermaid
 stateDiagram-v2
@@ -264,117 +248,103 @@ stateDiagram-v2
     END --> [*]
 ```
 
----
+## 4. Component Catalog and Responsibilities
 
-## 4. Component Catalog & Responsibilities
+### 4.1 Client and Presentation Layer
 
-### 4.1 Client & Presentation Layer
+| Component               | Path                                                                           | Responsibility                                                                                                                                              | Technologies / Dependencies                         |
+| :---------------------- | :----------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------- |
+| **Web SPA Interface**   | [frontend/](file:///d:/Projects/Personal-Projects/webchat/frontend/)           | Production web client with dark theme, real-time citation cards, SSE streaming event reader, model switcher, session history drawer, and diagram rendering. | React 19, Tailwind CSS, Vite, EventSource API       |
+| **Streamlit Dashboard** | [streamlit_app/](file:///d:/Projects/Personal-Projects/webchat/streamlit_app/) | Analytical interface offering model telemetry, chat history inspection, vector store exploration, document ingestion, and quota tracking.                   | Streamlit 1.40+, Custom CSS, Threading Queue Bridge |
 
-| Component               | Path                                                                           | Responsibility                                                                                                                                                                                                   | Technologies / Dependencies                                                      |
-| :---------------------- | :----------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------- |
-| **Web SPA Interface**   | [frontend/](file:///d:/Projects/Personal-Projects/webchat/frontend/)           | Ultra-responsive, production-grade web client with glassmorphic dark theme, real-time citation cards, SSE streaming event reader, model selection switcher, session history drawer, and quick ingestion buttons. | HTML5, Vanilla CSS (`index.css`), Vanilla JavaScript (`app.js`), EventSource API |
-| **Streamlit Dashboard** | [streamlit_app/](file:///d:/Projects/Personal-Projects/webchat/streamlit_app/) | Full-featured secondary analytical interface offering real-time model telemetry, chat history inspection, manual vector store exploration, document ingestion, and quota dials.                                  | Streamlit 1.40+, Custom CSS (`styles.py`), Threading Queue Bridge                |
+### 4.2 API and Gateway Layer
 
----
+| Component                  | Path                                                                                                   | Responsibility                                                                                                                         | Technologies / Dependencies             |
+| :------------------------- | :----------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------- |
+| **FastAPI Core App**       | [backend/app/main.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/main.py)               | Application entry point; initializes CORS, registers security headers, manages database lifespan, and mounts routers.                  | FastAPI 0.115+, Starlette, Uvicorn      |
+| **Anti-DDoS Rate Limiter** | [rate_limiter.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/core/rate_limiter.py)      | High-speed in-memory sliding-window token bucket shield intercepting flood attacks (>12 req/5s) and scraper abuse at connection layer. | FastAPI BaseHTTPMiddleware, TokenBucket |
+| **Security Headers**       | [security.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/core/security.py)              | Injects standard security HTTP headers into every response (nosniff, DENY, X-XSS-Protection, Referrer-Policy).                         | Starlette Middleware                    |
+| **Chat API Routes**        | [chat_routes.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/api/chat_routes.py)         | Handles `/api/chat` (JSON / SSE stream with IP defense), `/api/scrape`, `/api/crawl`, and `/api/models`.                               | FastAPI APIRouter, StreamingResponse    |
+| **User & Quota Routes**    | [user_routes.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/api/user_routes.py)         | Handles `/api/user/identify`, `/api/user/quota`, `/api/sessions` (list & create), and `/api/sessions/{session_id}` (get & delete).     | FastAPI APIRouter, Dependency Injection |
+| **Frontend Router**        | [frontend_routes.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/api/frontend_routes.py) | Serves the single-page application and static asset fallbacks.                                                                         | StaticFiles, FileResponse               |
 
-### 4.2 API & Gateway Layer
+### 4.3 Application Core and Orchestration
 
-| Component                  | Path                                                                                                   | Responsibility                                                                                                                                     | Technologies / Dependencies             |
-| :------------------------- | :----------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------- |
-| **FastAPI Core App**       | [backend/app/main.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/main.py)               | Application entry point; initializes CORS, registers security headers, manages lifespan (DB migration + Memori storage build), and mounts routers. | FastAPI 0.115+, Starlette, Uvicorn      |
-| **Anti-DDoS Rate Limiter** | [rate_limiter.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/core/rate_limiter.py)      | High-speed in-memory sliding-window token bucket shield intercepting flood attacks (>12 req/5s) and scraper abuse at the connection layer.         | FastAPI BaseHTTPMiddleware, TokenBucket |
-| **Security Headers**       | [security.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/core/security.py)              | Injects standard security HTTP headers into every response (`nosniff`, `DENY`, `X-XSS-Protection`, `Referrer-Policy`) and sanitizes inputs.        | Starlette Middleware                    |
-| **Chat API Routes**        | [chat_routes.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/api/chat_routes.py)         | Handles `/api/chat` (JSON / SSE stream with IP defense), `/api/scrape`, `/api/crawl`, and `/api/models`.                                           | FastAPI APIRouter, StreamingResponse    |
-| **User & Quota Routes**    | [user_routes.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/api/user_routes.py)         | Handles `/api/user/identify`, `/api/user/quota`, `/api/sessions` (list & create), and `/api/sessions/{session_id}` (get & delete).                 | FastAPI APIRouter, Dependency Injection |
-| **Frontend Router**        | [frontend_routes.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/api/frontend_routes.py) | Serves the single-page application and static asset fallbacks.                                                                                     | StaticFiles, FileResponse               |
+| Component           | Path                                                                                                        | Responsibility                                                                                                                                | Technologies / Dependencies |
+| :------------------ | :---------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------- |
+| **ChatService**     | [chat_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/chat_service.py)       | Business logic orchestrator; handles quota consumption, persists user questions/answers, checks semantic cache, and triggers agent streaming. | Python 3.11+, asyncio       |
+| **SupervisorAgent** | [supervisor_agent.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/agents/supervisor_agent.py) | Orchestrator delegating workflow across specialized agents, tracking execution traces and telemetry.                                          | Python 3.11+, Protocols     |
+| **RouterAgent**     | [router_agent.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/agents/router_agent.py)         | Intent classification agent determining routing across direct conversation, document RAG, and web search.                                     | Pydantic, Gemini Client     |
+| **PlannerAgent**    | [planner_agent.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/agents/planner_agent.py)       | Sub-query decomposition agent and query rewriter responding to Critic feedback.                                                               | Pydantic, Gemini Client     |
+| **ResearchAgent**   | [research_agent.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/agents/research_agent.py)     | Concurrent hybrid retrieval agent combining Qdrant dense vectors, BM25 sparse search, and FlashRank reranking.                                | FlashRank, Qdrant, asyncio  |
+| **CriticAgent**     | [critic_agent.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/agents/critic_agent.py)         | Verification agent executing Corrective RAG document relevance grading and Self-RAG hallucination checking.                                   | Pydantic, Gemini Client     |
+| **SynthesisAgent**  | [synthesis_agent.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/agents/synthesis_agent.py)   | Assembles verified context passages, extracts architectural diagrams, and prepares citations.                                                 | Pydantic, Python 3.11+      |
+| **UserService**     | [user_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/user_service.py)       | Manages dual-layer quota tracking (Client ID + IP address, 50 queries/day reset at UTC midnight).                                             | SQLAlchemy, datetime        |
 
----
+### 4.4 RAG, Scraper, Memory and Vector Services
 
-### 4.3 Application Core & Orchestration
+| Component          | Path                                                                                                        | Responsibility                                                                                                       | Technologies / Dependencies                  |
+| :----------------- | :---------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- |
+| **RAGService**     | [rag_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/rag_service.py)         | Document chunking, dense embedding with GeminiEmbeddings, Qdrant Cloud hybrid ingestion, and Reciprocal Rank Fusion. | Qdrant Cloud, FAISS-CPU, rank-bm25           |
+| **RerankService**  | [rerank_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/rerank_service.py)   | Local cross-encoder reranker refining top hybrid retrieval candidates down to the most relevant contexts.            | FlashRank                                    |
+| **ScraperService** | [scraper_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/scraper_service.py) | Ingests URLs and PDFs with multi-tier fallback: Trafilatura, BeautifulSoup, Jina Reader API, and Internet Archive.   | Trafilatura, BeautifulSoup4, PyPDF, Requests |
+| **MemoryService**  | [memory_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/memory_service.py)   | Connects to Memori Labs; records conversation turns and extracts facts automatically.                                | memori, SQLAlchemy                           |
+| **QdrantService**  | [qdrant_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/qdrant_service.py)   | Cloud vector database hosting dense embeddings (3072-dim Cosine) and BM25 sparse vectors.                            | qdrant-client                                |
 
-| Component             | Path                                                                                                                | Responsibility                                                                                                                                                                        | Technologies / Dependencies    |
-| :-------------------- | :------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------- |
-| **ChatService**       | [chat_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/chat_service.py)               | Business logic orchestrator; handles quota consumption, persists user questions/answers, checks semantic cache, triggers agent streaming, and sets memory attribution.                | Python 3.11+, asyncio          |
-| **WebChatAgent**      | [chat_agent.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/agents/chat_agent.py)                     | Coordinates Agentic RAG graph streaming, citation extraction, token yield formatting, and synchronous queue bridge for Streamlit.                                                     | asyncio, queue, threading      |
-| **AgenticRAGService** | [agentic_rag_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/agentic_rag_service.py) | Official LangGraph workflow executing routing, multi-hop query decomposition, hybrid retrieval, CRAG document grading, query rewriting, web search fallback, and Self-RAG evaluation. | LangGraph 0.2+, LangChain Core |
-| **UserService**       | [user_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/user_service.py)               | Manages guest tracking (UUID client ID, 5 lifetime requests) and authenticated user daily quotas (50 requests/day, UTC midnight reset).                                               | SQLAlchemy, datetime           |
+### 4.5 LLM Multi-Provider Fallback Cascade and Rate Limiter
 
----
+| Component              | Path                                                                                                   | Responsibility                                                                                                    | Technologies / Dependencies |
+| :--------------------- | :----------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :-------------------------- |
+| **ResilientLLMClient** | [llm_client.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/clients/llm_client.py)       | Transparently cascades through 10 priority models across Google Gemini and Groq if rate limits or timeouts occur. | google-genai, groq          |
+| **Rate Limiter Core**  | [rate_limiter.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/core/rate_limiter.py)      | Thread-safe token buckets, sliding window RPM monitors, and exponential cooldown trackers.                        | threading.Lock, time        |
+| **GeminiClient**       | [gemini_client.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/clients/gemini_client.py) | Google GenAI SDK wrapper handling generation and streaming.                                                       | google-genai                |
+| **GroqClient**         | [groq_client.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/clients/groq_client.py)     | Groq SDK client for fast failover models (LLaMA 3.3 70B).                                                         | groq                        |
 
-### 4.4 RAG, Scraper, Memory & Vector Services
+### 4.6 Storage, Databases and Caches
 
-| Component          | Path                                                                                                        | Responsibility                                                                                                                                                                                   | Technologies / Dependencies                   |
-| :----------------- | :---------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------- |
-| **RAGService**     | [rag_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/rag_service.py)         | Document chunking (`RecursiveCharacterTextSplitter`), dense embedding (`GeminiEmbeddings` with 3072 dims), Qdrant Cloud hybrid ingestion, and Reciprocal Rank Fusion (`MultiEngineHybridIndex`). | Qdrant Cloud, FAISS-CPU, rank-bm25, LangChain |
-| **RerankService**  | [rerank_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/rerank_service.py)   | High-speed local cross-encoder reranker refining top hybrid retrieval candidates down to the most relevant contexts.                                                                             | FlashRank (`ms-marco-TinyBERT-L-2-v2`)        |
-| **ScraperService** | [scraper_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/scraper_service.py) | Ingests URLs and PDFs; bypasses soft paywalls using multi-tier fallback: Trafilatura -> BeautifulSoup -> Jina Reader API -> Internet Archive Wayback Machine.                                    | Trafilatura, BeautifulSoup4, PyPDF, Requests  |
-| **MemoryService**  | [memory_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/memory_service.py)   | Connects to Memori Labs (Cloud or BYODB PostgreSQL); registers LLM client so conversation turns and facts are captured and recalled automatically.                                               | `memori>=3.3.0`, SQLAlchemy                   |
-| **QdrantService**  | [qdrant_service.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/services/qdrant_service.py)   | **Mandatory Primary Vector Database**: Connects to Qdrant Cloud cluster with 3072-dim dense cosine similarity, BM25 sparse vectors, and Binary Quantization (BQ) fused via RRF.                  | `qdrant-client>=1.19.0`                       |
+| Store                            | Location / Mechanism      | Schema / Structure                                                                                                                |
+| :------------------------------- | :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------- |
+| **Relational Database**          | PostgreSQL on Aiven Cloud | Tables for users, sessions, messages, guest usage by IP/CID, and URL cache with SHA-256 hashes.                                   |
+| **Memori Labs Storage**          | PostgreSQL tables         | Tables for user entities, sessions, conversations, and knowledge graph facts.                                                     |
+| **Upstash Redis Semantic Cache** | Upstash Cloud Redis       | Two-tier semantic cache: Tier 1 instant SHA-256 exact match (<1ms) and Tier 2 dense vector cosine similarity (threshold >= 0.92). |
+| **Cloud Vector Database**        | Qdrant Cloud Cluster      | Primary vector database hosting dense embeddings (3072-dim Cosine) and BM25 sparse vectors. Local FAISS acts as secondary backup. |
 
----
+## 5. Security and Authentication Model
 
-### 4.5 LLM Multi-Provider Fallback Cascade & Rate Limiter
+1. **Guest Device Tier**:
+   - Devices are identified by a persistent UUID Client ID and their client IP address.
+   - Guests receive 50 queries per day, tracked in PostgreSQL.
+   - Both the Client ID and the client IP address are evaluated, preventing users from resetting their quota by clearing browser storage.
+   - Quotas automatically reset daily at 00:00:00 UTC.
 
-| Component              | Path                                                                                                   | Responsibility                                                                                                               | Technologies / Dependencies  |
-| :--------------------- | :----------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- | :--------------------------- |
-| **ResilientLLMClient** | [llm_client.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/clients/llm_client.py)       | Transparently cascades through 10 priority models across Google Gemini and Groq if rate limits (HTTP 429) or timeouts occur. | google-genai, groq           |
-| **Rate Limiter Core**  | [rate_limiter.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/core/rate_limiter.py)      | Thread-safe token buckets, sliding window RPM monitors, and exponential cooldown trackers preventing provider throttling.    | threading.Lock, time, random |
-| **GeminiClient**       | [gemini_client.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/clients/gemini_client.py) | Official Google GenAI SDK wrapper registered with Memori for automatic memory capture.                                       | `google-genai>=1.0.0`        |
-| **GroqClient**         | [groq_client.py](file:///d:/Projects/Personal-Projects/webchat/backend/app/clients/groq_client.py)     | Official Groq SDK client for fast failover models (`gpt-oss-120b`, `compound`).                                              | `groq>=0.13.0`               |
+2. **HTTP Security Headers**:
+   - X-Content-Type-Options: nosniff
+   - X-Frame-Options: DENY
+   - X-XSS-Protection: 1; mode=block
+   - Referrer-Policy: strict-origin-when-cross-origin
 
----
+3. **Input Sanitization**:
+   - Strips null bytes and control characters from queries and document inputs.
 
-### 4.6 Storage, Databases & Caches
-
-| Store                            | Location / Mechanism                                                                | Schema / Structure                                                                                                                                                                                                                                                                                                                                              |
-| :------------------------------- | :---------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Relational Database**          | PostgreSQL (`psycopg2-binary`) on Aiven Cloud                                       | - `webchat_users` (id, email, daily_requests_count, last_request_date)<br/>- `webchat_sessions` (session_id, user_id, guest_client_id, title, url)<br/>- `webchat_messages` (id, session_id, role, content, citations_json)<br/>- `webchat_guest_usage` (client_id, request_count)<br/>- `webchat_url_cache` (url_hash, url, title, content, vector_session_id) |
-| **Memori Labs BYODB**            | PostgreSQL (`memori_*` tables)                                                      | - `memori_entity` (user mapping)<br/>- `memori_session` (session links)<br/>- `memori_conversation` & `memori_conversation_message`<br/>- `memori_entity_fact` & `memori_knowledge_graph`                                                                                                                                                                       |
-| **Upstash Redis Semantic Cache** | Upstash Cloud Redis (`rediss://...`) + Local Disk Fallback (`data/semantic_cache/`) | Two-tier semantic cache: Tier 1 instant SHA-256 exact match (<1ms) + Tier 2 dense vector cosine similarity (threshold >= 0.92, Gemini 3072-dim embeddings) partitioned by URL context hash with configurable 7-day TTL (`SEMANTIC_CACHE_TTL`).                                                                                                                  |
-| **Mandatory Cloud Vector DB**    | Qdrant Cloud Cluster (`QDRANT_URL`)                                                 | Mandatory primary vector database hosting dense embeddings (3072-dim Cosine), BM25 sparse vectors, and Binary Quantization (BQ) fused with Reciprocal Rank Fusion (RRF). Local FAISS disk cache serves as secondary backup.                                                                                                                                     |
-
----
-
-## 5. Security & Authentication Model
-
-1. **Guest Tier (Anonymous)**:
-   - Clients are assigned a `guest_client_id` (UUID generated on client side and persisted in `localStorage` or session state).
-   - Guests are granted **5 free requests** tracked in `webchat_guest_usage`.
-   - Once 5 requests are exhausted, the server issues an HTTP `403 Forbidden` with payload `{"requires_email": true}`.
-2. **Registered User Tier (Email Identification)**:
-   - Users provide their email address via `/api/user/identify`.
-   - Registered users receive **50 requests per day**, reset automatically at `00:00:00 UTC` by comparing `last_request_date` against `datetime.now(timezone.utc).strftime("%Y-%m-%d")`.
-3. **HTTP Security Headers**:
-   - `X-Content-Type-Options: nosniff`
-   - `X-Frame-Options: DENY`
-   - `X-XSS-Protection: 1; mode=block`
-   - `Referrer-Policy: strict-origin-when-cross-origin`
-4. **Input Sanitization**:
-   - Strip null bytes (`\x00`) and ASCII control characters from queries and document inputs.
-
----
-
-## 6. Background Jobs, Concurrency & Threading Architecture
+## 6. Background Jobs, Concurrency and Threading Architecture
 
 The system utilizes an asynchronous event-driven architecture coupled with managed thread pools and queues to handle long-running I/O without blocking:
 
-1. **Async / Sync Generator Streaming Bridge (`chat_agent.py`)**:
-   - Streamlit operates in a synchronous execution thread per session, while LangGraph and the LLM clients operate natively asynchronously via `asyncio`.
-   - A dedicated daemon thread runs an isolated `asyncio.new_event_loop()`, passing tokens, thinking steps, and citations into a thread-safe `queue.Queue`.
-   - The caller consumes items from the queue with an active timeout, terminating on a sentinel token (`None`) or raising cleanly on exceptions.
+1. **Async and Sync Generator Streaming Bridge (`chat_agent.py`)**:
+   - Streamlit operates in a synchronous execution thread per session, while LLM clients operate asynchronously via `asyncio`.
+   - A dedicated daemon thread runs an isolated event loop, passing tokens, thinking steps, and citations into a thread-safe `queue.Queue`.
+   - The caller consumes items from the queue with an active timeout, terminating on a sentinel token or raising cleanly on exceptions.
 
-2. **Parallel Web & Domain Crawler (`scraper_service.py`)**:
-   - Domain crawling and paywall bypass use `concurrent.futures.ThreadPoolExecutor(max_workers=min(len(urls), 6))`.
-   - Scraping tasks run in parallel across worker threads, utilizing timeout budgets and session pools.
+2. **Parallel Web and Domain Crawler (`scraper_service.py`)**:
+   - Domain crawling and paywall bypass use a thread pool executor.
+   - Scraping tasks run in parallel across worker threads, utilizing timeout budgets and connection pools.
 
 3. **Background Semantic Memory Ingestion (`memory_service.py`)**:
-   - Memori Labs hooks into LLM invocations, executing knowledge graph entity/fact extraction asynchronously so response generation latency is not impacted.
-
----
+   - Memori Labs hooks into LLM invocations, executing knowledge graph extraction asynchronously so response generation latency is not impacted.
 
 ### Production Architectural Guarantees
 
-- **Strictly Top-Level Imports**: Every Python module enforces static, top-level imports with zero inline imports or guarded `try...except` import blocks.
-- **Zero Namespace Collisions**: Modern namespace packaging without legacy `__init__.py` files across all backend domain packages.
-- **Dedicated FAISS Disk Vector Store**: FAISS is the sole vector index persisted to disk (`data/vector_storage/`), while Qdrant operates purely in the cloud without local disk fallbacks.
-- **Start-to-End Exception Boundaries**: Every function and route handler implements structured `try...except` boundaries with contextual logging.
+- **Strictly Top-Level Imports**: Every Python module enforces static, top-level imports with zero inline imports.
+- **Zero Namespace Collisions**: Modern namespace packaging across all backend domain packages.
+- **Dedicated FAISS Disk Vector Store**: FAISS is persisted to disk under `data/vector_storage/`, while Qdrant operates in the cloud.
+- **Start-to-End Exception Boundaries**: Functions and route handlers implement structured error handling with contextual logging.

@@ -1,5 +1,4 @@
-# WebChat
-
+<h1 align="center">WebChat</h1>
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python Version" />
   <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
@@ -10,8 +9,8 @@
   <img src="https://img.shields.io/badge/Qdrant-Vector_DB-E30052?style=for-the-badge&logo=qdrant&logoColor=white" alt="Qdrant" />
   <img src="https://img.shields.io/badge/PostgreSQL-Aiven-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
 </p>
-
-WebChat is a conversational RAG system that lets you ingest and chat with any public web page, technical documentation, or online article. It uses an asynchronous multi-agent supervisor pipeline with hybrid retrieval, cross-encoder reranking, multi-provider LLM failover, and automatic extraction of architectural diagrams.
+<h3 align="center">Distributed Multi-Agent Conversational RAG & Search System</h3>
+<p align="center">Production-ready conversational RAG platform featuring multi-agent orchestration, Corrective RAG (CRAG), Self-RAG reflection, hybrid dense/sparse retrieval with cross-encoder reranking, multi-provider LLM failover, and multimodal diagram extraction.</p>
 
 ## Overview
 
@@ -152,6 +151,7 @@ REDIS_URL="rediss://default:YOUR_TOKEN@YOUR_HOST.upstash.io:6379"
 QDRANT_URL="https://your-cluster-id.cloud.qdrant.io:6333"
 QDRANT_API_KEY="your_qdrant_api_key"
 
+URL_HASH_ALGORITHM="SHA256"
 URL_HASH_SECRET="your_random_secret_string"
 ```
 
@@ -220,6 +220,7 @@ The dashboard will open at http://localhost:8501.
 | `REDIS_URL`               | Upstash Redis connection string for caching | Optional | [Upstash](https://console.upstash.com/)                          |
 | `QDRANT_URL`              | Qdrant Cloud cluster endpoint               | Optional | [Qdrant Cloud](https://cloud.qdrant.io/) (FAISS used if omitted) |
 | `QDRANT_API_KEY`          | Qdrant Cloud authentication key             | Optional | Qdrant Cloud                                                     |
+| `URL_HASH_ALGORITHM`      | Cryptographic hashing algorithm (SHA256)    | Optional | Defaults to SHA256                                               |
 | `URL_HASH_SECRET`         | Salt string for URL content hashing         | Optional | Application Configuration                                        |
 
 ## API Reference
