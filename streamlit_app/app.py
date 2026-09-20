@@ -3,6 +3,11 @@ from pathlib import Path
 import sys
 import uuid
 
+# Ensure root workspace directory is in Python module search path
+root_dir = Path(__file__).resolve().parent.parent
+if str(root_dir) not in sys.path:
+    sys.path.insert(0, str(root_dir))
+
 # Patch Windows asyncio ProactorEventLoop WinError 10054 (ConnectionResetError)
 if sys.platform.startswith("win"):
     try:
@@ -14,8 +19,6 @@ if sys.platform.startswith("win"):
             try:
                 _orig_call_connection_lost(self, exc)
             except (ConnectionResetError, OSError):
-                # On Windows, shutdown() on an already closed remote socket raises WinError 10054.
-                # Complete the necessary socket close and detach cleanup safely.
                 try:
                     if hasattr(self, "_sock") and self._sock is not None:
                         self._sock.close()
@@ -31,11 +34,6 @@ if sys.platform.startswith("win"):
         _ProactorBasePipeTransport._call_connection_lost = _silenced_call_connection_lost
     except Exception:
         pass
-
-# Ensure root workspace directory is in Python module search path
-root_dir = Path(__file__).resolve().parent.parent
-if str(root_dir) not in sys.path:
-    sys.path.insert(0, str(root_dir))
 
 from dotenv import load_dotenv
 import streamlit as st
@@ -64,6 +62,7 @@ from backend.config.database import init_db
 from streamlit_app.components.chat import render_chat
 from streamlit_app.components.sidebar import render_sidebar
 from streamlit_app.styles import CUSTOM_CSS
+
 
 # Page configuration
 st.set_page_config(
@@ -102,25 +101,16 @@ def init_session():
         if "selected_model_override" not in st.session_state:
             st.session_state.selected_model_override = None
 
-        # 2. Check if we need to restore an active session on page refresh
+        # 2. Check if we need to restore an active session from query parameters
         qp_sid = st.query_params.get("sid")
         target_sid = str(qp_sid).strip() if (qp_sid and str(qp_sid).strip()) else None
 
-        # If no target_sid in query params, find the most recent session for this client
-        if not target_sid:
-            try:
-                recent_list = session_repository.list_sessions(guest_client_id=client_id, limit=1)
-                if recent_list and len(recent_list) > 0:
-                    target_sid = recent_list[0].get("session_id")
-                    if target_sid:
-                        st.query_params["sid"] = target_sid
-            except Exception:
-                pass
-
-        # Re-hydrate the target session if session_state is fresh/empty
+        # Re-hydrate the target session only if explicitly requested in URL query params
         if target_sid:
             st.session_state.session_id = target_sid
-            if "current_chat" not in st.session_state or len(st.session_state.current_chat) == 0:
+            if ("vector_store" not in st.session_state or not st.session_state.vector_store) and (
+                "site_metadata" not in st.session_state or not st.session_state.site_metadata
+            ):
                 try:
                     full_s = session_repository.get_session(target_sid)
                     if full_s:
@@ -157,7 +147,7 @@ def init_session():
                 except Exception as restore_err:
                     print(f"Error restoring session from DB: {restore_err}", file=sys.stderr)
         else:
-            if "session_id" not in st.session_state:
+            if "session_id" not in st.session_state or not st.session_state.session_id:
                 st.session_state.session_id = str(uuid.uuid4())
             if "current_chat" not in st.session_state:
                 st.session_state.current_chat = []
@@ -200,5 +190,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-# WebChat AI Application Entrypoint
-

@@ -55,6 +55,7 @@ def render_sidebar():
                     st.session_state.vector_store = None
                     st.session_state.site_metadata = None
                     st.session_state.selected_chat_index = None
+                    st.session_state.main_quick_url_input = ""
                     st.rerun()
             else:
                 if st.button(
@@ -71,6 +72,7 @@ def render_sidebar():
                     st.session_state.vector_store = None
                     st.session_state.site_metadata = None
                     st.session_state.selected_chat_index = None
+                    st.session_state.main_quick_url_input = ""
                     st.rerun()
 
             st.markdown("<hr style='margin: 12px 0; border: none; border-top: 1px solid rgba(255,255,255,0.08);'/>", unsafe_allow_html=True)

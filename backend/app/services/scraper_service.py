@@ -55,7 +55,7 @@ class ScraperService:
                 "User-Agent": settings.USER_AGENT,
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
                 "Accept-Language": "en-US,en;q=0.9",
-                "Accept-Encoding": "gzip, deflate, br",
+                "Accept-Encoding": "gzip, deflate",
                 "Sec-Ch-Ua": '"Chromium";v="133", "Google Chrome";v="133", "Not?A_Brand";v="99"',
                 "Sec-Ch-Ua-Mobile": "?0",
                 "Sec-Ch-Ua-Platform": '"Windows"',
@@ -135,7 +135,7 @@ class ScraperService:
                 if direct_res.get("success") and direct_res.get("word_count", 0) > 300:
                     return direct_res
                 # If direct worked and no paywall detected, return it
-                if direct_res.get("success") and not direct_res.get("paywall_detected") and direct_res.get("word_count", 0) > 150:
+                if direct_res.get("success") and not direct_res.get("paywall_detected") and direct_res.get("word_count", 0) >= 10:
                     return direct_res
 
                 # If paywall was detected or content was suspiciously short, continue to fallback
@@ -295,18 +295,14 @@ class ScraperService:
     def _scrape_direct_stealth(self, url: str) -> Dict[str, Any]:
         """Direct request using stealth headers and referer spoofing."""
         try:
-            session = requests.Session()
             req_headers = dict(self.default_headers)
             req_headers["Connection"] = "close"
             # Try with Google referer first
-            resp = session.get(url, headers=self.default_headers, timeout=self.timeout, allow_redirects=True)
             resp = requests.get(url, headers=req_headers, timeout=self.timeout, allow_redirects=True)
             if resp.status_code >= 400:
                 # Try Twitter/X referer if Google referer failed
-                alt_headers = dict(self.default_headers)
                 alt_headers = dict(req_headers)
                 alt_headers["Referer"] = "https://t.co/"
-                resp = session.get(url, headers=alt_headers, timeout=self.timeout, allow_redirects=True)
                 resp = requests.get(url, headers=alt_headers, timeout=self.timeout, allow_redirects=True)
                 if resp.status_code >= 400:
                     return {
@@ -348,7 +344,7 @@ class ScraperService:
             words = len(content.split())
 
             return {
-                "success": bool(content and words > 30),
+                "success": bool(content and words >= 10),
                 "url": url,
                 "title": title or "Website Content",
                 "content": content,

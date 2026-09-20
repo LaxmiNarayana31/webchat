@@ -302,6 +302,7 @@ def render_chat():
                         st.session_state.vector_store = None
                         st.session_state.site_metadata = None
                         st.session_state.selected_chat_index = None
+                        st.session_state.main_quick_url_input = ""
                         st.rerun()
 
             st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
