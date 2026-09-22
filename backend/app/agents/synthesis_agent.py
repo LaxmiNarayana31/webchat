@@ -111,6 +111,14 @@ class SynthesisAgent:
             document_metadata=doc_meta if doc_meta else None,
         )
 
+        # Enforce strict grounding when document is active but no relevant info is found
+        if has_doc and (not crag_relevant or not doc_chunks):
+            prompt += (
+                "\n\n[CRITICAL DIRECTIVE: The user's query cannot be answered from the active document excerpts. "
+                "You MUST inform the user clearly that the active document does not contain this information or that extraction was unavailable. "
+                "Do NOT attempt to answer from external general training knowledge.]"
+            )
+
         # Suppress citations for out-of-context queries
         if has_doc and not crag_relevant:
             exported_chunks: list[dict[str, Any]] = []

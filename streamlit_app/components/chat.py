@@ -124,9 +124,15 @@ def trigger_quick_ingest(raw_url_input: str, strategy: str = "auto"):
                     valid_urls.append(url)
                 else:
                     st.warning(f"Could not extract `{url}`: {scrape_res.get('error', 'Extraction failed')}")
+                    err = scrape_res.get("error", "Extraction failed")
+                    if "anti-bot" in err.lower() or "cloudflare" in err.lower() or scrape_res.get("strategy_used") == "blocked_by_antibot":
+                        st.error(f"🛡️ **Site Security Challenge**: Could not extract `{url}`. The website is protected by Cloudflare Bot Management / Turnstile which blocked automated extraction. The assistant cannot generate answers without extracted text.")
+                    else:
+                        st.warning(f"Could not extract `{url}`: {err}")
 
             if not extracted_sections:
                 st.error("Unable to extract content from any of the specified URLs.")
+                st.info("Tip: You can paste content directly into the chat or try a different public documentation / article URL.")
                 return
 
             combined_text = "\n\n" + ("=" * 40) + "\n\n" + ("\n\n" + ("=" * 40) + "\n\n").join(extracted_sections)

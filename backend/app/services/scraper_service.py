@@ -47,6 +47,164 @@ class ScraperService:
         "membership-prompt",
     ]
 
+    BOT_CHALLENGE_INDICATORS = [
+        "just a moment...",
+        "security | glassdoor",
+        "security check | glassdoor",
+        "security check",
+        "humans only",
+        "attention required! | cloudflare",
+        "access denied | www.glassdoor",
+        "used cloudflare to restrict access",
+        "ddos protection by cloudflare",
+        "cloudflare ray id",
+        "ray id:",
+        "checking your browser before accessing",
+        "enable javascript and cookies to continue",
+        "please turn javascript on and reload the page",
+        "verify you are human",
+        "verifying you are human",
+        "completing the captcha proves you are a human",
+        "our systems have detected unusual traffic",
+        "press & hold to confirm you are a human",
+        "glassdoor has been built on the contributions of real employees",
+        "we use advanced security systems to keep our site safe and prevent misuse",
+        "access to this page has been denied",
+        "robot or human?",
+        "are you a human?",
+        "challenge-platform",
+    ]
+
+    def _is_bot_challenge_page(self, title: str = "", text: str = "", html: str = "") -> bool:
+        """Detects whether extracted content is an anti-bot roadblock, CAPTCHA, or Cloudflare challenge."""
+        title_lower = (title or "").lower().strip()
+        text_lower = (text or "").lower()
+        html_lower = (html or "").lower()
+
+        # Check explicit challenge titles
+        bad_titles = [
+            "just a moment...",
+            "security | glassdoor",
+            "security check",
+            "attention required!",
+            "access denied",
+            "ddos protection by cloudflare",
+            "robot or human?",
+            "are you a human?",
+            "verify you are human",
+        ]
+        if any(bt in title_lower for bt in bad_titles):
+            return True
+
+        # Check high-confidence anti-bot challenge signatures in content or html
+        critical_hits = [
+            "humans only",
+            "just a moment...",
+            "security | glassdoor",
+            "used cloudflare to restrict access",
+            "checking your browser before accessing",
+            "completing the captcha proves you are a human",
+            "enable javascript and cookies to continue",
+            "please turn javascript on and reload the page",
+            "glassdoor has been built on the contributions of real employees",
+        ]
+        if any(ch in text_lower or ch in html_lower for ch in critical_hits):
+            return True
+
+        matched_indicators = [ind for ind in self.BOT_CHALLENGE_INDICATORS if ind in text_lower or ind in html_lower]
+        if len(matched_indicators) >= 2:
+            return True
+
+        return False
+
+    def _extract_structured_json_ld(self, soup: BeautifulSoup, base_url: str = "") -> Tuple[str, str, int]:
+        """Extracts rich structured data (FAQ, Salaries, Company Ratings, Articles) from JSON-LD scripts.
+
+        Returns: (markdown_content, title_hint, word_count)
+        """
+        if not soup:
+            return "", "", 0
+
+        sections: List[str] = []
+        title_hint = ""
+
+        try:
+            for tag in soup.find_all("script", type=re.compile(r"ld\+json", re.I)):
+                content_str = tag.string or tag.get_text() or ""
+                if not content_str.strip():
+                    continue
+                try:
+                    data = json.loads(content_str)
+                except Exception:
+                    continue
+
+                items = data if isinstance(data, list) else [data]
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    schema_type = item.get("@type", "")
+
+                    if schema_type == "FAQPage":
+                        faq_lines = ["## Frequently Asked Questions & Salary Data"]
+                        for q_entry in item.get("mainEntity", []):
+                            if not isinstance(q_entry, dict):
+                                continue
+                            question = q_entry.get("name", "").strip()
+                            ans_raw = q_entry.get("acceptedAnswer", {}).get("text", "")
+                            ans_clean = re.sub(r"<[^>]+>", " ", ans_raw).strip()
+                            ans_clean = re.sub(r"\s+", " ", ans_clean)
+                            if question and ans_clean:
+                                faq_lines.append(f"### {question}\n{ans_clean}\n")
+                        if len(faq_lines) > 1:
+                            sections.append("\n".join(faq_lines))
+
+                    elif schema_type == "EmployerAggregateRating":
+                        org_name = item.get("itemReviewed", {}).get("name", "Company")
+                        val = item.get("ratingValue", "")
+                        best = item.get("bestRating", "5")
+                        count = item.get("ratingCount", "")
+                        sections.append(f"## {org_name} - Employer Rating\n- Rating: {val} / {best} stars (based on {count} employee reviews)\n")
+
+                    elif schema_type in ["JobPosting", "Salary"]:
+                        j_title = item.get("title") or item.get("name", "")
+                        base_sal = item.get("baseSalary", {})
+                        sal_info = ""
+                        if isinstance(base_sal, dict):
+                            val_obj = base_sal.get("value", {})
+                            currency = base_sal.get("currency", "")
+                            if isinstance(val_obj, dict):
+                                min_v = val_obj.get("minValue")
+                                max_v = val_obj.get("maxValue")
+                                unit = val_obj.get("unitText", "YEAR")
+                                sal_info = f"- Base Salary: {min_v} - {max_v} {currency} per {unit}"
+                        desc = re.sub(r"<[^>]+>", " ", item.get("description", "")).strip()[:500]
+                        sections.append(f"## {j_title}\n{sal_info}\n{desc}\n")
+
+                    elif schema_type == "BreadcrumbList":
+                        crumbs = []
+                        for cr in item.get("itemListElement", []):
+                            if isinstance(cr, dict) and cr.get("name"):
+                                crumbs.append(cr["name"].strip())
+                        if crumbs:
+                            title_hint = " > ".join(crumbs)
+
+                    elif schema_type in ["Article", "NewsArticle", "TechArticle"]:
+                        headline = item.get("headline", "")
+                        body = item.get("articleBody", "")
+                        desc = item.get("description", "")
+                        if headline and not title_hint:
+                            title_hint = headline
+                        if body:
+                            sections.append(f"## {headline}\n\n{body}\n")
+                        elif desc:
+                            sections.append(f"## {headline}\n\n{desc}\n")
+        except Exception as e:
+            logger.debug(f"JSON-LD extraction note: {e}")
+
+        combined_text = "\n\n".join(s.strip() for s in sections if s.strip())
+        word_count = len(combined_text.split())
+        return combined_text, title_hint, word_count
+
     def __init__(self):
         """Initializes scraper service headers and request timeout settings."""
         try:
@@ -109,79 +267,104 @@ class ScraperService:
 
             url = url.strip()
             is_medium = self._is_medium_domain(url)
-
-            # Execution order for 'auto':
-            # Medium specific (if medium domain)
-            # Direct stealth fetch with referer spoofing
-            # Jina AI Reader API (if paywall or direct fails)
-            # Wayback Machine Archive fallback
+            is_substack = self._is_substack_domain(url)
+            is_news = self._is_news_domain(url)
+            is_glassdoor = "glassdoor" in url.lower()
 
             direct_res = {}
-            if strategy == "medium" or (strategy == "auto" and is_medium):
-                # Jina Reader bypasses Medium Cloudflare TLS anti-bot and extracts full markdown with diagrams
-                if settings.JINA_READER_ENABLED:
-                    jina_res = self._scrape_jina_reader(url)
-                    if jina_res.get("success") and jina_res.get("word_count", 0) > 150:
-                        jina_res["paywall_bypassed"] = True
-                        return jina_res
 
-                medium_res = self._scrape_medium_apollo(url)
-                if medium_res.get("success") and medium_res.get("word_count", 0) > 200:
-                    return medium_res
+            # Tier 1: Platform-Specific Archetype Handlers
 
-            if strategy in ["auto", "direct"]:
-                direct_res = self._scrape_direct_stealth(url)
-                # If direct extraction got substantial content (>300 words), it's the full article regardless of footer signup prompts
-                if direct_res.get("success") and direct_res.get("word_count", 0) > 300:
-                    return direct_res
-                # If direct worked and no paywall detected, return it
-                if direct_res.get("success") and not direct_res.get("paywall_detected") and direct_res.get("word_count", 0) >= 10:
-                    return direct_res
+            # Substack native REST API (bypasses subscribe modals & email walls)
+            if (is_substack and strategy in ["auto", "substack"]) or strategy == "substack":
+                substack_res = self._scrape_substack(url)
+                if substack_res.get("success") and substack_res.get("word_count", 0) > 40:
+                    return substack_res
 
-                # If paywall was detected or content was suspiciously short, continue to fallback
-                if direct_res.get("paywall_detected") or not direct_res.get("success"):
-                    logger.info(f"Direct scrape encountered paywall or low content for {url}. Attempting fallbacks...")
-
-            # Freedium proxy for Medium articles (bypasses member-only paywall)
-            if is_medium and strategy in ["auto", "medium"]:
+            # Medium via active Freedium mirror cluster or Apollo State
+            if (is_medium and strategy in ["auto", "medium"]) or strategy == "medium":
                 freedium_res = self._scrape_freedium(url)
                 if freedium_res.get("success") and freedium_res.get("word_count", 0) > 150:
                     return freedium_res
 
-            # Jina AI Reader (handles JS rendering, sign-in modals, soft paywalls)
-            if settings.JINA_READER_ENABLED and strategy in ["auto", "jina", "direct"]:
+                if settings.JINA_READER_ENABLED:
+                    jina_res = self._scrape_jina_reader(url)
+                    jina_has_paywall = any(p in jina_res.get("content", "").lower() for p in self.PAYWALL_INDICATORS)
+                    if jina_res.get("success") and jina_res.get("word_count", 0) > 200 and not jina_has_paywall:
+                        jina_res["paywall_bypassed"] = True
+                        return jina_res
+
+                medium_res = self._scrape_medium_apollo(url)
+                if medium_res.get("success") and medium_res.get("word_count", 0) > 150:
+                    return medium_res
+
+            # Major news publications with hard paywalls
+            if is_news and strategy in ["auto", "news"]:
+                news_res = self._scrape_news_publication(url)
+                if news_res.get("success") and news_res.get("word_count", 0) > 100:
+                    return news_res
+
+            # Tier 2: TLS Fingerprint Impersonation (bypasses Cloudflare / Glassdoor / Turnstile WAFs)
+            if strategy in ["auto", "stealth", "direct"] or is_glassdoor:
+                impersonate_res = self._scrape_curl_impersonate(url)
+                if impersonate_res.get("success") and impersonate_res.get("word_count", 0) >= 40:
+                    return impersonate_res
+
+            # Tier 3: Standard Direct Stealth Scrape with Referer Spoofing & Schema.org JSON-LD
+            if strategy in ["auto", "direct"]:
+                direct_res = self._scrape_direct_stealth(url)
+                if direct_res.get("success") and direct_res.get("word_count", 0) > 300:
+                    return direct_res
+                if direct_res.get("success") and not direct_res.get("paywall_detected") and direct_res.get("word_count", 0) >= 10:
+                    return direct_res
+                if direct_res.get("paywall_detected") or not direct_res.get("success"):
+                    logger.info(f"Direct scrape encountered paywall or low content for {url}. Attempting fallbacks...")
+
+            # Tier 4: Jina AI Reader API (handles JS rendering, sign-in modals, soft paywalls)
+            if settings.JINA_READER_ENABLED and strategy in ["auto", "jina"]:
                 jina_res = self._scrape_jina_reader(url)
                 if jina_res.get("success") and jina_res.get("word_count", 0) > 150:
-                    # Check if it bypassed paywall
                     jina_res["paywall_bypassed"] = True
                     return jina_res
 
-            # Google Webcache fallback
+            # Tier 5: Google Webcache fallback
             if strategy in ["auto"]:
                 cache_res = self._scrape_google_cache(url)
                 if cache_res.get("success") and cache_res.get("word_count", 0) > 150:
                     cache_res["paywall_bypassed"] = True
                     return cache_res
 
-            # Wayback Machine Archival fallback
+            # Tier 6: Wayback Machine Archival fallback
             if settings.ARCHIVE_FALLBACK_ENABLED and strategy in ["auto", "archive"]:
                 archive_res = self._scrape_wayback_archive(url)
                 if archive_res.get("success") and archive_res.get("word_count", 0) > 150:
                     archive_res["paywall_bypassed"] = True
                     return archive_res
 
-            # Fallback to direct result even if partial, or return descriptive error
-            if 'direct_res' in locals() and direct_res.get("success"):
+            # Tier 7: Final check on direct result if valid and not a bot challenge
+            if direct_res.get("success") and not self._is_bot_challenge_page(direct_res.get("title", ""), direct_res.get("content", "")):
                 return direct_res
+
+            # If all tiers failed, construct clear, honest diagnostic error
+            antibot_detected = False
+            if "anti-bot" in str(direct_res.get("error", "")).lower() or direct_res.get("strategy_used") == "blocked_by_antibot":
+                antibot_detected = True
+
+            err_msg = (
+                "This website is protected by Cloudflare Bot Management / Turnstile (anti-bot security challenge). "
+                "Automated scrapers and proxies were blocked by the site's security gateway."
+                if (antibot_detected or is_glassdoor)
+                else "Failed to bypass site protection or extract readable article content."
+            )
 
             return {
                 "success": False,
-                "error": "Failed to bypass site protection or extract readable article content.",
+                "error": err_msg,
                 "url": url,
                 "title": "",
                 "content": "",
                 "word_count": 0,
-                "strategy_used": "failed",
+                "strategy_used": "blocked_by_antibot" if (antibot_detected or is_glassdoor) else "failed",
                 "paywall_detected": True,
                 "paywall_bypassed": False,
             }
@@ -213,6 +396,220 @@ class ScraperService:
         except Exception as e:
             logger.debug(f"Error checking medium domain for {url}: {e}")
             return False
+
+    def _is_substack_domain(self, url: str) -> bool:
+        """Checks if URL is a Substack newsletter or post."""
+        try:
+            parsed = urlparse(url)
+            domain = parsed.netloc.lower()
+            path = parsed.path.lower()
+            return "substack.com" in domain or ("/p/" in path and ("newsletter" in domain or "blog" in domain or "pub" in domain))
+        except Exception:
+            return False
+
+    def _scrape_substack(self, url: str) -> Dict[str, Any]:
+        """Extracts full Substack article content via native REST API (/api/v1/posts/{slug}).
+        Bypasses email subscribe gates, paywall modals, and sign-in overlays.
+        """
+        try:
+            parsed = urlparse(url)
+            domain = parsed.netloc
+            path = parsed.path
+
+            m = re.search(r"/(?:p|post)/([a-zA-Z0-9_\-]+)", path)
+            if not m:
+                return {"success": False, "error": "No Substack post slug found in URL"}
+
+            slug = m.group(1)
+            api_url = f"https://{domain}/api/v1/posts/{slug}"
+            logger.info(f"Attempting Substack API extraction: {api_url}")
+
+            headers = dict(self.default_headers)
+            headers["Accept"] = "application/json"
+            resp = requests.get(api_url, headers=headers, timeout=self.timeout + 5)
+
+            if resp.status_code == 200:
+                data = resp.json()
+                title = data.get("title") or "Substack Article"
+                subtitle = data.get("subtitle") or ""
+                body_html = data.get("body_html") or ""
+
+                if body_html:
+                    soup = BeautifulSoup(body_html, "lxml")
+                    content_images = self._extract_content_images(soup, url)
+                    extracted_text = trafilatura.extract(body_html, include_comments=False, include_tables=True)
+                    if not extracted_text:
+                        extracted_text = soup.get_text(separator="\n", strip=True)
+
+                    full_text = f"# {title}\n"
+                    if subtitle:
+                        full_text += f"_{subtitle}_\n\n"
+                    full_text += extracted_text
+                    full_text = re.sub(r"\n{3,}", "\n\n", full_text).strip()
+                    words = len(full_text.split())
+
+                    if words >= 40:
+                        return {
+                            "success": True,
+                            "url": url,
+                            "title": title,
+                            "content": full_text,
+                            "images": content_images,
+                            "word_count": words,
+                            "strategy_used": "substack_api",
+                            "paywall_detected": True,
+                            "paywall_bypassed": True,
+                        }
+        except Exception as e:
+            logger.debug(f"Substack API extraction failed for {url}: {e}")
+
+        return {"success": False}
+
+    def _is_news_domain(self, url: str) -> bool:
+        """Checks if URL belongs to major paywalled news publication domains."""
+        try:
+            domain = urlparse(url).netloc.lower()
+            news_domains = [
+                "nytimes.com", "wsj.com", "bloomberg.com", "theatlantic.com",
+                "wired.com", "ft.com", "economist.com", "washingtonpost.com",
+                "businessinsider.com", "newyorker.com", "hbr.org", "reuters.com",
+                "latimes.com", "forbes.com", "fortune.com", "technologyreview.com",
+            ]
+            return any(nd in domain for nd in news_domains)
+        except Exception:
+            return False
+
+    def _scrape_news_publication(self, url: str) -> Dict[str, Any]:
+        """Extracts content from paywalled news publications using:
+        1. Googlebot crawler header spoofing + search referer
+        2. curl_cffi TLS impersonation + Twitter/X referer
+        3. Schema.org NewsArticle/Article extraction
+        4. Wayback Machine snapshot
+        """
+        try:
+            # 1. Googlebot crawler exemption
+            googlebot_headers = {
+                "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Referer": "https://www.google.com/",
+            }
+            try:
+                resp = requests.get(url, headers=googlebot_headers, timeout=self.timeout)
+                if resp.status_code == 200 and resp.text:
+                    soup = BeautifulSoup(resp.text, "lxml")
+                    title = soup.title.string.strip() if soup.title and soup.title.string else ""
+                    if not self._is_bot_challenge_page(title, soup.get_text(), resp.text):
+                        json_ld_text, json_ld_title, _ = self._extract_structured_json_ld(soup, url)
+                        extracted = trafilatura.extract(resp.text, include_comments=False, include_tables=True)
+                        content = extracted or json_ld_text
+                        if content and len(content.split()) >= 100:
+                            content_images = self._extract_content_images(soup, url)
+                            return {
+                                "success": True,
+                                "url": url,
+                                "title": json_ld_title or title or "News Article",
+                                "content": content,
+                                "images": content_images,
+                                "word_count": len(content.split()),
+                                "strategy_used": "news_googlebot_crawler",
+                                "paywall_detected": True,
+                                "paywall_bypassed": True,
+                            }
+            except Exception as e:
+                logger.debug(f"Googlebot news scrape failed for {url}: {e}")
+
+            # 2. curl_cffi TLS impersonation
+            impersonate_res = self._scrape_curl_impersonate(url)
+            if impersonate_res.get("success") and impersonate_res.get("word_count", 0) > 150:
+                impersonate_res["strategy_used"] = "news_impersonate"
+                return impersonate_res
+
+            # 3. Wayback Machine archive fallback
+            archive_res = self._scrape_wayback_archive(url)
+            if archive_res.get("success") and archive_res.get("word_count", 0) > 150:
+                return archive_res
+        except Exception as e:
+            logger.debug(f"News publication scraper failed for {url}: {e}")
+
+        return {"success": False}
+
+    def _scrape_curl_impersonate(self, url: str) -> Dict[str, Any]:
+        """Fetches page content using curl_cffi with Chrome 120 TLS fingerprint impersonation.
+        Bypasses Cloudflare Bot Management, Turnstile, and advanced anti-bot WAFs.
+        """
+        try:
+            from curl_cffi import requests as curl_requests
+            # Use only Referer so curl_cffi generates authentic Chrome TLS & HTTP/2 fingerprint
+            headers = {"Referer": "https://www.google.com/"}
+            resp = curl_requests.get(url, impersonate="chrome120", headers=headers, timeout=self.timeout + 5)
+            if resp.status_code >= 400 and resp.status_code != 403:
+                return {"success": False, "error": f"HTTP {resp.status_code}"}
+
+            html = resp.text
+            soup = BeautifulSoup(html, "lxml")
+            title = soup.title.string.strip() if soup.title and soup.title.string else ""
+
+            # Extract JSON-LD structured data first
+            json_ld_text, json_ld_title, json_ld_words = self._extract_structured_json_ld(soup, url)
+            if json_ld_title and (not title or "security" in title.lower() or "just a moment" in title.lower()):
+                title = json_ld_title
+
+            raw_text = soup.get_text()
+            if self._is_bot_challenge_page(title, raw_text, html):
+                if json_ld_words >= 80:
+                    return {
+                        "success": True,
+                        "url": url,
+                        "title": title or "Structured Knowledge Base",
+                        "content": json_ld_text,
+                        "images": [],
+                        "word_count": json_ld_words,
+                        "strategy_used": "curl_impersonate_json_ld",
+                        "paywall_detected": True,
+                        "paywall_bypassed": True,
+                    }
+                return {"success": False, "error": "Anti-bot challenge page encountered"}
+
+            # Extract content images before tag cleanup
+            content_images = self._extract_content_images(soup, url)
+
+            # Remove scripts, styles, navigation, paywall modals
+            for tag in soup(["script", "style", "nav", "footer", "iframe", "noscript", "aside"]):
+                tag.decompose()
+            for cls_name in self.PAYWALL_CSS_CLASSES:
+                for el in soup.find_all(attrs={"class": re.compile(cls_name, re.I)}):
+                    el.decompose()
+
+            extracted = trafilatura.extract(str(soup), include_comments=False, include_tables=True)
+            if not extracted:
+                extracted = trafilatura.extract(html)
+
+            content = extracted or raw_text
+            if json_ld_text and json_ld_text not in content:
+                content = f"{content}\n\n{json_ld_text}".strip()
+
+            content = re.sub(r"\n{3,}", "\n\n", content).strip()
+            words = len(content.split())
+
+            if words >= 10 and not self._is_bot_challenge_page(title, content):
+                return {
+                    "success": True,
+                    "url": url,
+                    "title": title or "Website Content",
+                    "content": content,
+                    "images": content_images,
+                    "word_count": words,
+                    "strategy_used": "curl_impersonate",
+                    "paywall_detected": True,
+                    "paywall_bypassed": True,
+                }
+        except ImportError:
+            logger.debug("curl_cffi not installed, skipping TLS impersonation.")
+        except Exception as e:
+            logger.debug(f"curl_cffi impersonate failed for {url}: {e}")
+
+        return {"success": False}
 
     def _extract_content_images(self, soup: BeautifulSoup, base_url: str, max_images: int = 20) -> List[Dict[str, str]]:
         """Extracts non-decorative content images (diagrams, photos, charts) with absolute URLs and captions."""
@@ -294,6 +691,7 @@ class ScraperService:
 
     def _scrape_direct_stealth(self, url: str) -> Dict[str, Any]:
         """Direct request using stealth headers and referer spoofing."""
+        """Direct request using stealth headers, referer spoofing, and structured JSON-LD extraction."""
         try:
             req_headers = dict(self.default_headers)
             req_headers["Connection"] = "close"
@@ -304,15 +702,51 @@ class ScraperService:
                 alt_headers = dict(req_headers)
                 alt_headers["Referer"] = "https://t.co/"
                 resp = requests.get(url, headers=alt_headers, timeout=self.timeout, allow_redirects=True)
-                if resp.status_code >= 400:
+
+            html = resp.text if resp is not None else ""
+            soup = BeautifulSoup(html, "lxml") if html else None
+
+            # 1. Extract rich JSON-LD structured data BEFORE script tags are decomposed
+            json_ld_text, json_ld_title, json_ld_words = self._extract_structured_json_ld(soup, url) if soup else ("", "", 0)
+
+            title = ""
+            if soup and soup.title and soup.title.string:
+                title = soup.title.string.strip()
+            if json_ld_title and (not title or "security" in title.lower() or "just a moment" in title.lower()):
+                title = json_ld_title
+
+            raw_text = soup.get_text() if soup else ""
+
+            # 2. Check for Bot Challenge / Cloudflare Turnstile roadblock
+            if self._is_bot_challenge_page(title, raw_text, html):
+                # If site gave a challenge page, but embedded complete JSON-LD data (e.g. Glassdoor FAQ/Salary schema)
+                if json_ld_words >= 80:
+                    logger.info(f"Direct scrape bypassed anti-bot challenge using embedded structured JSON-LD ({json_ld_words} words)")
                     return {
-                        "success": False,
-                        "error": f"HTTP {resp.status_code}",
-                        "paywall_detected": resp.status_code in [401, 403, 429],
+                        "success": True,
+                        "url": url,
+                        "title": title or "Structured Knowledge Base",
+                        "content": json_ld_text,
+                        "images": [],
+                        "word_count": json_ld_words,
+                        "strategy_used": "direct_json_ld",
+                        "paywall_detected": True,
+                        "paywall_bypassed": True,
                     }
+                return {
+                    "success": False,
+                    "error": "Site security (Cloudflare Turnstile/anti-bot challenge) blocked access.",
+                    "paywall_detected": True,
+                }
 
             html = resp.text
             soup = BeautifulSoup(html, "lxml")
+            if resp.status_code >= 400:
+                return {
+                    "success": False,
+                    "error": f"HTTP {resp.status_code}",
+                    "paywall_detected": resp.status_code in [401, 403, 429],
+                }
 
             # Extract content images before removing tags
             content_images = self._extract_content_images(soup, url)
@@ -340,8 +774,19 @@ class ScraperService:
                 extracted = trafilatura.extract(html)
 
             content = extracted or raw_text
+            if json_ld_text and json_ld_text not in content:
+                content = f"{content}\n\n{json_ld_text}".strip()
+
             content = re.sub(r"\n{3,}", "\n\n", content).strip()
             words = len(content.split())
+
+            # Double check final extracted text for bot challenge
+            if self._is_bot_challenge_page(title, content):
+                return {
+                    "success": False,
+                    "error": "Site security (anti-bot challenge) detected in extracted content.",
+                    "paywall_detected": True,
+                }
 
             return {
                 "success": bool(content and words >= 10),
@@ -408,64 +853,76 @@ class ScraperService:
         return {"success": False}
 
     def _scrape_freedium(self, url: str) -> Dict[str, Any]:
-        """Fetches Medium article content via Freedium proxy to bypass member-only paywall."""
-        try:
-            freedium_url = f"https://freedium.cfd/{url}"
-            logger.info(f"Attempting Freedium proxy for Medium URL: {url}")
-            resp = requests.get(
-                freedium_url,
-                headers=self.default_headers,
-                timeout=self.timeout + 5,
-                allow_redirects=True,
-            )
-            if resp.status_code != 200:
-                return {"success": False, "error": f"Freedium HTTP {resp.status_code}"}
+        """Fetches Medium article content via active Freedium mirrors to bypass member-only paywall."""
+        mirrors = [
+            "https://freedium-mirror.cfd/",
+            "https://freedium.cfd/",
+        ]
+        last_error = "All Freedium mirrors failed"
 
-            html = resp.text
-            # Use trafilatura for clean article extraction from the proxy page
-            extracted = trafilatura.extract(html, include_comments=False, include_tables=True)
+        for base_mirror in mirrors:
+            try:
+                freedium_url = f"{base_mirror.rstrip('/')}/{url.strip()}"
+                logger.info(f"Attempting Freedium mirror ({base_mirror}) for Medium URL: {url}")
+                resp = requests.get(
+                    freedium_url,
+                    headers=self.default_headers,
+                    timeout=self.timeout + 5,
+                    allow_redirects=True,
+                )
+                if resp.status_code != 200:
+                    last_error = f"HTTP {resp.status_code} from {base_mirror}"
+                    continue
 
-            if not extracted:
-                soup = BeautifulSoup(html, "lxml")
-                # Remove Freedium UI chrome
-                for tag in soup(["script", "style", "nav", "footer", "iframe", "header"]):
-                    tag.decompose()
-                # Try to find the article body
-                article = soup.find("article") or soup.find("main") or soup.find("div", class_=re.compile(r"content|article|post", re.I))
-                if article:
-                    extracted = article.get_text(separator="\n", strip=True)
-                else:
-                    extracted = soup.get_text(separator="\n", strip=True)
+                html = resp.text
+                extracted = trafilatura.extract(html, include_comments=False, include_tables=True)
 
-            if not extracted:
-                return {"success": False, "error": "Freedium returned no extractable content"}
+                if not extracted:
+                    soup = BeautifulSoup(html, "lxml")
+                    for tag in soup(["script", "style", "nav", "footer", "iframe", "header"]):
+                        tag.decompose()
+                    article = soup.find("article") or soup.find("main") or soup.find("div", class_=re.compile(r"content|article|post", re.I))
+                    if article:
+                        extracted = article.get_text(separator="\n", strip=True)
+                    else:
+                        extracted = soup.get_text(separator="\n", strip=True)
 
-            content = re.sub(r"\n{3,}", "\n\n", extracted).strip()
-            words = len(content.split())
+                if not extracted or len(extracted.split()) < 80:
+                    last_error = f"Insufficient content from {base_mirror}"
+                    continue
 
-            # Extract title
-            title = "Medium Article"
-            soup_title = BeautifulSoup(resp.text, "lxml")
-            if soup_title.title and soup_title.title.string:
-                raw_title = soup_title.title.string.strip()
-                # Strip "Freedium" prefix if present
-                raw_title = re.sub(r"^Freedium\s*[-–—|:]\s*", "", raw_title).strip()
-                if raw_title:
-                    title = raw_title
+                content = re.sub(r"\n{3,}", "\n\n", extracted).strip()
+                words = len(content.split())
 
-            return {
-                "success": words > 100,
-                "url": url,
-                "title": title,
-                "content": content,
-                "word_count": words,
-                "strategy_used": "freedium_proxy",
-                "paywall_detected": True,
-                "paywall_bypassed": True,
-            }
-        except Exception as e:
-            logger.warning(f"Freedium proxy scrape failed for {url}: {e}")
-            return {"success": False, "error": str(e)}
+                # Extract title
+                title = "Medium Article"
+                soup_title = BeautifulSoup(html, "lxml")
+                if soup_title.title and soup_title.title.string:
+                    raw_title = soup_title.title.string.strip()
+                    raw_title = re.sub(r"^\s*Freedium\s*[-–—|:]\s*", "", raw_title).strip()
+                    raw_title = re.sub(r"\s*[-–—|:]\s*Freedium\s*$", "", raw_title).strip()
+                    if raw_title:
+                        title = raw_title
+
+                soup_for_img = BeautifulSoup(html, "lxml")
+                content_images = self._extract_content_images(soup_for_img, url)
+
+                return {
+                    "success": words > 100,
+                    "url": url,
+                    "title": title,
+                    "content": content,
+                    "images": content_images,
+                    "word_count": words,
+                    "strategy_used": "freedium_mirror",
+                    "paywall_detected": True,
+                    "paywall_bypassed": True,
+                }
+            except Exception as e:
+                last_error = str(e)
+                logger.debug(f"Freedium mirror {base_mirror} failed for {url}: {e}")
+
+        return {"success": False, "error": last_error}
 
     def _scrape_google_cache(self, url: str) -> Dict[str, Any]:
         """Fetches cached page from Google Webcache as a paywall fallback."""
@@ -488,6 +945,9 @@ class ScraperService:
             soup = BeautifulSoup(resp.text, "lxml")
             if soup.title and soup.title.string:
                 title = soup.title.string.strip()
+
+            if self._is_bot_challenge_page(title, content, resp.text):
+                return {"success": False, "error": "Google Cache snapshot contains anti-bot challenge"}
 
             return {
                 "success": words > 50,
@@ -515,13 +975,30 @@ class ScraperService:
             resp = requests.get(jina_url, headers=headers, timeout=self.timeout + 10)
             if resp.status_code == 200 and resp.text:
                 text = resp.text.strip()
-                # Parse title from first header if present
+                # Parse title from first header or Title metadata if present
                 title = "Website Content"
                 lines = text.splitlines()
-                for line in lines[:5]:
-                    if line.startswith("# "):
-                        title = line.replace("# ", "").strip()
-                        break
+                for line in lines[:8]:
+                    line_clean = line.strip()
+                    if line_clean.startswith("Title:"):
+                        cand = line_clean.replace("Title:", "").strip()
+                        if cand and not self._is_bot_challenge_page(cand):
+                            title = cand
+                            break
+                    elif line_clean.startswith("# "):
+                        cand = line_clean.replace("# ", "").strip()
+                        if cand and not self._is_bot_challenge_page(cand):
+                            title = cand
+                            break
+
+                # Critical Anti-Bot Check: Jina Reader frequently returns Cloudflare challenge pages
+                if self._is_bot_challenge_page(title=title, text=text):
+                    logger.warning(f"Jina Reader returned anti-bot/Cloudflare challenge for {url}")
+                    return {
+                        "success": False,
+                        "error": "Site security (Cloudflare Turnstile/anti-bot challenge) blocked Jina Reader proxy.",
+                        "paywall_detected": True,
+                    }
 
                 words = len(text.split())
 
@@ -624,10 +1101,13 @@ class ScraperService:
                         content = trafilatura.extract(arch_resp.text)
                         if content:
                             words = len(content.split())
+                            arch_title = f"[Archive] {urlparse(url).netloc}"
+                            if self._is_bot_challenge_page(arch_title, content, arch_resp.text):
+                                return {"success": False, "error": "Wayback archive snapshot was an anti-bot challenge page"}
                             return {
                                 "success": True,
                                 "url": url,
-                                "title": f"[Archive] {urlparse(url).netloc}",
+                                "title": arch_title,
                                 "content": content,
                                 "word_count": words,
                                 "strategy_used": "wayback_archive",

@@ -38,6 +38,11 @@ Context:
 - Has active document: {has_document}
 - Document title: {doc_title}
 
+CRITICAL ROUTING RULE:
+If 'Has active document' is True, any question asking for information, facts, data, salaries, summaries, or subject-matter questions MUST be classified as DOCUMENT_RAG (or COMPLEX_ANALYTIC).
+Only classify as DIRECT_CHAT if it is a pure greeting or polite meta-remark (e.g. 'hello', 'thanks', 'who are you').
+Only classify as WEB_SEARCH if the user explicitly commands an external web search or if no active document is loaded.
+
 User Query: {query}
 
 Respond with ONLY a JSON object:

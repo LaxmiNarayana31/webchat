@@ -1,0 +1,1093 @@
+{
+  "cache_key": "4ae0a707d094530d",
+  "collection_name": "web-chat",
+  "created_at": 1790059543.8219013,
+  "metadata": {
+    "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+    "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+    "word_count": 489,
+    "strategy_used": "jina_reader",
+    "paywall_detected": false,
+    "paywall_bypassed": true,
+    "urls": [
+      "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+    ],
+    "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+    "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+    "cached_hit": false,
+    "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac"
+  },
+  "documents": [
+    {
+      "page_content": "========================================\n\n# Website: 10 GitHub Repositories to Help You Scrape the Entire Internet\nURL: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nTitle: 10 GitHub Repositories to Help You Scrape the Entire Internet",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 0,
+        "parent_id": "p_0",
+        "parent_text": "========================================\n\n# Website: 10 GitHub Repositories to Help You Scrape the Entire Internet\nURL: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nTitle: 10 GitHub Repositories to Help You Scrape the Entire Internet\n\nURL Source: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nPublished Time: 2026-06-29T08:22:59Z\n\nMarkdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)\n\n[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n[](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------)\n\nGet app\n\n[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav--------------------)\n\n[Search](https://medium.com/search?source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n![Image 1: Unknown user](https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png)\n\n## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication"
+      }
+    },
+    {
+      "page_content": "Title: 10 GitHub Repositories to Help You Scrape the Entire Internet\n\nURL Source: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nPublished Time: 2026-06-29T08:22:59Z\n\nMarkdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 1,
+        "parent_id": "p_0",
+        "parent_text": "========================================\n\n# Website: 10 GitHub Repositories to Help You Scrape the Entire Internet\nURL: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nTitle: 10 GitHub Repositories to Help You Scrape the Entire Internet\n\nURL Source: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nPublished Time: 2026-06-29T08:22:59Z\n\nMarkdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)\n\n[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n[](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------)\n\nGet app\n\n[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav--------------------)\n\n[Search](https://medium.com/search?source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n![Image 1: Unknown user](https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png)\n\n## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication"
+      }
+    },
+    {
+      "page_content": "Markdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)\n\n[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------)\n\nSign up",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 2,
+        "parent_id": "p_0",
+        "parent_text": "========================================\n\n# Website: 10 GitHub Repositories to Help You Scrape the Entire Internet\nURL: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nTitle: 10 GitHub Repositories to Help You Scrape the Entire Internet\n\nURL Source: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nPublished Time: 2026-06-29T08:22:59Z\n\nMarkdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)\n\n[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n[](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------)\n\nGet app\n\n[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav--------------------)\n\n[Search](https://medium.com/search?source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n![Image 1: Unknown user](https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png)\n\n## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication"
+      }
+    },
+    {
+      "page_content": "Sign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n[](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------)\n\nGet app",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 3,
+        "parent_id": "p_0",
+        "parent_text": "========================================\n\n# Website: 10 GitHub Repositories to Help You Scrape the Entire Internet\nURL: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nTitle: 10 GitHub Repositories to Help You Scrape the Entire Internet\n\nURL Source: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nPublished Time: 2026-06-29T08:22:59Z\n\nMarkdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)\n\n[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n[](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------)\n\nGet app\n\n[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav--------------------)\n\n[Search](https://medium.com/search?source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n![Image 1: Unknown user](https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png)\n\n## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication"
+      }
+    },
+    {
+      "page_content": "Get app\n\n[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav--------------------)\n\n[Search](https://medium.com/search?source=---top_nav_layout_nav-------------------------------------------)\n\nSign up",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 4,
+        "parent_id": "p_0",
+        "parent_text": "========================================\n\n# Website: 10 GitHub Repositories to Help You Scrape the Entire Internet\nURL: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nTitle: 10 GitHub Repositories to Help You Scrape the Entire Internet\n\nURL Source: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nPublished Time: 2026-06-29T08:22:59Z\n\nMarkdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)\n\n[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n[](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------)\n\nGet app\n\n[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav--------------------)\n\n[Search](https://medium.com/search?source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n![Image 1: Unknown user](https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png)\n\n## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication"
+      }
+    },
+    {
+      "page_content": "Sign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n![Image 1: Unknown user](https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 5,
+        "parent_id": "p_0",
+        "parent_text": "========================================\n\n# Website: 10 GitHub Repositories to Help You Scrape the Entire Internet\nURL: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nTitle: 10 GitHub Repositories to Help You Scrape the Entire Internet\n\nURL Source: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nPublished Time: 2026-06-29T08:22:59Z\n\nMarkdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)\n\n[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n[](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------)\n\nGet app\n\n[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav--------------------)\n\n[Search](https://medium.com/search?source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n![Image 1: Unknown user](https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png)\n\n## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication"
+      }
+    },
+    {
+      "page_content": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 6,
+        "parent_id": "p_0",
+        "parent_text": "========================================\n\n# Website: 10 GitHub Repositories to Help You Scrape the Entire Internet\nURL: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nTitle: 10 GitHub Repositories to Help You Scrape the Entire Internet\n\nURL Source: https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9\n\nPublished Time: 2026-06-29T08:22:59Z\n\nMarkdown Content:\n[Sitemap](https://medium.com/sitemap/sitemap.xml)\n\n[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n[](https://medium.com/?source=---top_nav_layout_nav-------------------------------------------)\n\nGet app\n\n[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav--------------------)\n\n[Search](https://medium.com/search?source=---top_nav_layout_nav-------------------------------------------)\n\nSign up\n\n[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=post_page---top_nav_layout_nav-----------------------global_nav--------------------)\n\n![Image 1: Unknown user](https://miro.medium.com/v2/resize:fill:64:64/1*dmbNkD5D-u45r44go_cf0g.png)\n\n## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication"
+      }
+    },
+    {
+      "page_content": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 7,
+        "parent_id": "p_1",
+        "parent_text": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication\n\n[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\n[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026"
+      }
+    },
+    {
+      "page_content": "[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 8,
+        "parent_id": "p_1",
+        "parent_text": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication\n\n[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\n[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026"
+      }
+    },
+    {
+      "page_content": "Coding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 9,
+        "parent_id": "p_1",
+        "parent_text": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication\n\n[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\n[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026"
+      }
+    },
+    {
+      "page_content": "Follow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 10,
+        "parent_id": "p_1",
+        "parent_text": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication\n\n[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\n[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026"
+      }
+    },
+    {
+      "page_content": "[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 11,
+        "parent_id": "p_1",
+        "parent_text": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication\n\n[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\n[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026"
+      }
+    },
+    {
+      "page_content": "[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 12,
+        "parent_id": "p_1",
+        "parent_text": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication\n\n[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\n[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026"
+      }
+    },
+    {
+      "page_content": "# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 13,
+        "parent_id": "p_1",
+        "parent_text": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication\n\n[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\n[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026"
+      }
+    },
+    {
+      "page_content": "[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 14,
+        "parent_id": "p_1",
+        "parent_text": "## [Coding Nexus](https://medium.com/coding-nexus?source=post_page---publication_nav-16e3527896e0-b191a3c55ed9-----------------------------------------)\n\n·\nFollow publication\n\n[![Image 2: Coding Nexus](https://miro.medium.com/v2/resize:fill:76:76/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_sidebar-16e3527896e0-b191a3c55ed9-----------------------------------------)\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow publication\n\nMember-only story\n\n[Github](https://medium.com/tag/github?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Github Repositories](https://medium.com/tag/github-repositories?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Web Scrapers](https://medium.com/tag/web-scrapers?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Python Web Scraper](https://medium.com/tag/python-web-scraper?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n[Internet](https://medium.com/tag/internet?source=post_page---header_tags--b191a3c55ed9-----------------------------------------)\n\n# 10 GitHub Repositories to Help You Scrape the Entire Internet\n\n[![Image 3: Sonu Yadav](https://miro.medium.com/v2/resize:fill:64:64/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\n[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026"
+      }
+    },
+    {
+      "page_content": "[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 15,
+        "parent_id": "p_2",
+        "parent_text": "[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------repost_header--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[Listen](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2Fplans%3Fdimension%3Dpost_audio_button%26postId%3Db191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------post_audio_button--------------------)\n\nShare\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**."
+      }
+    },
+    {
+      "page_content": "·\n\nJun 29, 2026\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------clap_footer--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 16,
+        "parent_id": "p_2",
+        "parent_text": "[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------repost_header--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[Listen](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2Fplans%3Fdimension%3Dpost_audio_button%26postId%3Db191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------post_audio_button--------------------)\n\nShare\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**."
+      }
+    },
+    {
+      "page_content": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------repost_header--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 17,
+        "parent_id": "p_2",
+        "parent_text": "[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------repost_header--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[Listen](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2Fplans%3Fdimension%3Dpost_audio_button%26postId%3Db191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------post_audio_button--------------------)\n\nShare\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**."
+      }
+    },
+    {
+      "page_content": "[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------bookmark_footer--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 18,
+        "parent_id": "p_2",
+        "parent_text": "[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------repost_header--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[Listen](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2Fplans%3Fdimension%3Dpost_audio_button%26postId%3Db191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------post_audio_button--------------------)\n\nShare\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**."
+      }
+    },
+    {
+      "page_content": "[Listen](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2Fplans%3Fdimension%3Dpost_audio_button%26postId%3Db191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------post_audio_button--------------------)\n\nShare",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 19,
+        "parent_id": "p_2",
+        "parent_text": "[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------repost_header--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[Listen](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2Fplans%3Fdimension%3Dpost_audio_button%26postId%3Db191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------post_audio_button--------------------)\n\nShare\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**."
+      }
+    },
+    {
+      "page_content": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 20,
+        "parent_id": "p_2",
+        "parent_text": "[Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---byline--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n5 min read\n\n·\n\nJun 29, 2026\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---header_actions--b191a3c55ed9---------------------repost_header--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[Listen](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2Fplans%3Fdimension%3Dpost_audio_button%26postId%3Db191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---header_actions--b191a3c55ed9---------------------post_audio_button--------------------)\n\nShare\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**."
+      }
+    },
+    {
+      "page_content": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 21,
+        "parent_id": "p_3",
+        "parent_text": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.\n\nWhether you’re building an AI chatbot, creating a search engine, training your own LLM, monitoring competitors, collecting research, or generating datasets, one thing remains constant:\n\n**You need data. Lots of it.**\n\nThe problem?\n\nMost commercial web scraping platforms charge anywhere from **$200 to over $2,000 per month** for features such as JavaScript rendering, browser automation, proxy rotation, and anti-bot evasion.\n\nThe good news is that many of these premium features are now available as open-source projects on GitHub.\n\nIn this article, we’ll explore 10 repositories that can scrape websites, automate browser actions, convert documents into AI-ready formats, and even collect data from mobile apps.\n\nLet’s dive in.\n\n## 1. Firecrawl\n\n**GitHub:** https://github.com/firecrawl/firecrawl\n\nIf I had to recommend only one scraping tool for AI developers, it would be Firecrawl.\n\nInstead of downloading raw HTML full of JavaScript, ads, navigation menus, and unnecessary code, Firecrawl returns clean, structured content that Large Language Models…\n\n## Create an account to read the full story.\n\nThe author made this story available to Medium members only.  \nIf you’re new to Medium, create a new account to read this story on us.\n\n[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web"
+      }
+    },
+    {
+      "page_content": "The AI revolution isn’t just about better models. It’s about **better data**.\n\nWhether you’re building an AI chatbot, creating a search engine, training your own LLM, monitoring competitors, collecting research, or generating datasets, one thing remains constant:\n\n**You need data. Lots of it.**\n\nThe problem?",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 22,
+        "parent_id": "p_3",
+        "parent_text": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.\n\nWhether you’re building an AI chatbot, creating a search engine, training your own LLM, monitoring competitors, collecting research, or generating datasets, one thing remains constant:\n\n**You need data. Lots of it.**\n\nThe problem?\n\nMost commercial web scraping platforms charge anywhere from **$200 to over $2,000 per month** for features such as JavaScript rendering, browser automation, proxy rotation, and anti-bot evasion.\n\nThe good news is that many of these premium features are now available as open-source projects on GitHub.\n\nIn this article, we’ll explore 10 repositories that can scrape websites, automate browser actions, convert documents into AI-ready formats, and even collect data from mobile apps.\n\nLet’s dive in.\n\n## 1. Firecrawl\n\n**GitHub:** https://github.com/firecrawl/firecrawl\n\nIf I had to recommend only one scraping tool for AI developers, it would be Firecrawl.\n\nInstead of downloading raw HTML full of JavaScript, ads, navigation menus, and unnecessary code, Firecrawl returns clean, structured content that Large Language Models…\n\n## Create an account to read the full story.\n\nThe author made this story available to Medium members only.  \nIf you’re new to Medium, create a new account to read this story on us.\n\n[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web"
+      }
+    },
+    {
+      "page_content": "**You need data. Lots of it.**\n\nThe problem?\n\nMost commercial web scraping platforms charge anywhere from **$200 to over $2,000 per month** for features such as JavaScript rendering, browser automation, proxy rotation, and anti-bot evasion.\n\nThe good news is that many of these premium features are now available as open-source projects on GitHub.",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 23,
+        "parent_id": "p_3",
+        "parent_text": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.\n\nWhether you’re building an AI chatbot, creating a search engine, training your own LLM, monitoring competitors, collecting research, or generating datasets, one thing remains constant:\n\n**You need data. Lots of it.**\n\nThe problem?\n\nMost commercial web scraping platforms charge anywhere from **$200 to over $2,000 per month** for features such as JavaScript rendering, browser automation, proxy rotation, and anti-bot evasion.\n\nThe good news is that many of these premium features are now available as open-source projects on GitHub.\n\nIn this article, we’ll explore 10 repositories that can scrape websites, automate browser actions, convert documents into AI-ready formats, and even collect data from mobile apps.\n\nLet’s dive in.\n\n## 1. Firecrawl\n\n**GitHub:** https://github.com/firecrawl/firecrawl\n\nIf I had to recommend only one scraping tool for AI developers, it would be Firecrawl.\n\nInstead of downloading raw HTML full of JavaScript, ads, navigation menus, and unnecessary code, Firecrawl returns clean, structured content that Large Language Models…\n\n## Create an account to read the full story.\n\nThe author made this story available to Medium members only.  \nIf you’re new to Medium, create a new account to read this story on us.\n\n[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web"
+      }
+    },
+    {
+      "page_content": "In this article, we’ll explore 10 repositories that can scrape websites, automate browser actions, convert documents into AI-ready formats, and even collect data from mobile apps.\n\nLet’s dive in.\n\n## 1. Firecrawl\n\n**GitHub:** https://github.com/firecrawl/firecrawl\n\nIf I had to recommend only one scraping tool for AI developers, it would be Firecrawl.",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 24,
+        "parent_id": "p_3",
+        "parent_text": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.\n\nWhether you’re building an AI chatbot, creating a search engine, training your own LLM, monitoring competitors, collecting research, or generating datasets, one thing remains constant:\n\n**You need data. Lots of it.**\n\nThe problem?\n\nMost commercial web scraping platforms charge anywhere from **$200 to over $2,000 per month** for features such as JavaScript rendering, browser automation, proxy rotation, and anti-bot evasion.\n\nThe good news is that many of these premium features are now available as open-source projects on GitHub.\n\nIn this article, we’ll explore 10 repositories that can scrape websites, automate browser actions, convert documents into AI-ready formats, and even collect data from mobile apps.\n\nLet’s dive in.\n\n## 1. Firecrawl\n\n**GitHub:** https://github.com/firecrawl/firecrawl\n\nIf I had to recommend only one scraping tool for AI developers, it would be Firecrawl.\n\nInstead of downloading raw HTML full of JavaScript, ads, navigation menus, and unnecessary code, Firecrawl returns clean, structured content that Large Language Models…\n\n## Create an account to read the full story.\n\nThe author made this story available to Medium members only.  \nIf you’re new to Medium, create a new account to read this story on us.\n\n[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web"
+      }
+    },
+    {
+      "page_content": "If I had to recommend only one scraping tool for AI developers, it would be Firecrawl.\n\nInstead of downloading raw HTML full of JavaScript, ads, navigation menus, and unnecessary code, Firecrawl returns clean, structured content that Large Language Models…\n\n## Create an account to read the full story.",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 25,
+        "parent_id": "p_3",
+        "parent_text": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.\n\nWhether you’re building an AI chatbot, creating a search engine, training your own LLM, monitoring competitors, collecting research, or generating datasets, one thing remains constant:\n\n**You need data. Lots of it.**\n\nThe problem?\n\nMost commercial web scraping platforms charge anywhere from **$200 to over $2,000 per month** for features such as JavaScript rendering, browser automation, proxy rotation, and anti-bot evasion.\n\nThe good news is that many of these premium features are now available as open-source projects on GitHub.\n\nIn this article, we’ll explore 10 repositories that can scrape websites, automate browser actions, convert documents into AI-ready formats, and even collect data from mobile apps.\n\nLet’s dive in.\n\n## 1. Firecrawl\n\n**GitHub:** https://github.com/firecrawl/firecrawl\n\nIf I had to recommend only one scraping tool for AI developers, it would be Firecrawl.\n\nInstead of downloading raw HTML full of JavaScript, ads, navigation menus, and unnecessary code, Firecrawl returns clean, structured content that Large Language Models…\n\n## Create an account to read the full story.\n\nThe author made this story available to Medium members only.  \nIf you’re new to Medium, create a new account to read this story on us.\n\n[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web"
+      }
+    },
+    {
+      "page_content": "## Create an account to read the full story.\n\nThe author made this story available to Medium members only.  \nIf you’re new to Medium, create a new account to read this story on us.\n\n[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 26,
+        "parent_id": "p_3",
+        "parent_text": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.\n\nWhether you’re building an AI chatbot, creating a search engine, training your own LLM, monitoring competitors, collecting research, or generating datasets, one thing remains constant:\n\n**You need data. Lots of it.**\n\nThe problem?\n\nMost commercial web scraping platforms charge anywhere from **$200 to over $2,000 per month** for features such as JavaScript rendering, browser automation, proxy rotation, and anti-bot evasion.\n\nThe good news is that many of these premium features are now available as open-source projects on GitHub.\n\nIn this article, we’ll explore 10 repositories that can scrape websites, automate browser actions, convert documents into AI-ready formats, and even collect data from mobile apps.\n\nLet’s dive in.\n\n## 1. Firecrawl\n\n**GitHub:** https://github.com/firecrawl/firecrawl\n\nIf I had to recommend only one scraping tool for AI developers, it would be Firecrawl.\n\nInstead of downloading raw HTML full of JavaScript, ads, navigation menus, and unnecessary code, Firecrawl returns clean, structured content that Large Language Models…\n\n## Create an account to read the full story.\n\nThe author made this story available to Medium members only.  \nIf you’re new to Medium, create a new account to read this story on us.\n\n[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web"
+      }
+    },
+    {
+      "page_content": "Or, continue in mobile web",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 27,
+        "parent_id": "p_3",
+        "parent_text": "Share\n\n_These open-source tools can replace expensive web scraping platforms and help you collect clean, AI-ready data from almost any website._\n\nThe AI revolution isn’t just about better models. It’s about **better data**.\n\nWhether you’re building an AI chatbot, creating a search engine, training your own LLM, monitoring competitors, collecting research, or generating datasets, one thing remains constant:\n\n**You need data. Lots of it.**\n\nThe problem?\n\nMost commercial web scraping platforms charge anywhere from **$200 to over $2,000 per month** for features such as JavaScript rendering, browser automation, proxy rotation, and anti-bot evasion.\n\nThe good news is that many of these premium features are now available as open-source projects on GitHub.\n\nIn this article, we’ll explore 10 repositories that can scrape websites, automate browser actions, convert documents into AI-ready formats, and even collect data from mobile apps.\n\nLet’s dive in.\n\n## 1. Firecrawl\n\n**GitHub:** https://github.com/firecrawl/firecrawl\n\nIf I had to recommend only one scraping tool for AI developers, it would be Firecrawl.\n\nInstead of downloading raw HTML full of JavaScript, ads, navigation menus, and unnecessary code, Firecrawl returns clean, structured content that Large Language Models…\n\n## Create an account to read the full story.\n\nThe author made this story available to Medium members only.  \nIf you’re new to Medium, create a new account to read this story on us.\n\n[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web"
+      }
+    },
+    {
+      "page_content": "[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 28,
+        "parent_id": "p_4",
+        "parent_text": "[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web\n\n[Sign up with Google](https://medium.com/m/connect/google?state=google-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[Sign up with Facebook](https://medium.com/m/connect/facebook?state=facebook-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nSign up with email\n\nAlready have an account? [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2"
+      }
+    },
+    {
+      "page_content": "[Sign up with Google](https://medium.com/m/connect/google?state=google-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 29,
+        "parent_id": "p_4",
+        "parent_text": "[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web\n\n[Sign up with Google](https://medium.com/m/connect/google?state=google-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[Sign up with Facebook](https://medium.com/m/connect/facebook?state=facebook-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nSign up with email\n\nAlready have an account? [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2"
+      }
+    },
+    {
+      "page_content": "[Sign up with",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 30,
+        "parent_id": "p_4",
+        "parent_text": "[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web\n\n[Sign up with Google](https://medium.com/m/connect/google?state=google-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[Sign up with Facebook](https://medium.com/m/connect/facebook?state=facebook-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nSign up with email\n\nAlready have an account? [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2"
+      }
+    },
+    {
+      "page_content": "up with Facebook](https://medium.com/m/connect/facebook?state=facebook-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 31,
+        "parent_id": "p_4",
+        "parent_text": "[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web\n\n[Sign up with Google](https://medium.com/m/connect/google?state=google-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[Sign up with Facebook](https://medium.com/m/connect/facebook?state=facebook-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nSign up with email\n\nAlready have an account? [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2"
+      }
+    },
+    {
+      "page_content": "Sign up with email\n\nAlready have an account? [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=-----b191a3c55ed9---------------------post_regwall--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 32,
+        "parent_id": "p_4",
+        "parent_text": "[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web\n\n[Sign up with Google](https://medium.com/m/connect/google?state=google-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[Sign up with Facebook](https://medium.com/m/connect/facebook?state=facebook-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nSign up with email\n\nAlready have an account? [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2"
+      }
+    },
+    {
+      "page_content": "[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 33,
+        "parent_id": "p_4",
+        "parent_text": "[Continue in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3Dregwall&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nOr, continue in mobile web\n\n[Sign up with Google](https://medium.com/m/connect/google?state=google-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[Sign up with Facebook](https://medium.com/m/connect/facebook?state=facebook-%7Chttps%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9%3Fsource%3D-----b191a3c55ed9---------------------post_regwall--------------------%26skipOnboarding%3D1%7Cregister%7Cremember_me&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\nSign up with email\n\nAlready have an account? [Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=-----b191a3c55ed9---------------------post_regwall--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2"
+      }
+    },
+    {
+      "page_content": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 34,
+        "parent_id": "p_5",
+        "parent_text": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------repost_footer--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---footer_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[![Image 4: Sonu Yadav](https://miro.medium.com/v2/resize:fill:96:96/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 5: Sonu Yadav](https://miro.medium.com/v2/resize:fill:128:128/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Written by Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------repost_footer--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 35,
+        "parent_id": "p_5",
+        "parent_text": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------repost_footer--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---footer_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[![Image 4: Sonu Yadav](https://miro.medium.com/v2/resize:fill:96:96/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 5: Sonu Yadav](https://miro.medium.com/v2/resize:fill:128:128/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Written by Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---footer_actions--b191a3c55ed9---------------------bookmark_footer--------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 36,
+        "parent_id": "p_5",
+        "parent_text": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------repost_footer--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---footer_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[![Image 4: Sonu Yadav](https://miro.medium.com/v2/resize:fill:96:96/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 5: Sonu Yadav](https://miro.medium.com/v2/resize:fill:128:128/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Written by Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[![Image 4: Sonu Yadav](https://miro.medium.com/v2/resize:fill:96:96/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 37,
+        "parent_id": "p_5",
+        "parent_text": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------repost_footer--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---footer_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[![Image 4: Sonu Yadav](https://miro.medium.com/v2/resize:fill:96:96/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 5: Sonu Yadav](https://miro.medium.com/v2/resize:fill:128:128/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Written by Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[![Image 5: Sonu Yadav](https://miro.medium.com/v2/resize:fill:128:128/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Written by Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 38,
+        "parent_id": "p_5",
+        "parent_text": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------repost_footer--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---footer_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[![Image 4: Sonu Yadav](https://miro.medium.com/v2/resize:fill:96:96/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 5: Sonu Yadav](https://miro.medium.com/v2/resize:fill:128:128/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Written by Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 39,
+        "parent_id": "p_5",
+        "parent_text": "2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fcoding-nexus%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------clap_footer--------------------)\n\n2\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Frepost%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&user=Sonu+Yadav&userId=733e0b4b3ebe&source=---footer_actions--b191a3c55ed9---------------------repost_footer--------------------)\n\n[](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fbookmark%2Fp%2Fb191a3c55ed9&operation=register&redirect=https%3A%2F%2Fmedium.com%2Fcoding-nexus%2F10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9&source=---footer_actions--b191a3c55ed9---------------------bookmark_footer--------------------)\n\n[![Image 4: Sonu Yadav](https://miro.medium.com/v2/resize:fill:96:96/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 5: Sonu Yadav](https://miro.medium.com/v2/resize:fill:128:128/1*pvJ0y2s6DCWwA30zPRNrzA.jpeg)](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Written by Sonu Yadav](https://medium.com/@sonuyadav1?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n·[6 following](https://medium.com/@sonuyadav1/following?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nI simplify programming concepts and make coding accessible for everyone!\n\nFollow",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 40,
+        "parent_id": "p_6",
+        "parent_text": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n·[6 following](https://medium.com/@sonuyadav1/following?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nI simplify programming concepts and make coding accessible for everyone!\n\nFollow\n\n[![Image 6: Coding Nexus](https://miro.medium.com/v2/resize:fill:96:96/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 7: Coding Nexus](https://miro.medium.com/v2/resize:fill:128:128/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Published in Coding Nexus](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[19.8K followers](https://medium.com/coding-nexus/followers?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n·[Last published 3 hours ago](https://medium.com/coding-nexus/10-jev-use-cases-that-could-make-agentic-apps-faster-and-cheaper-16520eaac506?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "I simplify programming concepts and make coding accessible for everyone!\n\nFollow\n\n[![Image 6: Coding Nexus](https://miro.medium.com/v2/resize:fill:96:96/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 41,
+        "parent_id": "p_6",
+        "parent_text": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n·[6 following](https://medium.com/@sonuyadav1/following?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nI simplify programming concepts and make coding accessible for everyone!\n\nFollow\n\n[![Image 6: Coding Nexus](https://miro.medium.com/v2/resize:fill:96:96/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 7: Coding Nexus](https://miro.medium.com/v2/resize:fill:128:128/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Published in Coding Nexus](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[19.8K followers](https://medium.com/coding-nexus/followers?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n·[Last published 3 hours ago](https://medium.com/coding-nexus/10-jev-use-cases-that-could-make-agentic-apps-faster-and-cheaper-16520eaac506?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[![Image 7: Coding Nexus](https://miro.medium.com/v2/resize:fill:128:128/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nFollow",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 42,
+        "parent_id": "p_6",
+        "parent_text": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n·[6 following](https://medium.com/@sonuyadav1/following?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nI simplify programming concepts and make coding accessible for everyone!\n\nFollow\n\n[![Image 6: Coding Nexus](https://miro.medium.com/v2/resize:fill:96:96/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 7: Coding Nexus](https://miro.medium.com/v2/resize:fill:128:128/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Published in Coding Nexus](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[19.8K followers](https://medium.com/coding-nexus/followers?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n·[Last published 3 hours ago](https://medium.com/coding-nexus/10-jev-use-cases-that-could-make-agentic-apps-faster-and-cheaper-16520eaac506?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "Follow\n\n## [Published in Coding Nexus](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[19.8K followers](https://medium.com/coding-nexus/followers?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 43,
+        "parent_id": "p_6",
+        "parent_text": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n·[6 following](https://medium.com/@sonuyadav1/following?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nI simplify programming concepts and make coding accessible for everyone!\n\nFollow\n\n[![Image 6: Coding Nexus](https://miro.medium.com/v2/resize:fill:96:96/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 7: Coding Nexus](https://miro.medium.com/v2/resize:fill:128:128/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Published in Coding Nexus](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[19.8K followers](https://medium.com/coding-nexus/followers?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n·[Last published 3 hours ago](https://medium.com/coding-nexus/10-jev-use-cases-that-could-make-agentic-apps-faster-and-cheaper-16520eaac506?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "·[Last published 3 hours ago](https://medium.com/coding-nexus/10-jev-use-cases-that-could-make-agentic-apps-faster-and-cheaper-16520eaac506?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 44,
+        "parent_id": "p_6",
+        "parent_text": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n·[6 following](https://medium.com/@sonuyadav1/following?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nI simplify programming concepts and make coding accessible for everyone!\n\nFollow\n\n[![Image 6: Coding Nexus](https://miro.medium.com/v2/resize:fill:96:96/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 7: Coding Nexus](https://miro.medium.com/v2/resize:fill:128:128/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Published in Coding Nexus](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[19.8K followers](https://medium.com/coding-nexus/followers?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n·[Last published 3 hours ago](https://medium.com/coding-nexus/10-jev-use-cases-that-could-make-agentic-apps-faster-and-cheaper-16520eaac506?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "Coding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 45,
+        "parent_id": "p_6",
+        "parent_text": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n·[6 following](https://medium.com/@sonuyadav1/following?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nI simplify programming concepts and make coding accessible for everyone!\n\nFollow\n\n[![Image 6: Coding Nexus](https://miro.medium.com/v2/resize:fill:96:96/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 7: Coding Nexus](https://miro.medium.com/v2/resize:fill:128:128/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Published in Coding Nexus](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[19.8K followers](https://medium.com/coding-nexus/followers?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n·[Last published 3 hours ago](https://medium.com/coding-nexus/10-jev-use-cases-that-could-make-agentic-apps-faster-and-cheaper-16520eaac506?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 46,
+        "parent_id": "p_6",
+        "parent_text": "[518 followers](https://medium.com/@sonuyadav1/followers?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\n·[6 following](https://medium.com/@sonuyadav1/following?source=post_page---post_author_info--b191a3c55ed9-----------------------------------------)\n\nI simplify programming concepts and make coding accessible for everyone!\n\nFollow\n\n[![Image 6: Coding Nexus](https://miro.medium.com/v2/resize:fill:96:96/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[![Image 7: Coding Nexus](https://miro.medium.com/v2/resize:fill:128:128/1*KCZtO6-wFqmTaMmbTMicbw.png)](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nFollow\n\n## [Published in Coding Nexus](https://medium.com/coding-nexus?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n[19.8K followers](https://medium.com/coding-nexus/followers?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\n·[Last published 3 hours ago](https://medium.com/coding-nexus/10-jev-use-cases-that-could-make-agentic-apps-faster-and-cheaper-16520eaac506?source=post_page---post_publication_info--b191a3c55ed9-----------------------------------------)\n\nCoding Nexus is a community of developers, tech enthusiasts, and aspiring coders. Whether you’re exploring the depths of Python, diving into data science, mastering web development, or staying updated on the latest trends in AI, Coding Nexus has something for you.\n\nFollow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "Follow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[About](https://medium.com/about?autoplay=1&source=post_page-----b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 47,
+        "parent_id": "p_7",
+        "parent_text": "Follow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[About](https://medium.com/about?autoplay=1&source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Careers](https://medium.com/jobs-at-medium/work-at-medium-959d1a85284e?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Press](mailto:pressinquiries@medium.com)\n\n[Blog](https://blog.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Store](https://medium.com/store)\n\n[Privacy](https://policy.medium.com/medium-privacy-policy-f03bf92035c9?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Rules](https://policy.medium.com/medium-rules-30e5502c4eb4?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Terms](https://policy.medium.com/medium-terms-of-service-9db0094a1e0f?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Text to speech](https://speechify.com/medium?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[Careers](https://medium.com/jobs-at-medium/work-at-medium-959d1a85284e?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Press](mailto:pressinquiries@medium.com)\n\n[Blog](https://blog.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Store](https://medium.com/store)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 48,
+        "parent_id": "p_7",
+        "parent_text": "Follow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[About](https://medium.com/about?autoplay=1&source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Careers](https://medium.com/jobs-at-medium/work-at-medium-959d1a85284e?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Press](mailto:pressinquiries@medium.com)\n\n[Blog](https://blog.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Store](https://medium.com/store)\n\n[Privacy](https://policy.medium.com/medium-privacy-policy-f03bf92035c9?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Rules](https://policy.medium.com/medium-rules-30e5502c4eb4?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Terms](https://policy.medium.com/medium-terms-of-service-9db0094a1e0f?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Text to speech](https://speechify.com/medium?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[Store](https://medium.com/store)\n\n[Privacy](https://policy.medium.com/medium-privacy-policy-f03bf92035c9?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Rules](https://policy.medium.com/medium-rules-30e5502c4eb4?source=post_page-----b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 49,
+        "parent_id": "p_7",
+        "parent_text": "Follow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[About](https://medium.com/about?autoplay=1&source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Careers](https://medium.com/jobs-at-medium/work-at-medium-959d1a85284e?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Press](mailto:pressinquiries@medium.com)\n\n[Blog](https://blog.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Store](https://medium.com/store)\n\n[Privacy](https://policy.medium.com/medium-privacy-policy-f03bf92035c9?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Rules](https://policy.medium.com/medium-rules-30e5502c4eb4?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Terms](https://policy.medium.com/medium-terms-of-service-9db0094a1e0f?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Text to speech](https://speechify.com/medium?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    },
+    {
+      "page_content": "[Terms](https://policy.medium.com/medium-terms-of-service-9db0094a1e0f?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Text to speech](https://speechify.com/medium?source=post_page-----b191a3c55ed9-----------------------------------------)",
+      "metadata": {
+        "url": "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9",
+        "title": "10 GitHub Repositories to Help You Scrape the Entire Internet",
+        "word_count": 489,
+        "strategy_used": "jina_reader",
+        "paywall_detected": false,
+        "paywall_bypassed": true,
+        "urls": [
+          "https://medium.com/coding-nexus/10-github-repositories-to-help-you-scrape-the-entire-internet-b191a3c55ed9"
+        ],
+        "session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "vector_session_id": "ea37518b-5462-4db1-ac2e-b604716e1681",
+        "cached_hit": false,
+        "url_hash": "4ae0a707d094530d6454c1e11c89cc0903bed866062dc4df845622c669486bac",
+        "chunk_index": 50,
+        "parent_id": "p_7",
+        "parent_text": "Follow\n\n[Help](https://help.medium.com/hc/en-us?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Status](https://status.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[About](https://medium.com/about?autoplay=1&source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Careers](https://medium.com/jobs-at-medium/work-at-medium-959d1a85284e?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Press](mailto:pressinquiries@medium.com)\n\n[Blog](https://blog.medium.com/?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Store](https://medium.com/store)\n\n[Privacy](https://policy.medium.com/medium-privacy-policy-f03bf92035c9?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Rules](https://policy.medium.com/medium-rules-30e5502c4eb4?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Terms](https://policy.medium.com/medium-terms-of-service-9db0094a1e0f?source=post_page-----b191a3c55ed9-----------------------------------------)\n\n[Text to speech](https://speechify.com/medium?source=post_page-----b191a3c55ed9-----------------------------------------)"
+      }
+    }
+  ]
+}
