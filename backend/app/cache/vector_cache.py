@@ -43,7 +43,7 @@ class VectorStoreCache:
             return compute_url_hash(clean)[:16]
         except Exception as e:
             logger.error(f"VectorStoreCache: Error computing hash: {e}", exc_info=True)
-            return hashlib.md5(str(text).encode("utf-8")).hexdigest()[:16]
+            return hashlib.md5((text or "").encode("utf-8")).hexdigest()[:16]
 
     def _get_item_dir(self, cache_key: str) -> str:
         """Returns the filesystem directory path for a specific cache key."""

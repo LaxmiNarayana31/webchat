@@ -1,4 +1,4 @@
-﻿import hashlib
+import hashlib
 import json
 import os
 import re
@@ -102,7 +102,7 @@ class SemanticCacheService:
             return clean
         except Exception as e:
             logger.error(f"SemanticCache: Error normalizing query: {e}")
-            return str(query).strip().lower() if query else ""
+            return query.strip().lower() if query else ""
 
     def _compute_exact_key(self, query: str, context_hash: Optional[str] = None) -> str:
         """Computes SHA-256 hash for Tier 1 instant exact match."""

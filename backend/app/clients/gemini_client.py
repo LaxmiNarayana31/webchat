@@ -1,6 +1,9 @@
 import concurrent.futures
 import os
+import time
 from typing import AsyncGenerator, Generator, List, Optional
+
+import httpx
 
 from dotenv import load_dotenv
 from google import genai
@@ -124,7 +127,6 @@ class GeminiClient:
     ) -> str:
         """Fetches an image URL and generates visual descriptions & OCR breakdown via Gemini Vision."""
         try:
-            import httpx
             async with httpx.AsyncClient(timeout=8.0, follow_redirects=True) as h_client:
                 resp = await h_client.get(image_url)
                 if resp.status_code != 200:
@@ -165,7 +167,6 @@ class GeminiClient:
                     return [0.0] * 3072
                 except Exception as e:
                     if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
-                        import time
                         time.sleep(1.0 * (attempt + 1))
                         continue
                     logger.warning(f"Embedding with {model} failed: {e}. Trying gemini-embedding-001 fallback.")
