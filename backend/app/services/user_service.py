@@ -3,7 +3,7 @@ import time
 from typing import Any, Dict, Optional, Tuple
 
 from backend.app.core.logging import logger
-from backend.app.models.models import GuestUsageEntity, UserEntity
+from backend.app.models.models import ChatSessionEntity, GuestUsageEntity, UserEntity
 from backend.config.database import USER_DAILY_REQUEST_LIMIT, get_db_session
 
 
@@ -46,7 +46,6 @@ class UserService:
 
                 # Claim any guest sessions created on this client device and link them to this email
                 if client_id and client_id.strip():
-                    from backend.app.models.models import ChatSessionEntity
                     guest_sessions = session.query(ChatSessionEntity).filter(
                         ChatSessionEntity.guest_client_id == client_id.strip(),
                         ChatSessionEntity.user_id.is_(None)
@@ -267,8 +266,6 @@ class UserService:
                 }
         except Exception as e:
             logger.error(f"UserService: Error retrieving quota status for email='{email}', client='{client_id}': {e}", exc_info=True)
-            raise
-            logger.error(f"UserService: Error retrieving quota status: {e}", exc_info=True)
             return {
                 "is_guest": True,
                 "guest_limit": USER_DAILY_REQUEST_LIMIT,

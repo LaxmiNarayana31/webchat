@@ -11,7 +11,7 @@ from backend.app.core.errors import (
     WebChatException,
 )
 from backend.app.core.logging import logger
-from backend.app.dtos.chat_dto import ChatRequestDto, ChatResponseDto, CitationItemDto
+from backend.app.dtos.chat_dto import ChatMessageDto, ChatRequestDto, ChatResponseDto, CitationItemDto
 from backend.app.dtos.model_dto import ModelCatalogItemDto
 from backend.app.dtos.scrape_dto import (
     CrawlPageDto,
@@ -407,6 +407,35 @@ class ChatService:
     #         logger.error(f"ChatService: File upload indexing failed: {e}", exc_info=True)
     #         raise WebChatException(message=f"File processing failed: {str(e)}", status_code=500)
 
+    def _resolve_session_chat_history(
+        self,
+        explicit_history: Optional[List[ChatMessageDto]],
+        session_id: str,
+    ) -> List[ChatMessageDto]:
+        """Resolves prior conversation turns from explicit parameter or database session."""
+        if explicit_history and len(explicit_history) > 0:
+            return explicit_history
+
+        if not session_id:
+            return []
+
+        try:
+            prior_session = session_repository.get_session(session_id)
+            if prior_session and prior_session.get("messages"):
+                # The latest user message was just appended to the database session,
+                # so the prior conversational context is all messages prior to the one just appended.
+                msgs = prior_session["messages"][:-1]
+                history = [
+                    ChatMessageDto(role=m["role"], content=m["content"])
+                    for m in msgs
+                    if m.get("content") and m.get("role") in ["user", "assistant"]
+                ]
+                return history[-10:]  # Keep last 10 messages for rich multi-turn context
+        except Exception as e:
+            logger.warning(f"ChatService: Could not load prior session history for '{session_id}': {e}")
+
+        return []
+
     async def handle_chat_query_async(self, req: ChatRequestDto, client_ip: Optional[str] = None) -> ChatResponseDto:
         """Executes non-streaming conversational RAG, checking dual-layer quota and persisting conversation turn asynchronously."""
         try:
@@ -480,12 +509,15 @@ class ChatService:
                     quota=quota_info
                 )
 
+            # Resolve conversation history from database or request
+            resolved_history = self._resolve_session_chat_history(req.chat_history, session_id)
+
             # Generate grounded answer
             response_dto = await chat_agent.answer_query_async(
                 query=req.query,
                 url=req.url,
                 document_content=req.document_content,
-                chat_history=req.chat_history,
+                chat_history=resolved_history,
                 selected_model=req.selected_model,
                 user_id=user_identifier,
             )
@@ -618,12 +650,15 @@ class ChatService:
                 yield format_done_event()
                 return
 
+            # Resolve conversation history from database or request
+            resolved_history = self._resolve_session_chat_history(req.chat_history, session_id)
+
             # Initialize Agent Stream
             events_gen = chat_agent.answer_query_stream_events_async(
                 query=req.query,
                 url=req.url,
                 document_content=req.document_content,
-                chat_history=req.chat_history,
+                chat_history=resolved_history,
                 selected_model=req.selected_model,
                 user_id=user_identifier,
             )

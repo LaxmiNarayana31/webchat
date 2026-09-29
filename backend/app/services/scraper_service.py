@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 import requests
 import trafilatura
 
+from curl_cffi import requests as curl_requests
+
 from backend.app.core.config import settings
 from backend.app.core.logging import logger
 
@@ -539,7 +541,8 @@ class ScraperService:
         Bypasses Cloudflare Bot Management, Turnstile, and advanced anti-bot WAFs.
         """
         try:
-            from curl_cffi import requests as curl_requests
+            if not curl_requests:
+                return {"success": False, "error": "curl_cffi not installed"}
             # Use only Referer so curl_cffi generates authentic Chrome TLS & HTTP/2 fingerprint
             headers = {"Referer": "https://www.google.com/"}
             resp = curl_requests.get(url, impersonate="chrome120", headers=headers, timeout=self.timeout + 5)
@@ -578,7 +581,7 @@ class ScraperService:
             for tag in soup(["script", "style", "nav", "footer", "iframe", "noscript", "aside"]):
                 tag.decompose()
             for cls_name in self.PAYWALL_CSS_CLASSES:
-                for el in soup.find_all(attrs={"class": re.compile(cls_name, re.I)}):
+                for el in soup.find_all(attrs={"class": re.compile(cls_name, re.I)}):  # type: ignore
                     el.decompose()
 
             extracted = trafilatura.extract(str(soup), include_comments=False, include_tables=True)
@@ -611,22 +614,33 @@ class ScraperService:
 
         return {"success": False}
 
+    @staticmethod
+    def _get_attr_str(val: Any) -> str:
+        """Safely converts BeautifulSoup attribute values (AttributeValueList, str, list, None) to clean str."""
+        if not val:
+            return ""
+        if isinstance(val, (list, tuple)):
+            return " ".join(str(x) for x in val)
+        return str(val)
+
     def _extract_content_images(self, soup: BeautifulSoup, base_url: str, max_images: int = 20) -> List[Dict[str, str]]:
         """Extracts non-decorative content images (diagrams, photos, charts) with absolute URLs and captions."""
         extracted_images = []
         seen_urls = set()
 
         for img in soup.find_all("img"):
-            src = img.get("src") or img.get("data-src") or img.get("data-original")
+            raw_src = img.get("src") or img.get("data-src") or img.get("data-original")
+            src = self._get_attr_str(raw_src)
             # Handle modern responsive picture and srcset tags (used by Medium, Substack, etc.)
             if not src:
-                srcset = img.get("srcset") or img.get("data-srcset")
-                if not srcset:
+                raw_srcset = img.get("srcset") or img.get("data-srcset")
+                if not raw_srcset:
                     picture = img.find_parent("picture")
                     if picture:
                         source = picture.find("source")
                         if source:
-                            srcset = source.get("srcset") or source.get("data-srcset")
+                            raw_srcset = source.get("srcset") or source.get("data-srcset")
+                srcset = self._get_attr_str(raw_srcset)
                 if srcset:
                     parts = [p.strip().split()[0] for p in srcset.split(",") if p.strip()]
                     if parts:
@@ -648,16 +662,16 @@ class ScraperService:
                 continue
 
             # Filter out small dimensions if specified
-            w = img.get("width")
-            h = img.get("height")
+            w = self._get_attr_str(img.get("width"))
+            h = self._get_attr_str(img.get("height"))
             try:
                 if w and int(w) < 120 and h and int(h) < 120:
                     continue
             except (ValueError, TypeError):
                 pass
 
-            alt_text = (img.get("alt") or "").strip()
-            title_text = (img.get("title") or "").strip()
+            alt_text = self._get_attr_str(img.get("alt")).strip()
+            title_text = self._get_attr_str(img.get("title")).strip()
 
             parent_caption = ""
             parent_fig = img.find_parent(["figure", "div", "p"])

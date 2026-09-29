@@ -6,6 +6,7 @@ from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple, TypedDict
 from langgraph.graph import END, START, StateGraph
 import requests
 
+from backend.app.agents.router_agent import router_agent
 from backend.app.clients.gemini_client import gemini_client
 from backend.app.core.logging import logger
 from backend.app.dtos.chat_dto import ChatMessageDto
@@ -203,7 +204,6 @@ class AgenticRAGService:
     async def route_node(self, state: AgenticRAGState) -> Dict[str, Any]:
         """Node 1: Classifies user intent using AI-driven Router Agent with heuristic fallback."""
         try:
-            from backend.app.agents.router_agent import router_agent
             query = state.get("query", "").strip()
             has_doc = bool(state.get("vector_store"))
             doc_meta = state.get("document_metadata") or {}
