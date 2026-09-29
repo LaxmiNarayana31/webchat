@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
@@ -11,7 +11,6 @@ import {
   MessageSquare,
   ShieldCheck,
   Cpu,
-  Clock,
   ChevronDown,
   ChevronRight,
   CheckCircle2,
@@ -28,11 +27,25 @@ import {
   ThumbsUp,
   ThumbsDown,
   Zap,
+  Square,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = (() => {
+  const envUrl =
+    import.meta.env.VITE_API_BASE_URL ||
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_API_BASE;
+
+  if (!envUrl) return "http://localhost:8000/api";
+
+  const trimmed = envUrl.trim().replace(/\/+$/, "");
+  if (!trimmed.endsWith("/api") && !trimmed.includes("/api/")) {
+    return `${trimmed}/api`;
+  }
+  return trimmed;
+})();
 
 function getOrCreateClientId() {
   let cid = localStorage.getItem("webchat_client_id");
@@ -82,6 +95,21 @@ function isValidUrlPattern(str) {
   }
 }
 
+function cleanMarkdownContent(raw) {
+  if (!raw || typeof raw !== "string") return "";
+  let text = raw;
+
+  // 1. Remove malformed/doubled HTML break tags like <<brbr>>, <br>, &lt;br&gt;, etc.
+  text = text.replace(/(&lt;|<)\s*<?\s*b\s*r\s*b?\s*r?\s*\/?>*(&gt;|>)+/gi, "\n");
+  text = text.replace(/<\s*br\s*\/?>/gi, "\n");
+  text = text.replace(/&lt;\s*br\s*\/?&gt;/gi, "\n");
+
+  // 2. Fix duplicated pipe characters in Markdown tables (e.g. "||" -> "|")
+  text = text.replace(/\|{2,}/g, "|");
+
+  return text;
+}
+
 function parseUrlInput(text) {
   if (!text) return { valid: [], invalid: [] };
   const rawItems = text
@@ -121,17 +149,136 @@ function formatModelName(name) {
   return str.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
+function normalizeText(text) {
+  if (!text || typeof text !== "string") return "";
+  return text
+    .toLowerCase()
+    .replace(/[?!.:;,`'"$#*()[\]{}]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Extracts real section headings and main topics from the website/document content.
+ */
+function extractDocumentTopics(docContent) {
+  if (!docContent || typeof docContent !== "string") return [];
+  const lines = docContent.split("\n");
+  const topics = [];
+  const seen = new Set();
+
+  for (const rawLine of lines) {
+    if (topics.length >= 15) break;
+    const line = rawLine.trim();
+    const headerMatch = line.match(/^#{1,4}\s+(.+)$/);
+    if (headerMatch) {
+      let title = headerMatch[1]
+        .replace(/[*_#]/g, "")
+        .replace(/[:\-–—]+$/, "")
+        .trim();
+      const norm = normalizeText(title);
+      if (
+        title.length >= 4 &&
+        title.length <= 65 &&
+        !seen.has(norm) &&
+        !/^(table of contents|contents|introduction|overview|conclusion|summary|references|sources|navigation|footer|menu|share this|related articles|sign in|log in|subscribe)/i.test(
+          norm,
+        )
+      ) {
+        seen.add(norm);
+        topics.push(title);
+      }
+    }
+  }
+
+  // Fallback to bold terms if few headers found
+  if (topics.length < 3) {
+    const boldMatches = docContent.match(/\*\*([A-Za-z0-9\s\-–—/]{4,40})\*\*/g) || [];
+    for (const b of boldMatches) {
+      if (topics.length >= 8) break;
+      const clean = b.replace(/\*\*/g, "").replace(/[$`]/g, "").trim();
+      const norm = normalizeText(clean);
+      if (
+        clean.length >= 4 &&
+        clean.length <= 35 &&
+        !seen.has(norm) &&
+        !/^(note|tip|warning|important|caution|step|example|figure|summary|overview)/i.test(
+          clean,
+        )
+      ) {
+        seen.add(norm);
+        topics.push(clean);
+      }
+    }
+  }
+
+  return topics;
+}
+
+/**
+ * Extracts new key concepts, technologies, and terms introduced in the assistant response.
+ */
+function extractAnswerConcepts(content) {
+  if (!content || typeof content !== "string") return [];
+  const concepts = [];
+  const seen = new Set();
+  const boldMatches = content.match(/\*\*([A-Za-z0-9\s\-–—/]{3,40})\*\*/g) || [];
+  for (const b of boldMatches) {
+    const clean = b.replace(/\*\*/g, "").replace(/[$`]/g, "").trim();
+    const norm = normalizeText(clean);
+    if (
+      clean.length >= 3 &&
+      clean.length <= 35 &&
+      !seen.has(norm) &&
+      !/^(note|tip|warning|important|caution|step|example|figure|summary|overview|with constant)/i.test(
+        clean,
+      )
+    ) {
+      seen.add(norm);
+      concepts.push(clean);
+    }
+  }
+  return concepts;
+}
+
+/**
+ * Extracts the core subject from user query by stripping common interrogative phrasing.
+ */
+function extractQuerySubject(query) {
+  if (!query || typeof query !== "string") return "";
+  return query
+    .replace(
+      /^(what is|what are|how does|how do|how can|why is|why are|tell me about|explain|can you explain|summarize|give me an overview of|compare|difference between)\s+/i,
+      "",
+    )
+    .replace(
+      /\s+(work under the hood|operate in this system|operate|work in practice|work|mean|differ|compare)\s*\??$/i,
+      "",
+    )
+    .replace(/[?!.]/g, "")
+    .trim();
+}
+
+/**
+ * Generates dynamically evolving, context-aware suggested follow-up questions
+ * directly based on:
+ * 1. The website content (sections, headings, topics from activeDoc)
+ * 2. The user's query and conversation history (avoiding repeat topics)
+ * 3. The assistant's response (deep diving into newly introduced concepts)
+ */
 function getSuggestedQuestions(activeDoc, messages = []) {
+  const docContent = activeDoc?.content || "";
   const rawTitle = (activeDoc?.title || activeDoc?.url || "").trim();
   const cleanTitle =
     rawTitle
       .replace(/^Domain Crawl \(\d+ pages\)/i, "")
       .replace(/^Site Crawl:/i, "")
-      .trim() || "extracted content";
+      .trim() || "this document";
   const shortTitle =
     cleanTitle.length > 32 ? cleanTitle.substring(0, 30) + "..." : cleanTitle;
+  const docTopics = extractDocumentTopics(docContent);
 
-  // Dynamic context-aware follow-up questions during active chat
+  // Active chat follow-ups
   if (messages && messages.length > 0) {
     const userMsgs = messages.filter((m) => m.role === "user");
     const assistantMsgs = messages.filter((m) => m.role === "assistant");
@@ -140,83 +287,145 @@ function getSuggestedQuestions(activeDoc, messages = []) {
     const lastAssistant =
       assistantMsgs.length > 0 ? assistantMsgs[assistantMsgs.length - 1] : null;
     const lastContent = lastAssistant?.content || "";
-    const citations = lastAssistant?.citations || [];
 
-    const combinedText = (lastUserQuery + " " + lastContent).toLowerCase();
-
-    // 1. Follow-up based on grounded source citations in last response
-    if (citations && citations.length > 0) {
-      const topCitationTitle = citations[0].title
-        ? citations[0].title.substring(0, 28) + "..."
-        : "the cited sources";
-      return [
-        `🔍 Tell me more about "${topCitationTitle}" from the sources`,
-        `📌 What additional evidence or details are in the cited sources?`,
-        `⚡ What are the key practical implications from these sources?`,
-      ];
+    // If currently thinking without content, do not show suggestions
+    if (lastAssistant?.isThinking && !lastContent) {
+      return [];
     }
 
-    // 2. Follow-up based on Code / API / Implementation context
+    const askedQueries = userMsgs.map((m) => normalizeText(m.content));
+    const isTopicAsked = (topic) => {
+      const normTopic = normalizeText(topic);
+      if (!normTopic) return false;
+      return askedQueries.some(
+        (q) => q.includes(normTopic) || normTopic.includes(q),
+      );
+    };
+
+    const querySubject = extractQuerySubject(lastUserQuery);
+    const answerConcepts = extractAnswerConcepts(lastContent);
+    const normLastQuery = normalizeText(lastUserQuery);
+
+    const newConcepts = answerConcepts.filter(
+      (c) => !normLastQuery.includes(normalizeText(c)),
+    );
+
+    const unaskedDocTopics = docTopics.filter(
+      (t) => !isTopicAsked(t) && !normLastQuery.includes(normalizeText(t)),
+    );
+
+    const suggestions = [];
+    const usedSubjects = new Set();
+    const turnIndex = Math.max(0, userMsgs.length - 1);
+
+    // 1. Concept deep dive from the answer
+    let q1 = "";
+    if (newConcepts.length > 0) {
+      const topConcept = newConcepts[0];
+      const q1Templates = [
+        `🔍 How does "${topConcept}" operate in this architecture?`,
+        `🔍 Can you explain the role and mechanics of "${topConcept}"?`,
+        `🔍 What are the advantages of using "${topConcept}" here?`,
+      ];
+      q1 = q1Templates[turnIndex % q1Templates.length];
+      usedSubjects.add(normalizeText(topConcept));
+    } else if (querySubject) {
+      q1 = `🔍 How does ${querySubject} work in practice under the hood?`;
+      usedSubjects.add(normalizeText(querySubject));
+    } else {
+      q1 = `🔍 What are the underlying technical mechanisms?`;
+    }
+    suggestions.push(q1);
+
+    // 2. Practical trade-offs, benchmarks, or implementation
+    const combined = (lastUserQuery + " " + lastContent).toLowerCase();
+    let q2 = "";
+    const codeAngles = [
+      "⚡ What are the key configuration options and common pitfalls?",
+      "⚡ How can this implementation be optimized or scaled further?",
+      "⚡ What edge cases and error handling steps should be included?",
+      "⚡ Show an example testing or verifying this code snippet",
+    ];
+    const tradeOffAngles = [
+      "⚡ What are the performance and latency trade-offs reported?",
+      "⚡ How does this approach compare with alternatives in practical tests?",
+      "⚡ What are the main edge cases or limitations mentioned in the article?",
+      "⚡ What real-world production challenges are discussed?",
+    ];
+
     if (
-      combinedText.includes("code") ||
-      combinedText.includes("python") ||
-      combinedText.includes("function") ||
-      combinedText.includes("api") ||
-      combinedText.includes("script") ||
-      combinedText.includes("example")
+      combined.includes("code") ||
+      combined.includes("python") ||
+      combined.includes("api")
     ) {
-      return [
-        `🔍 Show a step-by-step code implementation or script`,
-        `⚡ What are the main edge cases or error handling steps?`,
-        `📌 How can this code be customized or extended further?`,
-      ];
-    }
-
-    // 3. Follow-up based on RAG / Vector / Architecture / Performance
-    if (
-      combinedText.includes("rag") ||
-      combinedText.includes("vector") ||
-      combinedText.includes("retrieval") ||
-      combinedText.includes("benchmark") ||
-      combinedText.includes("performance") ||
-      combinedText.includes("embedding")
+      q2 = codeAngles[turnIndex % codeAngles.length];
+    } else if (
+      combined.includes("benchmark") ||
+      combined.includes("latency") ||
+      combined.includes("score") ||
+      combined.includes("mrr")
     ) {
-      return [
-        `🔍 What are the performance trade-offs and latency metrics?`,
-        `📌 How does vector search compare with keyword retrieval here?`,
-        `⚡ What optimization techniques are recommended?`,
-      ];
-    }
-
-    // 4. Follow-up based on AI / LLM / Multi-Agent models
-    if (
-      combinedText.includes("ai") ||
-      combinedText.includes("llm") ||
-      combinedText.includes("model") ||
-      combinedText.includes("agent")
+      q2 = "⚡ What are the performance and latency trade-offs reported?";
+    } else if (
+      newConcepts.length > 1 &&
+      !usedSubjects.has(normalizeText(newConcepts[1]))
     ) {
-      return [
-        `🔍 How does this model or pipeline compare with alternatives?`,
-        `📌 What are the core limitations or trade-offs mentioned?`,
-        `⚡ What future improvements or benchmarks are highlighted?`,
-      ];
+      q2 = `⚡ What are the trade-offs and limitations of "${newConcepts[1]}"?`;
+      usedSubjects.add(normalizeText(newConcepts[1]));
+    } else if (querySubject && !usedSubjects.has(normalizeText(querySubject))) {
+      q2 = `⚡ What are the practical limitations or trade-offs of ${querySubject}?`;
+      usedSubjects.add(normalizeText(querySubject));
+    } else {
+      q2 = tradeOffAngles[turnIndex % tradeOffAngles.length];
     }
+    suggestions.push(q2);
 
-    // 5. General follow-up based on last user question
-    if (lastUserQuery) {
-      const shortQuery =
-        lastUserQuery.length > 30
-          ? lastUserQuery.substring(0, 28) + "..."
-          : lastUserQuery;
-      return [
-        `📌 Can you elaborate further on "${shortQuery}"?`,
-        `🔍 What are the practical real-world applications of this?`,
-        `⚡ Summarize the key action items or conclusions`,
+    // 3. Next unasked topic from the website content (rotates through unexplored sections)
+    let q3 = "";
+    const freshDocTopics = unaskedDocTopics.filter(
+      (t) => !usedSubjects.has(normalizeText(t)),
+    );
+    const availableDocTopic =
+      freshDocTopics.length > 0
+        ? freshDocTopics[turnIndex % freshDocTopics.length]
+        : null;
+
+    if (availableDocTopic) {
+      const q3Templates = [
+        `📌 What does the document explain about "${availableDocTopic}"?`,
+        `📌 How does "${availableDocTopic}" relate to this discussion?`,
+        `📌 Tell me more about the section on "${availableDocTopic}"`,
       ];
+      q3 = q3Templates[turnIndex % q3Templates.length];
+      usedSubjects.add(normalizeText(availableDocTopic));
+    } else if (
+      newConcepts.length > 2 &&
+      !usedSubjects.has(normalizeText(newConcepts[2]))
+    ) {
+      q3 = `📌 Can you elaborate on "${newConcepts[2]}"?`;
+    } else {
+      q3 = `📌 What are the primary conclusions or next steps from ${shortTitle}?`;
     }
+    suggestions.push(q3);
+
+    return suggestions;
   }
 
-  // Default suggested questions prior to sending any messages
+  // Pre-chat empty state (when document is loaded but no messages sent yet)
+  if (docTopics.length >= 2) {
+    const list = [
+      `📌 Overview: Summarize the core thesis and key findings of "${shortTitle}"`,
+      `🔍 Deep Dive: What does the article explain about "${docTopics[0]}"?`,
+      `⚡ Technical Analysis: How does "${docTopics[1]}" operate according to the document?`,
+    ];
+    if (docTopics.length >= 3) {
+      list.push(
+        `📊 Trade-offs: What are the key findings or benchmarks for "${docTopics[2]}"?`,
+      );
+    }
+    return list;
+  }
+
   if (!activeDoc) {
     return [
       "📌 Summarize core takeaways",
@@ -225,50 +434,10 @@ function getSuggestedQuestions(activeDoc, messages = []) {
     ];
   }
 
-  const titleLower = cleanTitle.toLowerCase();
-
-  if (
-    titleLower.includes("rag") ||
-    titleLower.includes("retrieval") ||
-    titleLower.includes("vector")
-  ) {
-    return [
-      `📌 What are the core RAG components in "${shortTitle}"?`,
-      `🔍 How does vector search & retrieval work in this article?`,
-      `⚡ What are the main architectural trade-offs?`,
-    ];
-  }
-
-  if (
-    titleLower.includes("python") ||
-    titleLower.includes("code") ||
-    titleLower.includes("api") ||
-    titleLower.includes("docs")
-  ) {
-    return [
-      `📌 What are the main features explained in "${shortTitle}"?`,
-      `🔍 Give a code example demonstrating core functions`,
-      `⚡ What are the key API guidelines or best practices?`,
-    ];
-  }
-
-  if (
-    titleLower.includes("ai") ||
-    titleLower.includes("model") ||
-    titleLower.includes("llm") ||
-    titleLower.includes("agent")
-  ) {
-    return [
-      `📌 What are the primary AI insights in "${shortTitle}"?`,
-      `🔍 How does the agentic pipeline or model structure operate?`,
-      `📊 What are the key benchmarks and findings?`,
-    ];
-  }
-
   return [
-    `📌 Summarize key takeaways from "${shortTitle}"`,
-    `🔍 What are the primary technical concepts explained?`,
-    `⚡ What are the most important conclusions or recommendations?`,
+    `📌 What are the primary takeaways and key findings from "${shortTitle}"?`,
+    `🔍 How does the core methodology or architecture described here work?`,
+    `⚡ What are the practical implications and trade-offs highlighted in this document?`,
   ];
 }
 
@@ -284,7 +453,9 @@ export default function App() {
 
   // Sessions
   const [sessions, setSessions] = useState([]);
-  const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [currentSessionId, setCurrentSessionId] = useState(() => {
+    return localStorage.getItem("webchat_active_session_id") || null;
+  });
   const [sessionSearch, setSessionSearch] = useState("");
 
   // Ingestion State
@@ -331,14 +502,57 @@ export default function App() {
     }
   }, [activeDoc]);
 
-  // Chat State
-  const [messages, setMessages] = useState([]);
+  // Chat State (instant rehydration from localStorage to prevent loss on page refresh)
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem("webchat_active_messages");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [inputMessage, setInputMessage] = useState("");
   const [isStreaming, setIsStreaming] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [expandedThinking, setExpandedThinking] = useState({});
   const [copiedCodeIdx, setCopiedCodeIdx] = useState(null);
+  const [copiedMsgIdx, setCopiedMsgIdx] = useState(null);
   const [feedback, setFeedback] = useState({});
+  const abortControllerRef = useRef(null);
+
+  // Keep active messages in sync with localStorage
+  useEffect(() => {
+    try {
+      if (messages && messages.length > 0) {
+        const cleanToStore = messages
+          .filter((m) => m.content || (m.steps && m.steps.length > 0))
+          .map((m) => ({
+            role: m.role,
+            content: m.content,
+            citations: m.citations || [],
+            modelInfo: m.modelInfo || "",
+            provider: m.provider || "",
+            steps: m.steps || [],
+          }));
+        if (cleanToStore.length > 0) {
+          localStorage.setItem("webchat_active_messages", JSON.stringify(cleanToStore));
+        }
+      } else {
+        localStorage.removeItem("webchat_active_messages");
+      }
+    } catch (e) {
+      console.debug("Could not cache messages in localStorage", e);
+    }
+  }, [messages]);
+
+  // Keep active session_id in sync with localStorage
+  useEffect(() => {
+    if (currentSessionId) {
+      localStorage.setItem("webchat_active_session_id", currentSessionId);
+    } else {
+      localStorage.removeItem("webchat_active_session_id");
+    }
+  }, [currentSessionId]);
 
   // Model Catalog
   const [models, setModels] = useState([]);
@@ -389,7 +603,6 @@ export default function App() {
     }
   };
 
-  // Fetch Functions
   const fetchQuota = async () => {
     try {
       const params = new URLSearchParams({ client_id: clientId });
@@ -494,7 +707,7 @@ export default function App() {
       setCurrentSessionId(null);
       localStorage.removeItem("webchat_active_session_id");
 
-      // Transition to Chat View cleanly without fake system message
+      // Transition to Chat View cleanly
       setMessages([]);
     } catch (err) {
       alert("Extraction Error: " + err.message);
@@ -502,6 +715,36 @@ export default function App() {
       setIsIngesting(false);
       setIngestStatus("");
     }
+  };
+
+  // Stop Generating Handler
+  const handleStopGenerating = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsGenerating(false);
+    setMessages((prev) => {
+      const updated = [...prev];
+      const last = updated[updated.length - 1];
+      if (last && last.role === "assistant") {
+        last.isThinking = false;
+        if (!last.content) {
+          last.content = "_Generation stopped by user._";
+        }
+      }
+      return updated;
+    });
+  };
+
+  // Copy Message Handler (with inline feedback)
+  const handleCopyMessage = (content, idx) => {
+    if (!content) return;
+    navigator.clipboard.writeText(content);
+    setCopiedMsgIdx(idx);
+    setTimeout(() => {
+      setCopiedMsgIdx((prev) => (prev === idx ? null : prev));
+    }, 2000);
   };
 
   // Send Message
@@ -514,12 +757,22 @@ export default function App() {
       return;
     }
 
+    // Extract recent conversation history for multi-turn context
+    const historyPayload = messages
+      .filter(
+        (m) =>
+          m.content &&
+          !m.isThinking &&
+          (m.role === "user" || m.role === "assistant"),
+      )
+      .slice(-10)
+      .map((m) => ({ role: m.role, content: m.content }));
+
     if (!customQuery) setInputMessage("");
     setMessages((prev) => [...prev, { role: "user", content: query }]);
     setIsGenerating(true);
 
     // Placeholder for assistant turn
-    const assistantIndex = messages.length + 1;
     setMessages((prev) => [
       ...prev,
       {
@@ -534,11 +787,15 @@ export default function App() {
       },
     ]);
 
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     try {
       const payload = {
         query: query,
         url: activeDoc?.url || validUrls.join(", ") || null,
         document_content: activeDoc?.content || null,
+        chat_history: historyPayload,
         stream: isStreaming,
         session_id: currentSessionId,
         client_id: clientId,
@@ -549,6 +806,7 @@ export default function App() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          signal,
         });
 
         if (!response.ok) {
@@ -597,27 +855,54 @@ export default function App() {
                   }
                 }
 
-                setMessages((prev) => {
-                  const updated = [...prev];
-                  const last = updated[updated.length - 1];
-                  if (!last || last.role !== "assistant") return prev;
-
-                  if (currentEvent === "step") {
-                    last.steps = [...(last.steps || []), parsed];
-                  } else if (currentEvent === "citations") {
-                    last.citations = parsed;
-                  } else if (parsed.chunk !== undefined) {
-                    last.isThinking = false;
-                    fullAnswer += parsed.chunk;
-                    last.content = fullAnswer;
-                    if (parsed.model_used) last.modelInfo = parsed.model_used;
-                    if (parsed.provider) last.provider = parsed.provider;
-                    if (parsed.latency_sec) last.latency = parsed.latency_sec;
-                  }
-                  return updated;
-                });
+                if (currentEvent === "step") {
+                  setMessages((prev) => {
+                    if (prev.length === 0) return prev;
+                    const last = prev[prev.length - 1];
+                    if (!last || last.role !== "assistant") return prev;
+                    return [
+                      ...prev.slice(0, -1),
+                      {
+                        ...last,
+                        steps: [...(last.steps || []), parsed],
+                      },
+                    ];
+                  });
+                } else if (currentEvent === "citations") {
+                  setMessages((prev) => {
+                    if (prev.length === 0) return prev;
+                    const last = prev[prev.length - 1];
+                    if (!last || last.role !== "assistant") return prev;
+                    return [
+                      ...prev.slice(0, -1),
+                      {
+                        ...last,
+                        citations: parsed,
+                      },
+                    ];
+                  });
+                } else if (parsed.chunk !== undefined) {
+                  fullAnswer += parsed.chunk;
+                  const currentText = fullAnswer;
+                  setMessages((prev) => {
+                    if (prev.length === 0) return prev;
+                    const last = prev[prev.length - 1];
+                    if (!last || last.role !== "assistant") return prev;
+                    return [
+                      ...prev.slice(0, -1),
+                      {
+                        ...last,
+                        isThinking: false,
+                        content: currentText,
+                        modelInfo: parsed.model_used || last.modelInfo,
+                        provider: parsed.provider || last.provider,
+                        latency: parsed.latency_sec || last.latency,
+                      },
+                    ];
+                  });
+                }
               } catch (e) {
-                // Ignore raw chunk parsing
+                // Ignore raw chunk parsing error
               }
             }
           }
@@ -628,6 +913,7 @@ export default function App() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          signal,
         });
         const data = await res.json();
         if (!res.ok)
@@ -655,6 +941,9 @@ export default function App() {
         });
       }
     } catch (err) {
+      if (err.name === "AbortError") {
+        return;
+      }
       setMessages((prev) => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
@@ -665,37 +954,63 @@ export default function App() {
         return updated;
       });
     } finally {
+      abortControllerRef.current = null;
       setIsGenerating(false);
       fetchQuota();
       fetchSessions();
     }
   };
 
-  // Start New Chat with Current Document (keeps activeDoc intact)
-  const startNewChatForCurrentDoc = () => {
+  // Start Fresh New Chat (clears all active chat history and doc, returns to home screen)
+  const startNewChat = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsGenerating(false);
     localStorage.removeItem("webchat_active_session_id");
-    setCurrentSessionId(null);
-    setMessages([]);
-    fetchSessions();
-  };
-
-  // Start Fresh with New URL (clears activeDoc and returns to URL input screen)
-  const startFreshWithNewUrl = () => {
-    localStorage.removeItem("webchat_active_session_id");
+    localStorage.removeItem("webchat_active_messages");
     localStorage.removeItem("webchat_active_doc");
-    setActiveDoc(null);
     setCurrentSessionId(null);
     setMessages([]);
+    setActiveDoc(null);
     setUrlsInput("");
+    setInputMessage("");
+    setExpandedThinking({});
+    setFeedback({});
     fetchSessions();
   };
 
-  // Alias for backwards compatibility
-  const startNewChat = startFreshWithNewUrl;
+  // Start New Chat with Current Document (clears conversation history on the active document)
+  const startNewChatForCurrentDoc = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsGenerating(false);
+    localStorage.removeItem("webchat_active_session_id");
+    localStorage.removeItem("webchat_active_messages");
+    setCurrentSessionId(null);
+    setMessages([]);
+    setInputMessage("");
+    setExpandedThinking({});
+    setFeedback({});
+    fetchSessions();
+  };
+
+  // Alias for backward compatibility
+  const startFreshWithNewUrl = startNewChat;
 
   // Load Session
   const loadSession = async (sid) => {
+    if (!sid) return;
     try {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+      setIsGenerating(false);
+
       const res = await fetch(`${API_BASE}/sessions/${sid}`);
       if (res.ok) {
         const data = await res.json();
@@ -710,19 +1025,30 @@ export default function App() {
             strategyUsed: "Session",
             paywallBypassed: false,
           });
+        } else {
+          setActiveDoc(null);
+          localStorage.removeItem("webchat_active_doc");
         }
         if (Array.isArray(data.messages)) {
-          setMessages(
-            data.messages.map((m) => ({
-              role: m.role,
-              content: m.content,
-              citations: m.citations || [],
-              modelInfo: m.model_used || "Cached",
-              provider: m.provider || "",
-              steps: [],
-            })),
-          );
+          const loadedMsgs = data.messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+            citations: m.citations || [],
+            modelInfo: m.model_used || "Cached",
+            provider: m.provider || "",
+            steps: [],
+          }));
+          setMessages(loadedMsgs);
+          try {
+            localStorage.setItem("webchat_active_messages", JSON.stringify(loadedMsgs));
+          } catch (e) {}
         }
+      } else if (res.status === 404) {
+        // Stale or deleted session: clean up local storage
+        localStorage.removeItem("webchat_active_session_id");
+        localStorage.removeItem("webchat_active_messages");
+        setCurrentSessionId(null);
+        setMessages([]);
       }
     } catch (e) {
       console.error("Failed to load session", e);
@@ -736,7 +1062,6 @@ export default function App() {
     try {
       await fetch(`${API_BASE}/sessions/${sid}`, { method: "DELETE" });
       if (currentSessionId === sid) {
-        localStorage.removeItem("webchat_active_session_id");
         startNewChat();
       } else {
         fetchSessions();
@@ -764,111 +1089,96 @@ export default function App() {
   const remainingQuota = quota?.requests_remaining ?? quota?.remaining ?? 50;
 
   return (
-    <div className="flex h-screen w-full bg-[#08090c] text-slate-200 overflow-hidden font-sans">
-      {/* Background Aurora Ambient Glow */}
-      <div className="aurora-bg">
-        <div className="aurora-glow-1" />
-        <div className="aurora-glow-2" />
-      </div>
-
-      {/* Sidebar */}
+    <div className="flex h-screen w-full bg-[#212121] text-[#ececec] overflow-hidden font-sans selection:bg-zinc-700 selection:text-white">
+      {/* Sidebar - ChatGPT Style Dark Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 290, opacity: 1 }}
+            animate={{ width: 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="h-full border-r border-white/10 bg-[#0d0f14]/90 backdrop-blur-xl flex flex-col shrink-0 z-30">
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="h-full border-r border-[#2e2e33] bg-[#171717] flex flex-col shrink-0 z-30 select-none">
             {/* Sidebar Brand Header */}
-            <div className="p-4 border-b border-white/5 flex items-center justify-between">
+            <div className="p-3.5 border-b border-[#27272a] flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
-                  <Globe className="w-4 h-4 text-white" />
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-b from-zinc-700 to-zinc-900 border border-zinc-700/80 flex items-center justify-center shadow-sm text-white">
+                  <Sparkles className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-bold text-sm text-white tracking-wide">
-                    WebChat AI
+                  <h1 className="font-semibold text-sm text-white tracking-tight">
+                    WebChat
                   </h1>
                 </div>
               </div>
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="p-1.5 hover:bg-white/10 rounded-md text-slate-400 hover:text-white transition-colors md:hidden">
+                className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors md:hidden">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* New Session Action Buttons */}
             <div className="p-3 space-y-2">
-              {activeDoc ? (
-                <>
-                  <button
-                    onClick={startNewChatForCurrentDoc}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white py-2.5 px-3 rounded-lg font-medium text-xs shadow-md shadow-sky-500/20 transition-all active:scale-[0.99]"
-                    title="Start fresh conversation on the current document">
-                    <Plus className="w-4 h-4" /> New Chat (Same Doc)
-                  </button>
-                  <button
-                    onClick={startFreshWithNewUrl}
-                    className="w-full flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white py-2 px-3 rounded-lg font-medium text-xs border border-white/10 transition-all active:scale-[0.99]"
-                    title="Clear current document and ingest a new URL">
-                    <Globe className="w-3.5 h-3.5 text-sky-400" /> Ingest New
-                    URL
-                  </button>
-                </>
-              ) : (
+              <button
+                onClick={startNewChat}
+                className="w-full flex items-center justify-center gap-2 bg-white hover:bg-zinc-200 text-black py-2.5 px-3 rounded-xl font-semibold text-xs shadow-md transition-all active:scale-[0.99]"
+                title="Start a fresh chat conversation">
+                <Plus className="w-4 h-4 text-black" /> New Chat
+              </button>
+              {activeDoc && (
                 <button
-                  onClick={startFreshWithNewUrl}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white py-2.5 px-3 rounded-lg font-medium text-xs shadow-md shadow-sky-500/20 transition-all active:scale-[0.99]">
-                  <Plus className="w-4 h-4" /> Start New Session
+                  onClick={startNewChatForCurrentDoc}
+                  className="w-full flex items-center justify-center gap-2 bg-[#212121] hover:bg-[#27272a] text-zinc-300 hover:text-white py-2 px-3 rounded-xl font-medium text-[11px] border border-zinc-800 transition-all active:scale-[0.99]"
+                  title="Clear messages but keep current document loaded">
+                  <RefreshCcw className="w-3 h-3 text-zinc-400" /> New Chat (Same Doc)
                 </button>
               )}
             </div>
 
             {/* Session Search */}
             <div className="px-3 pb-2">
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-md text-xs text-slate-400 focus-within:border-sky-500/50">
-                <Search className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-2 bg-[#212121] border border-zinc-800 focus-within:border-zinc-600 px-2.5 py-1.5 rounded-lg text-xs text-zinc-400 transition-colors">
+                <Search className="w-3.5 h-3.5 text-zinc-500" />
                 <input
                   type="text"
-                  placeholder="Filter sessions..."
+                  placeholder="Search chats..."
                   value={sessionSearch}
                   onChange={(e) => setSessionSearch(e.target.value)}
-                  className="bg-transparent border-none outline-none text-slate-200 text-xs w-full placeholder:text-slate-500"
+                  className="bg-transparent border-none outline-none text-zinc-200 text-xs w-full placeholder:text-zinc-500"
                 />
               </div>
             </div>
 
             {/* Sessions List */}
-            <div className="flex-1 overflow-y-auto px-3 py-1 space-y-1">
-              <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider px-2 py-1">
+            <div className="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
+              <div className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider px-2.5 py-1.5">
                 Chat History ({filteredSessions.length})
               </div>
               {filteredSessions.length === 0 ? (
-                <div className="text-xs text-slate-500 text-center py-8 italic">
-                  No conversation sessions found
+                <div className="text-xs text-zinc-500 text-center py-8 italic">
+                  No conversation history
                 </div>
               ) : (
                 filteredSessions.map((s) => (
                   <div
                     key={s.session_id}
                     onClick={() => loadSession(s.session_id)}
-                    className={`group flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer transition-all ${
+                    className={`group flex items-center justify-between px-2.5 py-2 rounded-lg text-xs cursor-pointer transition-colors ${
                       currentSessionId === s.session_id
-                        ? "bg-sky-500/15 border border-sky-500/30 text-sky-200 font-medium"
-                        : "hover:bg-white/5 text-slate-400 hover:text-slate-200"
+                        ? "bg-[#212121] text-white font-medium border border-zinc-700/60"
+                        : "hover:bg-[#212121]/60 text-zinc-400 hover:text-zinc-200"
                     }`}>
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <MessageSquare className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-sky-400" />
+                      <MessageSquare className="w-3.5 h-3.5 shrink-0 text-zinc-400 group-hover:text-zinc-300" />
                       <span className="truncate">
                         {s.title || s.url || "Untitled Chat"}
                       </span>
                     </div>
                     <button
                       onClick={(e) => deleteSession(e, s.session_id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 hover:text-rose-400 text-slate-500 rounded transition-opacity"
-                      title="Delete session">
+                      className="opacity-0 group-hover:opacity-100 p-1 hover:text-rose-400 text-zinc-500 rounded transition-opacity"
+                      title="Delete chat">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -876,23 +1186,23 @@ export default function App() {
               )}
             </div>
 
-            {/* Device Quota Footer */}
-            <div className="p-3 border-t border-white/5 bg-black/20">
-              <div className="p-2.5 rounded-xl border border-white/10 bg-white/[0.02]">
+            {/* Device Quota & Plan Footer */}
+            <div className="p-3 border-t border-[#27272a] bg-[#141414]">
+              <div className="p-3 rounded-xl border border-zinc-800/80 bg-[#1a1a1c]">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Zap className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-[11px] text-slate-400 font-medium">
-                      Queries Today
+                    <Zap className="w-3.5 h-3.5 text-zinc-300" />
+                    <span className="text-[11px] text-zinc-400 font-medium">
+                      Daily Queries
                     </span>
                   </div>
-                  <span className="text-[11px] text-emerald-400 font-semibold tabular-nums">
+                  <span className="text-[11px] text-white font-semibold tabular-nums">
                     {remainingQuota} / {totalQuota}
                   </span>
                 </div>
-                <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-zinc-400 to-white transition-all duration-500 rounded-full"
                     style={{
                       width: `${Math.min(100, (remainingQuota / totalQuota) * 100)}%`,
                     }}
@@ -905,20 +1215,20 @@ export default function App() {
       </AnimatePresence>
 
       {/* Main Workspace */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden relative z-10">
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative z-10 bg-[#212121]">
         {/* Top Navbar */}
-        <header className="h-14 border-b border-white/10 bg-[#0c0e14]/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0 gap-3">
+        <header className="h-14 border-b border-[#2e2e33] bg-[#212121]/90 backdrop-blur-md flex items-center justify-between px-4 shrink-0 gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 hover:bg-white/10 rounded-md text-slate-400 hover:text-white transition-colors shrink-0"
+              className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors shrink-0"
               title="Toggle Sidebar">
               <Menu className="w-4 h-4" />
             </button>
 
             {activeDoc && (
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/20 text-xs text-sky-200 min-w-0 max-w-xs md:max-w-md">
-                <Globe className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#2a2a2d] border border-zinc-700/80 text-xs text-zinc-200 min-w-0 max-w-xs md:max-w-md">
+                <Globe className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
                 <span className="truncate font-medium">
                   {activeDoc.title || activeDoc.url}
                 </span>
@@ -929,20 +1239,29 @@ export default function App() {
           {/* Right Header Space / Actions */}
           <div className="flex items-center gap-2 shrink-0">
             {activeDoc && (
+              <button
+                onClick={() => setShowDocModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 hover:text-white text-xs font-medium transition-all shadow-sm active:scale-95"
+                title="Inspect Extracted Document">
+                <FileText className="w-3.5 h-3.5 text-zinc-400" />
+                <span className="hidden sm:inline">Inspector</span>
+              </button>
+            )}
+            {activeDoc && (
               <>
                 <button
-                  onClick={startNewChatForCurrentDoc}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 hover:text-white text-xs font-medium transition-all shadow-sm active:scale-95"
-                  title="Start fresh conversation on the current document">
-                  <RefreshCcw className="w-3.5 h-3.5" />
+                  onClick={startNewChat}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-black text-xs font-semibold transition-all shadow-sm active:scale-95"
+                  title="Start a fresh new chat conversation">
+                  <Plus className="w-3.5 h-3.5 text-black" />
                   <span className="hidden sm:inline">New Chat</span>
                 </button>
                 <button
-                  onClick={startFreshWithNewUrl}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs font-medium transition-all shadow-sm active:scale-95"
-                  title="Clear document and ingest a new URL">
-                  <Plus className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="hidden sm:inline">Change URL</span>
+                  onClick={startNewChatForCurrentDoc}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 hover:text-white text-xs font-medium transition-all shadow-sm active:scale-95"
+                  title="Reset conversation on current document">
+                  <RefreshCcw className="w-3.5 h-3.5 text-zinc-400" />
+                  <span className="hidden sm:inline">Reset Chat</span>
                 </button>
               </>
             )}
@@ -953,46 +1272,43 @@ export default function App() {
         <main className="flex-1 relative flex flex-col overflow-hidden">
           {messages.length === 0 && !activeDoc ? (
             /* Home Start Screen */
-            <div className="flex-1 flex flex-col items-center justify-start pt-6 md:pt-10 p-4 md:p-8 max-w-3xl mx-auto w-full">
+            <div className="flex-1 flex flex-col items-center justify-start pt-8 md:pt-14 p-4 md:p-8 max-w-3xl mx-auto w-full">
               {/* Hero Banner */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-4">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-[11px] font-medium mb-2">
-                  <Sparkles className="w-3.5 h-3.5" /> Autonomous Web
-                  Intelligence & Agentic RAG
+                className="text-center mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-b from-zinc-700 to-zinc-900 border border-white/10 flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+                  <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-1.5">
-                  Chat with Any Web Source
+                <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-2">
+                  What can I help you extract and explore?
                 </h2>
-                <p className="text-slate-400 text-xs max-w-lg mx-auto">
-                  Extract articles, bypass paywalls, crawl documentation, and
-                  ground your questions with multi-model validation.
+                <p className="text-zinc-400 text-sm max-w-lg mx-auto">
+                  Paste website URLs to extract articles, bypass paywalls, crawl documentation, and chat with grounded AI.
                 </p>
               </motion.div>
 
-              {/* Multi-URL Ingestion Card with Premium Shadow */}
+              {/* Multi-URL Ingestion Card */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full premium-card-shadow rounded-2xl p-5 border border-white/10">
+                className="w-full bg-[#18181b] rounded-2xl p-5 border border-zinc-800 shadow-2xl">
                 {/* Header */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
-                  <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
-                    <Globe className="w-4 h-4 text-sky-400" /> Target Website
-                    URL(s)
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800">
+                  <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
+                    <Globe className="w-4 h-4 text-zinc-300" /> Target Website URL(s)
                   </div>
                   <div className="flex items-center gap-2">
                     {urlsInput && (
                       <button
                         onClick={() => setUrlsInput("")}
-                        className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors">
+                        className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
                         Clear
                       </button>
                     )}
                     {invalidUrls.length > 0 && (
-                      <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-rose-500/15 text-rose-300 border border-rose-500/30 flex items-center gap-1">
+                      <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3 text-rose-400" />{" "}
                         {invalidUrls.length} Invalid
                       </span>
@@ -1000,11 +1316,11 @@ export default function App() {
                     <span
                       className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1 ${
                         validUrls.length > 0
-                          ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
-                          : "bg-white/5 text-slate-500"
+                          ? "bg-zinc-800 text-zinc-200 border border-zinc-700"
+                          : "bg-zinc-800/50 text-zinc-500"
                       }`}>
                       {validUrls.length > 0 && (
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        <CheckCircle2 className="w-3 h-3 text-zinc-300" />
                       )}
                       {validUrls.length} valid URL
                       {validUrls.length !== 1 ? "s" : ""}
@@ -1017,10 +1333,10 @@ export default function App() {
                   value={urlsInput}
                   onChange={(e) => setUrlsInput(e.target.value)}
                   placeholder="Paste website URL(s) here (e.g. example.com, https://docs.python.org)..."
-                  className={`w-full h-32 bg-black/40 border rounded-xl p-3.5 text-sm text-slate-200 placeholder:text-slate-600 resize-none outline-none transition-colors font-mono ${
+                  className={`w-full h-32 bg-[#121214] border rounded-xl p-3.5 text-sm text-zinc-100 placeholder:text-zinc-600 resize-none outline-none transition-colors font-mono ${
                     invalidUrls.length > 0
                       ? "border-rose-500/40 focus:border-rose-500/60"
-                      : "border-white/5 focus:border-sky-500/50"
+                      : "border-zinc-800 focus:border-zinc-600"
                   }`}
                 />
 
@@ -1050,8 +1366,8 @@ export default function App() {
                 )}
 
                 {/* Action Submit */}
-                <div className="flex items-center justify-between pt-3 mt-3 border-t border-white/5">
-                  <div className="text-[11px] text-slate-500">
+                <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-800">
+                  <div className="text-[11px] text-zinc-500">
                     {invalidUrls.length > 0
                       ? "⚠️ Correct the invalid URLs above to enable ingestion."
                       : ingestStatus ||
@@ -1064,15 +1380,15 @@ export default function App() {
                       validUrls.length === 0 ||
                       invalidUrls.length > 0
                     }
-                    className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-medium text-xs px-5 py-2.5 rounded-xl shadow-xl shadow-sky-500/25 hover:shadow-sky-500/40 flex items-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
+                    className="bg-white hover:bg-zinc-200 text-black font-semibold text-xs px-5 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
                     {isIngesting ? (
                       <>
-                        <RefreshCcw className="w-4 h-4 animate-spin" />{" "}
+                        <RefreshCcw className="w-4 h-4 animate-spin text-black" />{" "}
                         Ingesting & Indexing...
                       </>
                     ) : (
                       <>
-                        <Zap className="w-4 h-4" /> Ingest &amp; Start Chat
+                        <Zap className="w-4 h-4 text-black" /> Ingest &amp; Start Chat
                       </>
                     )}
                   </button>
@@ -1083,28 +1399,28 @@ export default function App() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full mt-6">
                 {[
                   {
-                    icon: <Layers className="w-4 h-4 text-sky-400" />,
+                    icon: <Layers className="w-4 h-4 text-zinc-300" />,
                     title: "Agentic CRAG",
                     desc: "Query rewriting, web fallback, and groundedness checks with LangGraph.",
                   },
                   {
-                    icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
+                    icon: <ShieldCheck className="w-4 h-4 text-zinc-300" />,
                     title: "Paywall Bypass",
                     desc: "Apollo State extraction, Jina headless reading, and Wayback Machine fallback.",
                   },
                   {
-                    icon: <Cpu className="w-4 h-4 text-cyan-400" />,
+                    icon: <Cpu className="w-4 h-4 text-zinc-300" />,
                     title: "10-Tier Failover",
                     desc: "Gemini 3.6 Flash auto-cascading to Groq LLaMA models with circuit breakers.",
                   },
                 ].map((feat, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5">
-                    <div className="flex items-center gap-2 font-semibold text-xs text-slate-200 mb-1">
+                    className="p-3.5 rounded-xl bg-[#18181b]/70 border border-zinc-800 hover:border-zinc-700 transition-colors">
+                    <div className="flex items-center gap-2 font-semibold text-xs text-zinc-200 mb-1">
                       {feat.icon} {feat.title}
                     </div>
-                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                    <p className="text-[11px] text-zinc-400 leading-relaxed">
                       {feat.desc}
                     </p>
                   </div>
@@ -1117,12 +1433,12 @@ export default function App() {
               ref={chatContainerRef}
               onScroll={handleChatScroll}
               className="flex-1 overflow-y-auto w-full scroll-smooth">
-              <div className="p-4 md:p-6 pb-44 md:pb-48 space-y-5 max-w-4xl mx-auto w-full">
+              <div className="p-4 md:p-6 pb-44 md:pb-48 space-y-6 max-w-4xl mx-auto w-full">
                 {/* Context Summary Header */}
                 {activeDoc && (
-                  <div className="p-3 rounded-xl bg-sky-950/20 border border-sky-500/20 flex items-center justify-between text-xs text-slate-300 gap-3">
+                  <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-800 flex items-center justify-between text-xs text-zinc-300 gap-3">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Globe className="w-4 h-4 text-sky-400 shrink-0" />
+                      <Globe className="w-4 h-4 text-zinc-300 shrink-0" />
                       <span className="truncate">
                         Indexed source:{" "}
                         <strong className="text-white">
@@ -1133,15 +1449,15 @@ export default function App() {
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={startNewChatForCurrentDoc}
-                        className="px-2.5 py-1 rounded-md bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 hover:text-white font-medium text-[11px] transition-colors flex items-center gap-1.5"
-                        title="Start a fresh chat with this document">
-                        <RefreshCcw className="w-3 h-3" />
-                        <span>New Chat</span>
+                        className="px-2.5 py-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white font-medium text-[11px] transition-colors flex items-center gap-1.5 border border-zinc-700/60"
+                        title="Clear conversation on this document">
+                        <RefreshCcw className="w-3 h-3 text-zinc-400" />
+                        <span>Reset Chat</span>
                       </button>
                       <button
-                        onClick={startFreshWithNewUrl}
-                        className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 text-[11px] transition-colors"
-                        title="Clear document and ingest a new URL">
+                        onClick={startNewChat}
+                        className="px-2.5 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 text-[11px] transition-colors border border-zinc-800"
+                        title="Clear document and start fresh">
                         Change URL
                       </button>
                     </div>
@@ -1151,15 +1467,15 @@ export default function App() {
                 {/* Centered Quick Start Cards when document is ready but no message sent yet */}
                 {messages.length === 0 && activeDoc && (
                   <div className="flex-1 flex flex-col items-center justify-center py-8 text-center max-w-2xl mx-auto">
-                    <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 mb-3 shadow-lg shadow-sky-500/10">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-b from-zinc-700 to-zinc-900 border border-white/10 flex items-center justify-center text-white mb-3 shadow-md">
                       <Sparkles className="w-6 h-6" />
                     </div>
                     <h3 className="text-lg font-bold text-white mb-1">
                       Knowledge Base Ready
                     </h3>
-                    <p className="text-xs text-slate-400 mb-6 max-w-md leading-relaxed">
+                    <p className="text-xs text-zinc-400 mb-6 max-w-md leading-relaxed">
                       Select a suggested inquiry below or ask any question about{" "}
-                      <strong>{activeDoc.title || activeDoc.url}</strong>.
+                      <strong className="text-zinc-200">{activeDoc.title || activeDoc.url}</strong>.
                     </p>
 
                     {/* Context-Aware Suggested Question Cards */}
@@ -1174,9 +1490,9 @@ export default function App() {
                               )
                             }
                             disabled={isGenerating}
-                            className="p-3.5 rounded-xl bg-slate-900/80 hover:bg-sky-950/60 border border-white/10 hover:border-sky-500/40 text-xs text-slate-200 transition-all flex items-center justify-between group shadow-md hover:shadow-sky-500/10">
-                            <span className="font-medium">{chip}</span>
-                            <ArrowRight className="w-4 h-4 text-sky-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                            className="p-3.5 rounded-xl bg-[#18181b] hover:bg-[#222226] border border-zinc-800 hover:border-zinc-700 text-xs text-zinc-200 transition-all flex items-center justify-between group shadow-sm">
+                            <span className="font-medium text-zinc-200">{chip}</span>
+                            <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
                           </button>
                         ),
                       )}
@@ -1192,22 +1508,22 @@ export default function App() {
                     animate={{ opacity: 1, y: 0 }}
                     className={`flex gap-3.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                     {msg.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shrink-0 text-white shadow-md shadow-sky-500/20 mt-1">
-                        <Sparkles className="w-4 h-4" />
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-b from-zinc-700 to-zinc-900 border border-white/20 flex items-center justify-center shrink-0 text-white shadow-md mt-0.5">
+                        <Sparkles className="w-4 h-4 text-white" />
                       </div>
                     )}
 
                     <div
-                      className={`max-w-[85%] rounded-2xl p-4 md:p-5 text-sm leading-relaxed ${
+                      className={`text-sm leading-relaxed ${
                         msg.role === "user"
-                          ? "bg-slate-800/80 border border-slate-700/50 text-slate-100 shadow-xl backdrop-blur-md rounded-tr-[4px]"
-                          : "bg-slate-900/60 backdrop-blur-sm border border-white/10 text-slate-200 shadow-xl rounded-tl-[4px]"
+                          ? "bg-[#2f2f2f] text-white border border-zinc-700/60 rounded-3xl rounded-tr-md px-5 py-3.5 shadow-sm max-w-[85%] md:max-w-[75%]"
+                          : "max-w-[90%] md:max-w-[85%] rounded-2xl p-4 md:p-5 text-[14.5px] text-[#ececec] bg-[#18181b]/80 border border-zinc-800/80 shadow-md backdrop-blur-sm rounded-tl-md"
                       }`}>
                       {/* Agentic Chain-of-Thought / Thinking Accordion */}
                       {msg.role === "assistant" &&
                         msg.steps &&
                         msg.steps.length > 0 && (
-                          <div className="mb-3 rounded-lg border border-white/10 bg-black/30 overflow-hidden text-xs">
+                          <div className="mb-3 rounded-xl border border-zinc-800 bg-[#121214] overflow-hidden text-xs">
                             <button
                               onClick={() =>
                                 setExpandedThinking((prev) => ({
@@ -1215,9 +1531,9 @@ export default function App() {
                                   [idx]: !prev[idx],
                                 }))
                               }
-                              className="w-full flex items-center justify-between p-2 text-slate-400 hover:text-slate-200 bg-white/[0.02] transition-colors">
+                              className="w-full flex items-center justify-between p-2.5 text-zinc-400 hover:text-zinc-200 bg-zinc-900/40 transition-colors">
                               <span className="flex items-center gap-1.5 font-medium">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                <CheckCircle2 className="w-3.5 h-3.5 text-zinc-300" />
                                 Agentic Reasoning Trace ({msg.steps.length}{" "}
                                 steps)
                               </span>
@@ -1228,8 +1544,11 @@ export default function App() {
                               )}
                             </button>
                             {expandedThinking[idx] && (
-                              <div className="p-2.5 border-t border-white/5 space-y-1.5 font-sans text-[11px]">
+                              <div className="p-3 border-t border-zinc-800/80 space-y-2 font-sans text-[11px] bg-zinc-950/40">
                                 {msg.steps.map((step, sIdx) => {
+                                  const isLatestActive =
+                                    msg.isThinking &&
+                                    sIdx === msg.steps.length - 1;
                                   const title =
                                     step.title ||
                                     step.action ||
@@ -1245,19 +1564,30 @@ export default function App() {
                                   return (
                                     <div
                                       key={sIdx}
-                                      className="flex items-start gap-2 text-slate-300">
-                                      <span className="text-sky-400 shrink-0 font-mono font-bold">
+                                      className={`flex items-start gap-2.5 transition-colors ${
+                                        isLatestActive
+                                          ? "text-zinc-100"
+                                          : "text-zinc-300"
+                                      }`}>
+                                      <span className="text-zinc-500 shrink-0 font-mono font-bold">
                                         #{sIdx + 1}
                                       </span>
-                                      <div>
-                                        <span className="text-slate-200 font-semibold">
-                                          {title}
-                                        </span>
-                                        {detail && (
-                                          <span className="text-slate-400 font-normal">
-                                            {" — "}
-                                            {detail}
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                          <span className="font-semibold">
+                                            {title}
                                           </span>
+                                          {isLatestActive && (
+                                            <span className="relative flex h-1.5 w-1.5">
+                                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
+                                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-zinc-200"></span>
+                                            </span>
+                                          )}
+                                        </div>
+                                        {detail && (
+                                          <div className="text-zinc-400 font-normal mt-0.5 break-words">
+                                            {detail}
+                                          </div>
                                         )}
                                       </div>
                                     </div>
@@ -1270,14 +1600,19 @@ export default function App() {
 
                       {/* Message Body Content */}
                       {msg.isThinking && !msg.content ? (
-                        <div className="flex items-center gap-2 text-sky-400 py-1">
-                          <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
-                          <span className="text-xs">
-                            Reasoning and synthesising grounded answer...
+                        <div className="flex items-center gap-3 text-zinc-300 py-2.5 px-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80 text-xs font-medium">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-zinc-200"></span>
+                          </span>
+                          <span className="text-zinc-300">
+                            {msg.steps && msg.steps.length > 0
+                              ? `Agent active: ${msg.steps[msg.steps.length - 1].title || msg.steps[msg.steps.length - 1].step || "Synthesizing"}`
+                              : "Thinking & synthesizing grounded response..."}
                           </span>
                         </div>
                       ) : msg.role === "user" ? (
-                        <div className="text-slate-100 whitespace-pre-wrap break-words overflow-hidden font-normal leading-relaxed">
+                        <div className="text-zinc-100 text-[14.5px] leading-relaxed whitespace-pre-wrap break-words font-normal">
                           {msg.content}
                         </div>
                       ) : (
@@ -1287,8 +1622,8 @@ export default function App() {
                             components={{
                               table({ children }) {
                                 return (
-                                  <div className="overflow-x-auto my-3 rounded-xl border border-white/10 shadow-lg">
-                                    <table className="w-full text-xs text-left text-slate-200 border-collapse">
+                                  <div className="overflow-x-auto my-3 rounded-lg border border-zinc-800 shadow-md">
+                                    <table className="w-full text-xs text-left text-zinc-200 border-collapse">
                                       {children}
                                     </table>
                                   </div>
@@ -1296,35 +1631,35 @@ export default function App() {
                               },
                               thead({ children }) {
                                 return (
-                                  <thead className="bg-sky-950/60 text-sky-400 font-semibold uppercase text-[11px] border-b border-white/10">
+                                  <thead className="bg-[#1f1f23] text-zinc-200 font-semibold text-xs border-b border-zinc-800">
                                     {children}
                                   </thead>
                                 );
                               },
                               tbody({ children }) {
                                 return (
-                                  <tbody className="divide-y divide-white/5 bg-black/40">
+                                  <tbody className="divide-y divide-zinc-800 bg-[#121214]">
                                     {children}
                                   </tbody>
                                 );
                               },
                               tr({ children }) {
                                 return (
-                                  <tr className="hover:bg-white/[0.03] transition-colors">
+                                  <tr className="hover:bg-zinc-800/30 transition-colors">
                                     {children}
                                   </tr>
                                 );
                               },
                               th({ children }) {
                                 return (
-                                  <th className="px-3.5 py-2.5 font-semibold text-sky-300">
+                                  <th className="px-3.5 py-2.5 font-semibold text-white">
                                     {children}
                                   </th>
                                 );
                               },
                               td({ children }) {
                                 return (
-                                  <td className="px-3.5 py-2 leading-relaxed text-slate-300">
+                                  <td className="px-3.5 py-2 leading-relaxed text-zinc-300">
                                     {children}
                                   </td>
                                 );
@@ -1332,7 +1667,7 @@ export default function App() {
                               img({ node, src, alt, ...props }) {
                                 if (!src) return null;
                                 return (
-                                  <div className="my-4 rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black/50 max-w-[540px]">
+                                  <div className="my-4 rounded-xl overflow-hidden border border-zinc-800 shadow-2xl bg-[#0d0d0e] max-w-[560px]">
                                     <a
                                       href={src}
                                       target="_blank"
@@ -1342,14 +1677,14 @@ export default function App() {
                                       <img
                                         src={src}
                                         alt={alt || "Article Illustration"}
-                                        className="w-full max-h-[440px] object-contain rounded-t-xl bg-[#090b10] transition-transform duration-200 group-hover:scale-[1.01]"
+                                        className="w-full max-h-[440px] object-contain rounded-t-xl bg-[#0d0d0e] transition-transform duration-200 group-hover:scale-[1.01]"
                                         loading="lazy"
                                         referrerPolicy="no-referrer"
                                         {...props}
                                       />
                                     </a>
                                     {alt && alt !== "Content Diagram/Image" && (
-                                      <div className="p-2.5 flex items-center justify-between text-[11px] text-slate-400 border-t border-white/5 bg-white/[0.02]">
+                                      <div className="p-2.5 flex items-center justify-between text-[11px] text-zinc-400 border-t border-zinc-800 bg-zinc-900/40">
                                         <span className="font-medium truncate mr-2">
                                           📊 {alt}
                                         </span>
@@ -1357,7 +1692,7 @@ export default function App() {
                                           href={src}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="text-sky-400 hover:text-sky-300 shrink-0 text-[10px] underline">
+                                          className="text-zinc-300 hover:text-white shrink-0 text-[10px] underline">
                                           Open full size ↗
                                         </a>
                                       </div>
@@ -1380,27 +1715,27 @@ export default function App() {
                                   "",
                                 );
                                 return !inline ? (
-                                  <div className="relative group my-2 rounded-lg overflow-hidden border border-white/10 bg-[#08090d]">
-                                    <div className="flex items-center justify-between px-3 py-1.5 bg-white/5 border-b border-white/10 text-[11px] text-slate-400">
-                                      <span>{match ? match[1] : "Code"}</span>
+                                  <div className="relative group my-3 rounded-xl overflow-hidden border border-zinc-800 bg-[#0d0d0e]">
+                                    <div className="flex items-center justify-between px-3.5 py-2 bg-[#212124] border-b border-[#2e2e33] text-xs text-zinc-400 font-mono">
+                                      <span>{match ? match[1] : "code"}</span>
                                       <button
                                         onClick={() =>
                                           copyCode(codeString, idx)
                                         }
-                                        className="flex items-center gap-1 text-slate-400 hover:text-white">
+                                        className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors">
                                         {copiedCodeIdx === idx ? (
-                                          <Check className="w-3 h-3 text-emerald-400" />
+                                          <Check className="w-3.5 h-3.5 text-white" />
                                         ) : (
-                                          <Copy className="w-3 h-3" />
+                                          <Copy className="w-3.5 h-3.5" />
                                         )}
                                         <span>
                                           {copiedCodeIdx === idx
                                             ? "Copied"
-                                            : "Copy"}
+                                            : "Copy code"}
                                         </span>
                                       </button>
                                     </div>
-                                    <pre className="p-3 text-xs overflow-x-auto text-cyan-200">
+                                    <pre className="p-4 text-xs overflow-x-auto text-[#f4f4f5] font-mono leading-relaxed bg-[#0d0d0e]">
                                       <code>{children}</code>
                                     </pre>
                                   </div>
@@ -1410,46 +1745,134 @@ export default function App() {
                                   </code>
                                 );
                               },
-                            }}>
-                            {msg.content}
+                              }}>
+                            {cleanMarkdownContent(msg.content)}
                           </ReactMarkdown>
+                          {isGenerating && idx === messages.length - 1 && (
+                            <span
+                              className="inline-block w-1.5 h-4 bg-zinc-300 ml-1 translate-y-0.5 animate-pulse rounded-xs"
+                              aria-hidden="true"
+                            />
+                          )}
                         </div>
                       )}
 
+                      {/* Grounded Citations & Sources (if available) */}
+                      {msg.role === "assistant" &&
+                        msg.citations &&
+                        msg.citations.length > 0 && (
+                          <div className="mt-3.5 pt-3 border-t border-zinc-800/80">
+                            <div className="text-[11px] font-medium text-zinc-400 mb-2 flex items-center gap-1.5">
+                              <BookOpen className="w-3.5 h-3.5 text-zinc-300" />
+                              <span>Sources & Citations:</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {msg.citations.map((c, cIdx) => (
+                                <a
+                                  key={cIdx}
+                                  href={c.url || "#"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#222226] hover:bg-[#2b2b30] border border-zinc-700/60 text-xs text-zinc-300 hover:text-white transition-colors"
+                                  title={c.snippet || c.title || c.url}>
+                                  <ExternalLink className="w-3 h-3 text-zinc-400" />
+                                  <span className="truncate max-w-[200px]">
+                                    {c.title || c.url || `Source #${cIdx + 1}`}
+                                  </span>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                      {/* Suggested Follow-Ups for latest completed assistant message */}
+                      {idx === messages.length - 1 &&
+                        msg.role === "assistant" &&
+                        msg.content &&
+                        !isGenerating && (
+                          <div className="mt-3.5 pt-3 border-t border-zinc-800/80">
+                            <div className="text-[11px] font-semibold text-zinc-400 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
+                              <Sparkles className="w-3.5 h-3.5 text-zinc-300" />
+                              <span>Suggested Follow-Ups:</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {getSuggestedQuestions(activeDoc, messages).map(
+                                (chip, qIdx) => (
+                                  <button
+                                    key={qIdx}
+                                    onClick={() =>
+                                      handleSendMessage(
+                                        chip.replace(/^[📌🔍⚡📊]\s*/, "").trim(),
+                                      )
+                                    }
+                                    className="inline-flex items-center text-left text-xs font-medium bg-[#222226] hover:bg-[#2b2b30] border border-zinc-700/60 hover:border-zinc-500 text-zinc-300 hover:text-white px-3 py-1.5 rounded-xl transition-all shadow-xs cursor-pointer group">
+                                    <span className="mr-1.5 opacity-80 group-hover:opacity-100">
+                                      {chip.slice(0, 2)}
+                                    </span>
+                                    <span>
+                                      {chip.replace(/^[📌🔍⚡📊]\s*/, "")}
+                                    </span>
+                                  </button>
+                                ),
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                       {/* Assistant Action Buttons */}
                       {msg.role === "assistant" && msg.content && (
-                        <div className="flex items-center gap-3 mt-3 pt-2 border-t border-white/5 text-slate-500 text-xs">
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(msg.content);
-                              alert("Copied to clipboard!");
-                            }}
-                            className="hover:text-slate-300 flex items-center gap-1 transition-colors">
-                            <Copy className="w-3 h-3" /> Copy
-                          </button>
-                          <button
-                            onClick={() =>
-                              setFeedback((prev) => ({ ...prev, [idx]: "up" }))
-                            }
-                            className={`hover:text-emerald-400 flex items-center gap-1 transition-colors ${feedback[idx] === "up" ? "text-emerald-400" : ""}`}>
-                            <ThumbsUp className="w-3 h-3" /> Helpful
-                          </button>
-                          <button
-                            onClick={() =>
-                              setFeedback((prev) => ({
-                                ...prev,
-                                [idx]: "down",
-                              }))
-                            }
-                            className={`hover:text-rose-400 flex items-center gap-1 transition-colors ${feedback[idx] === "down" ? "text-rose-400" : ""}`}>
-                            <ThumbsDown className="w-3 h-3" /> Unhelpful
-                          </button>
+                        <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-zinc-800/80 text-zinc-500 text-xs">
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => handleCopyMessage(cleanMarkdownContent(msg.content), idx)}
+                              className="hover:text-zinc-200 flex items-center gap-1.5 transition-colors"
+                              title="Copy response">
+                              {copiedMsgIdx === idx ? (
+                                <>
+                                  <Check className="w-3.5 h-3.5 text-zinc-200" />
+                                  <span className="text-zinc-200 font-medium">Copied!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3.5 h-3.5" />
+                                  <span>Copy</span>
+                                </>
+                              )}
+                            </button>
+                            <button
+                              onClick={() =>
+                                setFeedback((prev) => ({ ...prev, [idx]: "up" }))
+                              }
+                              className={`hover:text-white flex items-center gap-1.5 transition-colors ${feedback[idx] === "up" ? "text-white font-semibold" : ""}`}>
+                              <ThumbsUp className="w-3.5 h-3.5" /> Helpful
+                            </button>
+                            <button
+                              onClick={() =>
+                                setFeedback((prev) => ({
+                                  ...prev,
+                                  [idx]: "down",
+                                }))
+                              }
+                              className={`hover:text-rose-400 flex items-center gap-1.5 transition-colors ${feedback[idx] === "down" ? "text-rose-400" : ""}`}>
+                              <ThumbsDown className="w-3.5 h-3.5" /> Unhelpful
+                            </button>
+                          </div>
+                          {(msg.modelInfo || msg.latency) && (
+                            <div className="text-[11px] text-zinc-500 flex items-center gap-1.5 font-mono">
+                              {msg.modelInfo && (
+                                <span>{formatModelName(msg.modelInfo)}</span>
+                              )}
+                              {msg.latency ? (
+                                <span>• {Number(msg.latency).toFixed(1)}s</span>
+                              ) : null}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
 
                     {msg.role === "user" && (
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-cyan-500 border border-sky-300/40 flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-md shadow-sky-500/25 mt-1">
+                      <div className="w-8 h-8 rounded-full bg-zinc-700 border border-zinc-600/70 flex items-center justify-center shrink-0 text-white font-medium text-xs mt-0.5">
                         U
                       </div>
                     )}
@@ -1462,12 +1885,12 @@ export default function App() {
           )}
         </main>
 
-        {/* Floating Chat Input Dock */}
+        {/* Floating Chat Input Dock - ChatGPT Signature Floating Input Bar */}
         {(activeDoc || messages.length > 0) && (
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#08090c] via-[#08090c]/95 to-transparent backdrop-blur-md pb-5 shrink-0 z-20">
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#212121] via-[#212121]/95 to-transparent pb-5 shrink-0 z-20">
             <div className="max-w-4xl mx-auto">
-              {/* Dynamic Context-Aware Suggested Prompt Chips (Only shown during active conversation to avoid duplication) */}
-              {messages.length > 0 && (
+              {/* Dynamic Context-Aware Suggested Prompt Chips */}
+              {messages.length > 0 && !isGenerating && (
                 <div className="flex flex-wrap items-center gap-2 mb-2.5">
                   {getSuggestedQuestions(activeDoc, messages).map((chip) => (
                     <button
@@ -1478,7 +1901,7 @@ export default function App() {
                         )
                       }
                       disabled={isGenerating}
-                      className="inline-flex items-center text-left leading-snug h-auto text-[11px] font-medium bg-white/5 hover:bg-sky-500/10 border border-white/10 hover:border-sky-500/30 text-slate-300 hover:text-sky-300 px-3.5 py-2 rounded-2xl transition-all duration-200 disabled:opacity-40 shadow-sm backdrop-blur-md">
+                      className="inline-flex items-center text-left text-xs font-medium bg-[#2a2a2d] hover:bg-[#343438] border border-zinc-700/70 text-zinc-300 hover:text-white px-3.5 py-1.5 rounded-full transition-all disabled:opacity-40 shadow-sm cursor-pointer hover:border-zinc-500">
                       {chip}
                     </button>
                   ))}
@@ -1486,7 +1909,7 @@ export default function App() {
               )}
 
               {/* Input Wrapper */}
-              <div className="relative flex items-end gap-2 bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 focus-within:bg-slate-900/80 focus-within:border-sky-500/50 focus-within:shadow-[0_0_30px_rgba(14,165,233,0.15)] transition-all duration-300">
+              <div className="relative flex items-end gap-2 bg-[#2f2f2f] border border-zinc-700/70 rounded-3xl p-2 shadow-2xl focus-within:border-zinc-500 focus-within:bg-[#333333] transition-all">
                 <textarea
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
@@ -1497,30 +1920,41 @@ export default function App() {
                     }
                   }}
                   placeholder="Ask anything about the extracted web content..."
-                  className="flex-1 max-h-36 min-h-[48px] bg-transparent resize-none outline-none p-3 text-sm text-slate-200 placeholder:text-slate-500 leading-relaxed font-sans"
+                  className="flex-1 max-h-36 min-h-[48px] bg-transparent resize-none outline-none p-3 text-sm text-zinc-100 placeholder:text-zinc-500 leading-relaxed font-sans"
                   rows={1}
                 />
 
-                {/* Send Button */}
-                <button
-                  onClick={() => handleSendMessage()}
-                  disabled={!inputMessage.trim() || isGenerating}
-                  className="w-11 h-11 shrink-0 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-0.5 mr-0.5 shadow-lg shadow-sky-500/25">
-                  {isGenerating ? (
-                    <RefreshCcw className="w-4 h-4 animate-spin" />
-                  ) : (
+                {/* Send / Stop Button */}
+                {isGenerating ? (
+                  <button
+                    type="button"
+                    onClick={handleStopGenerating}
+                    title="Stop generating"
+                    className="w-9 h-9 shrink-0 rounded-full bg-white hover:bg-zinc-200 text-black flex items-center justify-center mb-1 mr-1 transition-all active:scale-95 shadow-md cursor-pointer">
+                    <Square className="w-3.5 h-3.5 fill-black text-black" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleSendMessage()}
+                    disabled={!inputMessage.trim()}
+                    className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center mb-1 mr-1 transition-all ${
+                      !inputMessage.trim()
+                        ? "bg-zinc-700/40 text-zinc-500 cursor-not-allowed"
+                        : "bg-white text-black hover:bg-zinc-200 active:scale-95 shadow-md cursor-pointer"
+                    }`}>
                     <Send className="w-4 h-4 ml-0.5" />
-                  )}
-                </button>
+                  </button>
+                )}
               </div>
 
-              <div className="text-center mt-2 text-[10px] text-slate-500 font-medium">
+              <div className="text-center mt-2 text-[11px] text-zinc-500 font-normal">
                 Press{" "}
-                <kbd className="px-1 py-0.5 bg-white/5 border border-white/10 rounded">
+                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-zinc-400 text-[10px]">
                   Enter
                 </kbd>{" "}
                 to send •{" "}
-                <kbd className="px-1 py-0.5 bg-white/5 border border-white/10 rounded">
+                <kbd className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-zinc-400 text-[10px]">
                   Shift + Enter
                 </kbd>{" "}
                 for new line
@@ -1533,60 +1967,60 @@ export default function App() {
       {/* Document Inspector Modal */}
       <AnimatePresence>
         {showDocModal && activeDoc && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="glass-card border border-white/15 rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[85vh] flex flex-col">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+              className="bg-[#18181b] border border-zinc-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[85vh] flex flex-col text-zinc-200">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800">
                 <div className="flex items-center gap-2 font-bold text-white text-sm">
-                  <FileText className="w-4 h-4 text-sky-400" /> Document Content
+                  <FileText className="w-4 h-4 text-zinc-300" /> Document Content
                   Inspector
                 </div>
                 <button
                   onClick={() => setShowDocModal(false)}
-                  className="text-slate-400 hover:text-white">
+                  className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
               <div className="space-y-3 flex-1 overflow-y-auto pr-1">
-                <div className="p-3 bg-black/30 rounded-lg border border-white/5 space-y-1.5 text-xs">
+                <div className="p-3 bg-[#121214] rounded-xl border border-zinc-800 space-y-1.5 text-xs">
                   <div>
-                    <strong>Title:</strong> {activeDoc.title}
+                    <strong className="text-white">Title:</strong> {activeDoc.title}
                   </div>
                   <div className="truncate">
-                    <strong>URL:</strong>{" "}
+                    <strong className="text-white">URL:</strong>{" "}
                     <a
                       href={activeDoc.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-sky-400 underline">
+                      className="text-zinc-200 hover:text-white underline">
                       {activeDoc.url}
                     </a>
                   </div>
                   <div>
-                    <strong>Word Count:</strong>{" "}
+                    <strong className="text-white">Word Count:</strong>{" "}
                     {activeDoc.wordCount?.toLocaleString()} words
                   </div>
                   <div>
-                    <strong>Strategy Used:</strong>{" "}
-                    <span className="uppercase text-emerald-400 font-semibold">
+                    <strong className="text-white">Strategy Used:</strong>{" "}
+                    <span className="uppercase text-white font-semibold">
                       {activeDoc.strategyUsed}
                     </span>
                   </div>
                   <div>
-                    <strong>Paywall Status:</strong>{" "}
+                    <strong className="text-white">Paywall Status:</strong>{" "}
                     {activeDoc.paywallBypassed
                       ? "Bypassed via Apollo/Jina"
                       : "Clean Web Extraction"}
                   </div>
                 </div>
                 <div>
-                  <span className="text-xs font-medium text-slate-400 block mb-1">
+                  <span className="text-xs font-medium text-zinc-400 block mb-1">
                     Extracted Text Content Preview:
                   </span>
-                  <div className="p-3 bg-black/40 rounded-lg border border-white/5 text-xs text-slate-300 font-mono max-h-72 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                  <div className="p-3 bg-[#0d0d0e] rounded-xl border border-zinc-800 text-xs text-zinc-300 font-mono max-h-72 overflow-y-auto whitespace-pre-wrap leading-relaxed">
                     {activeDoc.content ||
                       "No raw text available for this session."}
                   </div>
@@ -1600,24 +2034,23 @@ export default function App() {
       {/* Model Catalog Modal */}
       <AnimatePresence>
         {showModelModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="glass-card border border-white/15 rounded-2xl p-6 max-w-xl w-full shadow-2xl max-h-[85vh] flex flex-col">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+              className="bg-[#18181b] border border-zinc-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl max-h-[85vh] flex flex-col text-zinc-200">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800">
                 <div className="flex items-center gap-2 font-bold text-white text-sm">
-                  <Cpu className="w-4 h-4 text-sky-400" /> 10-Tier Resilient LLM
-                  Cascade
+                  <Cpu className="w-4 h-4 text-zinc-300" /> 10-Tier Resilient LLM Cascade
                 </div>
                 <button
                   onClick={() => setShowModelModal(false)}
-                  className="text-slate-400 hover:text-white">
+                  className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <p className="text-xs text-slate-300 mb-3">
+              <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
                 Queries dynamically route through a prioritized fallback chain
                 across Google Gemini and Groq with sliding-window RPM rate
                 limiters.
@@ -1666,21 +2099,21 @@ export default function App() {
                 ).map((m, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-2.5 rounded-lg bg-black/30 border border-white/5 text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-sky-500/15 text-sky-300 flex items-center justify-center font-bold text-[10px]">
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-[#121214] border border-zinc-800 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700 flex items-center justify-center font-bold text-[10px]">
                         {m.priority || idx + 1}
                       </span>
                       <div>
                         <div className="font-semibold text-white">
                           {m.model_name || m.name}
                         </div>
-                        <div className="text-[10px] text-slate-500 uppercase">
+                        <div className="text-[10px] text-zinc-500 uppercase">
                           {m.provider}
                         </div>
                       </div>
                     </div>
-                    <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-medium">
+                    <span className="text-[10px] text-zinc-200 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700 font-medium">
                       {m.status || "Operational"}
                     </span>
                   </div>
