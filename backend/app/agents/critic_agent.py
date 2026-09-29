@@ -13,11 +13,9 @@ from typing import Any
 
 from backend.app.agents.protocols import AgentResult, AgentRole, AgentTrace
 from backend.app.core.logging import logger
-from backend.app.services.agentic_rag_service import is_overview_or_summary_query
-from backend.app.services.agentic_rag_service import (
-    is_diagram_or_image_query,
-    is_overview_or_summary_query,
-)
+from backend.app.services.agentic_rag_service import is_diagram_or_image_query, is_overview_or_summary_query
+
+from backend.app.clients.gemini_client import gemini_client as default_client
 
 _CRAG_GRADING_PROMPT = """User Query: {query}
 
@@ -52,9 +50,6 @@ class CriticAgent:
     def __init__(self, gemini_client=None):
         """Initializes CriticAgent with optional injected LLM client."""
         if gemini_client is None:
-            from backend.app.clients.gemini_client import (
-                gemini_client as default_client,
-            )
             self.gemini_client = default_client
         else:
             self.gemini_client = gemini_client

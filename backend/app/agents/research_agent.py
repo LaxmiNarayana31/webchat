@@ -14,11 +14,12 @@ import requests
 
 from backend.app.agents.protocols import AgentResult, AgentRole, AgentTrace
 from backend.app.core.logging import logger
-from backend.app.services.agentic_rag_service import is_overview_or_summary_query
 from backend.app.services.agentic_rag_service import (
     is_diagram_or_image_query,
     is_overview_or_summary_query,
 )
+from backend.app.services.rag_service import rag_service
+from backend.app.services.rerank_service import rerank_service
 
 
 class ResearchAgent:
@@ -31,17 +32,15 @@ class ResearchAgent:
 
     @property
     def rag(self):
-        """Lazily imports and returns the rag_service singleton."""
+        """Returns the rag_service singleton."""
         if self._rag_service is None:
-            from backend.app.services.rag_service import rag_service
             self._rag_service = rag_service
         return self._rag_service
 
     @property
     def reranker(self):
-        """Lazily imports and returns the rerank_service singleton."""
+        """Returns the rerank_service singleton."""
         if self._rerank_service is None:
-            from backend.app.services.rerank_service import rerank_service
             self._rerank_service = rerank_service
         return self._rerank_service
 
@@ -145,7 +144,7 @@ class ResearchAgent:
         results = await asyncio.gather(*tasks, return_exceptions=True)
         
         for sq, result in zip(effective_sub_queries, results):
-            if isinstance(result, Exception):
+            if isinstance(result, BaseException):
                 logger.warning(f"ResearchAgent: Retrieval error for sub-query '{sq[:40]}': {result}")
             else:
                 for c in result:

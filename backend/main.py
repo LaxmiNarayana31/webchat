@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 import os
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn

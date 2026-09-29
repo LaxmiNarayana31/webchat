@@ -13,6 +13,7 @@ from backend.app.helpers.url_helper import compute_url_hash
 from backend.app.services.llm_service import llm_service
 from backend.app.services.memory_service import memory_service
 from backend.app.services.rag_service import rag_service
+from backend.app.repositories.url_cache_repository import url_cache_repository
 
 
 class WebChatAgent:
@@ -46,7 +47,6 @@ class WebChatAgent:
             meta = meta or self.vector_cache.get_metadata(url) or self.vector_cache.get_metadata(url_hash)
             if not vs:
                 try:
-                    from backend.app.repositories.url_cache_repository import url_cache_repository
                     cache_entry = url_cache_repository.get_by_hash(url_hash)
                     if cache_entry:
                         meta = meta or cache_entry.get("metadata") or {

@@ -11,6 +11,7 @@ from typing import Any
 
 from backend.app.agents.protocols import AgentResult, AgentRole, AgentTrace
 from backend.app.core.logging import logger
+from backend.app.clients.gemini_client import gemini_client as default_client
 
 _DECOMPOSITION_PROMPT = """You are a query decomposition agent for a document Q&A system.
 
@@ -51,9 +52,6 @@ class PlannerAgent:
     def __init__(self, gemini_client=None):
         """Initializes PlannerAgent with optional injected LLM client."""
         if gemini_client is None:
-            from backend.app.clients.gemini_client import (
-                gemini_client as default_client,
-            )
             self.gemini_client = default_client
         else:
             self.gemini_client = gemini_client
