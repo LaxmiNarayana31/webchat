@@ -5,11 +5,13 @@ Classifies user queries into DOCUMENT_RAG, WEB_SEARCH, DIRECT_CHAT, or COMPLEX_A
 using few-shot structured LLM classification with a sub-50ms heuristic fast-path fallback.
 """
 
+import json
 import re
 import time
 from typing import Any
 
 from backend.app.agents.protocols import AgentResult, AgentRole, AgentTrace
+from backend.app.clients.gemini_client import gemini_client as default_client
 from backend.app.core.logging import logger
 
 # Heuristic fast-path patterns for sub-50ms classification without LLM round-trip
@@ -54,13 +56,7 @@ class RouterAgent:
 
     def __init__(self, gemini_client=None):
         """Initializes RouterAgent with optional injected LLM client."""
-        if gemini_client is None:
-            from backend.app.clients.gemini_client import (
-                gemini_client as default_client,
-            )
-            self.gemini_client = default_client
-        else:
-            self.gemini_client = gemini_client
+        self.gemini_client = gemini_client if gemini_client is not None else default_client
 
     async def classify_intent_async(
         self,
@@ -189,7 +185,6 @@ class RouterAgent:
     @staticmethod
     def _parse_classification(raw_text: str) -> dict[str, Any] | None:
         """Parses structured JSON classification from LLM response."""
-        import json
         try:
             clean = raw_text.strip()
             if "```json" in clean:

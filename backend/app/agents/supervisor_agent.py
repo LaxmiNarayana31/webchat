@@ -19,6 +19,7 @@ from backend.app.agents.router_agent import router_agent
 from backend.app.agents.synthesis_agent import synthesis_agent
 from backend.app.core.logging import logger
 from backend.app.dtos.chat_dto import ChatMessageDto
+from backend.app.services.llm_service import llm_service
 
 
 class SupervisorWorkflowResult(BaseModel):
@@ -27,7 +28,6 @@ class SupervisorWorkflowResult(BaseModel):
     route: str
     citations: list[dict[str, Any]] = Field(default_factory=list)
     model_used: str = "gemini-2.0-flash"
-    model_used: str = "gemini-3.6-flash"
     provider: str = "gemini"
     fallback_triggered: bool = False
     latency_sec: float = 0.0
@@ -49,9 +49,8 @@ class SupervisorAgent:
 
     @property
     def llm(self):
-        """Lazily imports and returns the llm_service singleton."""
+        """Returns the llm_service singleton."""
         if self._llm_service is None:
-            from backend.app.services.llm_service import llm_service
             self._llm_service = llm_service
         return self._llm_service
 
@@ -61,7 +60,7 @@ class SupervisorAgent:
         vector_store: Any = None,
         url: str | None = None,
         document_content: str | None = None,
-        chat_history: list[dict[str, str]] | None = None,
+        chat_history: list[ChatMessageDto] | list[dict[str, Any]] | list[dict[str, str]] | None = None,
         selected_model: dict[str, str] | None = None,
         user_id: str | None = None,
         document_metadata: dict[str, Any] | None = None,
@@ -70,7 +69,7 @@ class SupervisorAgent:
         start_time = time.time()
 
         # Step 1: Orchestrate multi-agent retrieval and synthesis
-        history_dtos = [ChatMessageDto(**m) if isinstance(m, dict) else m for m in (chat_history or [])]
+        history_dtos = [ChatMessageDto.model_validate(m) if isinstance(m, dict) else m for m in (chat_history or [])]
         context_chunks, prompt, system_instruction, telemetry, trace = await self.orchestrate_async(
             query=query,
             vector_store=vector_store,
@@ -145,7 +144,11 @@ class SupervisorAgent:
         trace = AgentTrace(query=query)
         history_dicts = []
         if chat_history:
-            history_dicts = [{"role": m.role, "content": m.content} for m in chat_history]
+            for m in chat_history:
+                if isinstance(m, dict):
+                    history_dicts.append({"role": m.get("role", "user"), "content": m.get("content", "")})
+                elif hasattr(m, "role"):
+                    history_dicts.append({"role": getattr(m, "role", "user"), "content": getattr(m, "content", "")})
 
         has_doc = bool(vector_store)
         doc_meta = self._resolve_metadata(vector_store, document_metadata)
@@ -272,7 +275,11 @@ class SupervisorAgent:
         trace = AgentTrace(query=query)
         history_dicts = []
         if chat_history:
-            history_dicts = [{"role": m.role, "content": m.content} for m in chat_history]
+            for m in chat_history:
+                if isinstance(m, dict):
+                    history_dicts.append({"role": m.get("role", "user"), "content": m.get("content", "")})
+                elif hasattr(m, "role"):
+                    history_dicts.append({"role": getattr(m, "role", "user"), "content": getattr(m, "content", "")})
 
         has_doc = bool(vector_store)
         doc_meta = self._resolve_metadata(vector_store, document_metadata)

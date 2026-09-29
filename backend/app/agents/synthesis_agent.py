@@ -10,6 +10,8 @@ from typing import Any
 
 from backend.app.agents.protocols import AgentResult, AgentRole, AgentTrace
 from backend.app.core.logging import logger
+from backend.app.services.memory_service import memory_service
+from backend.app.services.rag_service import rag_service
 
 
 class SynthesisAgent:
@@ -22,17 +24,15 @@ class SynthesisAgent:
 
     @property
     def rag(self):
-        """Lazily imports and returns the rag_service singleton."""
+        """Returns the rag_service singleton."""
         if self._rag_service is None:
-            from backend.app.services.rag_service import rag_service
             self._rag_service = rag_service
         return self._rag_service
 
     @property
     def memory(self):
-        """Lazily imports and returns the memory_service singleton."""
+        """Returns the memory_service singleton."""
         if self._memory_service is None:
-            from backend.app.services.memory_service import memory_service
             self._memory_service = memory_service
         return self._memory_service
 
