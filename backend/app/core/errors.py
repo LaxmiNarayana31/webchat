@@ -57,16 +57,19 @@ class ValidationException(WebChatException):
         super().__init__(message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
 
 
-async def webchat_exception_handler(request: Request, exc: WebChatException) -> JSONResponse:
+async def webchat_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Standardized exception handler for custom WebChat domain errors."""
+    status_code = exc.status_code if isinstance(exc, WebChatException) else status.HTTP_400_BAD_REQUEST
+    message = exc.message if isinstance(exc, WebChatException) else str(exc)
+    details = exc.details if isinstance(exc, WebChatException) else None
     return JSONResponse(
-        status_code=exc.status_code,
+        status_code=status_code,
         content={
             "success": False,
             "error_type": exc.__class__.__name__,
-            "message": exc.message,
-            "details": exc.details,
-            "path": str(request.url.path),
+            "message": message,
+            "details": details,
+            "path": request.url.path,
         },
     )
 
@@ -80,6 +83,6 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
             "error_type": "InternalServerError",
             "message": "An unexpected internal server error occurred.",
             "details": {"error": str(exc)},
-            "path": str(request.url.path),
+            "path": request.url.path,
         },
     )

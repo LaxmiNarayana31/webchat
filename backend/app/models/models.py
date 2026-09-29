@@ -89,7 +89,7 @@ class ChatMessageEntity(Base):
     @citations.setter
     def citations(self, val: List[Dict[str, Any]]):
         """Serializes list of citations to JSON string for database storage."""
-        self.citations_json = json.dumps(val) if val else None
+        self.citations_json = json.dumps(val) if val else None  # type: ignore
 
 
 class GuestUsageEntity(Base):
@@ -134,7 +134,7 @@ class UrlCacheEntity(Base):
     @site_metadata.setter
     def site_metadata(self, val: Dict[str, Any]):
         """Serializes dictionary to metadata JSON string for database storage."""
-        self.metadata_json = json.dumps(val) if val else None
+        self.metadata_json = json.dumps(val) if val else None  # type: ignore
 
 
 

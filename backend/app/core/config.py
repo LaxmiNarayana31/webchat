@@ -1,4 +1,4 @@
-﻿import json
+import json
 from typing import Any, Dict, List
 
 from pydantic import Field, model_validator
@@ -118,7 +118,7 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_mandatory_services(self) -> "Settings":
         """Enforces that strictly mandatory services like Qdrant have configured credentials."""
-        if not self.QDRANT_URL or not str(self.QDRANT_URL).strip():
+        if not self.QDRANT_URL or not self.QDRANT_URL.strip():
             raise ValueError(
                 "QDRANT_URL is mandatory and cannot be empty. "
                 "Please configure QDRANT_URL in backend/.env"
