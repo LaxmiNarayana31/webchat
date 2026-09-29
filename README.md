@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.svg" width="96" height="96" alt="WebChat Logo" />
+</p>
+
 <h1 align="center">WebChat</h1>
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python Version" />
@@ -98,6 +102,7 @@ webchat/
 │   │   ├── App.css          # Styling and layout rules
 │   │   ├── index.css        # Tailwind CSS directives
 │   │   └── main.jsx         # React application root
+│   ├── .env.example         # Sample environment file for frontend
 │   ├── package.json         # Frontend package configuration
 │   └── vite.config.js       # Vite build setup
 ├── streamlit_app/           # Streamlit analytical dashboard
@@ -173,10 +178,23 @@ The API will be available at:
 
 ### 4. Frontend Setup
 
-In another terminal, start the development React server:
+In another terminal, configure the frontend environment and start the development React server:
 
 ```bash
 cd frontend
+cp .env.example .env
+```
+
+Fill in your backend URL in `frontend/.env` (default is local dev):
+
+```env
+# FastAPI backend base URL
+VITE_API_BASE_URL="http://localhost:8000/api"
+```
+
+Then install dependencies and run:
+
+```bash
 npm install
 npm run dev
 ```
@@ -209,7 +227,7 @@ The dashboard will open at http://localhost:8501.
 
 ## Environment Variables Reference
 
-| Variable                  | Description                                 | Required | Provider                                                         |
+| Variable                  | Description                                 | Required | Provider / Location                                              |
 | :------------------------ | :------------------------------------------ | :------: | :--------------------------------------------------------------- |
 | `GEMINI_API_KEY`          | Primary LLM and embeddings generation       |   Yes    | [Google AI Studio](https://aistudio.google.com/api-keys)         |
 | `GROQ_API_KEY`            | Fast fallback model provider                |   Yes    | [Groq Console](https://console.groq.com/keys)                    |
@@ -222,6 +240,7 @@ The dashboard will open at http://localhost:8501.
 | `QDRANT_API_KEY`          | Qdrant Cloud authentication key             | Optional | Qdrant Cloud                                                     |
 | `URL_HASH_ALGORITHM`      | Cryptographic hashing algorithm (SHA256)    | Optional | Defaults to SHA256                                               |
 | `URL_HASH_SECRET`         | Salt string for URL content hashing         | Optional | Application Configuration                                        |
+| `VITE_API_BASE_URL`       | FastAPI backend endpoint for frontend       | Optional | Defaults to `http://localhost:8000/api` in `frontend/.env`       |
 
 ## API Reference
 
