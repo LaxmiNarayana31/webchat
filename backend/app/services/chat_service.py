@@ -8,6 +8,7 @@ from backend.app.cache.semantic_cache import semantic_cache_service
 from backend.app.cache.vector_cache import vector_store_cache
 from backend.app.core.errors import (
     ScraperException,
+    ValidationException,
     WebChatException,
 )
 from backend.app.core.logging import logger
@@ -19,6 +20,7 @@ from backend.app.dtos.scrape_dto import (
     CrawlResponseDto,
     ScrapeRequestDto,
     ScrapeResponseDto,
+    TextIngestRequestDto,
 )
 from backend.app.helpers.stream_helper import format_done_event, format_sse_event
 from backend.app.helpers.url_helper import compute_url_hash
@@ -363,6 +365,53 @@ class ChatService:
         except Exception as e:
             logger.error(f"ChatService: Unexpected error in crawl_and_index: {e}", exc_info=True)
             raise WebChatException(message=f"Domain crawl failed: {str(e)}", status_code=500)
+
+    def handle_text_index(self, req: TextIngestRequestDto) -> ScrapeResponseDto:
+        """Directly indexes arbitrary text or document into vector store and RAM/disk cache."""
+        try:
+            content = (req.content or "").strip()
+            if not content:
+                raise ValidationException("Content cannot be empty.")
+
+            title = (req.title or "").strip() or "Custom Document"
+            virtual_url = req.url.strip() if req.url and req.url.strip() else f"text://{uuid.uuid4().hex[:8]}"
+            url_hash = compute_url_hash(virtual_url)
+            vec_sid = str(uuid.uuid4())
+            words = len(content.split())
+
+            meta = {
+                "url": virtual_url,
+                "title": title,
+                "session_id": vec_sid,
+                "vector_session_id": vec_sid,
+                "url_hash": url_hash,
+                "word_count": words,
+                "source_type": "text_paste",
+            }
+
+            vs, err = rag_service.build_vectorstore(content, metadata=meta)
+            if vs:
+                vector_store_cache.set(url_hash, vector_store=vs, metadata=meta)
+                vector_store_cache.set(virtual_url, vector_store=vs, metadata=meta)
+
+            logger.info(f"ChatService: Successfully indexed direct text document '{title}' ({words} words)")
+
+            return ScrapeResponseDto(
+                success=True,
+                url=virtual_url,
+                title=title,
+                content=content,
+                word_count=words,
+                strategy_used="direct_text_paste",
+                paywall_detected=False,
+                paywall_bypassed=False,
+                pages_crawled=1,
+            )
+        except WebChatException:
+            raise
+        except Exception as e:
+            logger.error(f"ChatService: Direct text indexing failed: {e}", exc_info=True)
+            raise WebChatException(message=f"Text indexing failed: {str(e)}", status_code=500)
 
     # def handle_file_upload_and_index(self, file_bytes: bytes, filename: str) -> FileUploadResponseDto:
     #     """Parses uploaded file, extracts text, and indexes into vector cache."""

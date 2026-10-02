@@ -16,7 +16,7 @@ class QueryExpansionService:
             if not query:
                 return []
 
-            clean_query = query.strip()
+            clean_query = query.encode("utf-8", "ignore").decode("utf-8").strip()
             queries = [clean_query]
             if len(clean_query.split()) < 3:
                 return queries
