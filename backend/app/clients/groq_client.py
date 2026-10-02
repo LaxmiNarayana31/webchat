@@ -11,6 +11,13 @@ load_dotenv()
 
 
 
+def _clean_unicode(text: Optional[str]) -> Optional[str]:
+    """Strips lone surrogates to ensure safe UTF-8 transmission."""
+    if not text or not isinstance(text, str):
+        return text
+    return text.encode("utf-8", "ignore").decode("utf-8")
+
+
 class GroqClient:
     """Encapsulates interaction with Groq API."""
 
@@ -40,10 +47,13 @@ class GroqClient:
         max_tokens: int = 4096,
     ) -> str:
         """Executes non-streaming generation via Groq."""
+        safe_prompt = _clean_unicode(prompt) or ""
+        safe_sys = _clean_unicode(system_instruction)
+
         messages: list = []
-        if system_instruction:
-            messages.append({"role": "system", "content": system_instruction})
-        messages.append({"role": "user", "content": prompt})
+        if safe_sys:
+            messages.append({"role": "system", "content": safe_sys})
+        messages.append({"role": "user", "content": safe_prompt})
 
         chat_completion = self.client.chat.completions.create(
             model=model,
@@ -62,10 +72,13 @@ class GroqClient:
         max_tokens: int = 4096,
     ) -> Generator[str, None, None]:
         """Streams text chunks via Groq."""
+        safe_prompt = _clean_unicode(prompt) or ""
+        safe_sys = _clean_unicode(system_instruction)
+
         messages: list = []
-        if system_instruction:
-            messages.append({"role": "system", "content": system_instruction})
-        messages.append({"role": "user", "content": prompt})
+        if safe_sys:
+            messages.append({"role": "system", "content": safe_sys})
+        messages.append({"role": "user", "content": safe_prompt})
 
         response = self.client.chat.completions.create(
             model=model,

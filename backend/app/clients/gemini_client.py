@@ -17,6 +17,13 @@ from backend.app.services.memory_service import memory_service
 load_dotenv()
 
 
+def _clean_unicode(text: Optional[str]) -> Optional[str]:
+    """Strips lone surrogates to ensure safe JSON/UTF-8 serialization."""
+    if not text or not isinstance(text, str):
+        return text
+    return text.encode("utf-8", "ignore").decode("utf-8")
+
+
 class GeminiClient:
     """Encapsulates interaction with the official Google GenAI SDK."""
 
@@ -47,13 +54,16 @@ class GeminiClient:
         temperature: float = 0.4,
     ) -> str:
         """Executes non-streaming generation via Google Gemini."""
+        safe_prompt = _clean_unicode(prompt) or ""
+        safe_sys = _clean_unicode(system_instruction)
+
         config = genai_types.GenerateContentConfig(
             temperature=temperature,
-            system_instruction=system_instruction if system_instruction else None,
+            system_instruction=safe_sys if safe_sys else None,
         )
         response = self.client.models.generate_content(
             model=model,
-            contents=prompt,
+            contents=safe_prompt,
             config=config,
         )
         return response.text or ""
@@ -66,13 +76,16 @@ class GeminiClient:
         temperature: float = 0.4,
     ) -> Generator[str, None, None]:
         """Streams text chunks via Google Gemini."""
+        safe_prompt = _clean_unicode(prompt) or ""
+        safe_sys = _clean_unicode(system_instruction)
+
         config = genai_types.GenerateContentConfig(
             temperature=temperature,
-            system_instruction=system_instruction if system_instruction else None,
+            system_instruction=safe_sys if safe_sys else None,
         )
         response = self.client.models.generate_content_stream(
             model=model,
-            contents=prompt,
+            contents=safe_prompt,
             config=config,
         )
         for chunk in response:
@@ -87,13 +100,16 @@ class GeminiClient:
         temperature: float = 0.4,
     ) -> str:
         """Executes non-streaming generation via Google Gemini asynchronously."""
+        safe_prompt = _clean_unicode(prompt) or ""
+        safe_sys = _clean_unicode(system_instruction)
+
         config = genai_types.GenerateContentConfig(
             temperature=temperature,
-            system_instruction=system_instruction if system_instruction else None,
+            system_instruction=safe_sys if safe_sys else None,
         )
         response = await self.client.aio.models.generate_content(
             model=model,
-            contents=prompt,
+            contents=safe_prompt,
             config=config,
         )
         return response.text or ""
@@ -106,13 +122,16 @@ class GeminiClient:
         temperature: float = 0.4,
     ) -> AsyncGenerator[str, None]:
         """Streams text chunks via Google Gemini asynchronously."""
+        safe_prompt = _clean_unicode(prompt) or ""
+        safe_sys = _clean_unicode(system_instruction)
+
         config = genai_types.GenerateContentConfig(
             temperature=temperature,
-            system_instruction=system_instruction if system_instruction else None,
+            system_instruction=safe_sys if safe_sys else None,
         )
         response = await self.client.aio.models.generate_content_stream(
             model=model,
-            contents=prompt,
+            contents=safe_prompt,
             config=config,
         )
         async for chunk in response:

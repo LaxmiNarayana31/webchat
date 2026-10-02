@@ -13,6 +13,7 @@ from backend.app.dtos.scrape_dto import (
     CrawlResponseDto,
     ScrapeRequestDto,
     ScrapeResponseDto,
+    TextIngestRequestDto,
 )
 from backend.app.services.chat_service import chat_service
 
@@ -55,6 +56,22 @@ def scrape_endpoint(req: ScrapeRequestDto):
         )
     except Exception as e:
         logger.error(f"Unexpected scrape endpoint error: {e}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router.post("/index-text", response_model=ScrapeResponseDto)
+def index_text_endpoint(req: TextIngestRequestDto):
+    """Directly indexes arbitrary text or document content into the vector cache."""
+    try:
+        return chat_service.handle_text_index(req)
+    except WebChatException as wce:
+        logger.warning(f"Text indexing handled exception: {wce.message}")
+        raise HTTPException(
+            status_code=wce.status_code,
+            detail=wce.details if wce.details else wce.message,
+        )
+    except Exception as e:
+        logger.error(f"Unexpected index-text endpoint error: {e}", exc_info=True)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 

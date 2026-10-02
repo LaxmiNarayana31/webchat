@@ -51,6 +51,10 @@ class ResilientLLMClient:
         temperature: float = 0.4,
     ) -> Dict[str, Any]:
         """Executes non-streaming text generation across the fallback chain."""
+        prompt = prompt.encode("utf-8", "ignore").decode("utf-8") if isinstance(prompt, str) else prompt
+        if system_instruction and isinstance(system_instruction, str):
+            system_instruction = system_instruction.encode("utf-8", "ignore").decode("utf-8")
+
         chain_to_try = self._build_execution_chain(selected_model)
         attempt_errors: List[str] = []
         start_time = time.time()
@@ -145,6 +149,10 @@ class ResilientLLMClient:
         temperature: float = 0.4,
     ) -> Dict[str, Any]:
         """Executes non-streaming text generation asynchronously across the fallback chain."""
+        prompt = prompt.encode("utf-8", "ignore").decode("utf-8") if isinstance(prompt, str) else prompt
+        if system_instruction and isinstance(system_instruction, str):
+            system_instruction = system_instruction.encode("utf-8", "ignore").decode("utf-8")
+
         chain_to_try = self._build_execution_chain(selected_model)
         attempt_errors: List[str] = []
         start_time = time.time()
@@ -241,6 +249,10 @@ class ResilientLLMClient:
         temperature: float = 0.4,
     ) -> Generator[Dict[str, Any], None, None]:
         """Streams response tokens across the fallback chain."""
+        prompt = prompt.encode("utf-8", "ignore").decode("utf-8") if isinstance(prompt, str) else prompt
+        if system_instruction and isinstance(system_instruction, str):
+            system_instruction = system_instruction.encode("utf-8", "ignore").decode("utf-8")
+
         chain_to_try = self._build_execution_chain(selected_model)
         start_time = time.time()
         success = False
@@ -324,6 +336,10 @@ class ResilientLLMClient:
         temperature: float = 0.4,
     ) -> AsyncGenerator[Dict[str, Any], None]:
         """Streams response tokens asynchronously across the fallback chain."""
+        prompt = prompt.encode("utf-8", "ignore").decode("utf-8") if isinstance(prompt, str) else prompt
+        if system_instruction and isinstance(system_instruction, str):
+            system_instruction = system_instruction.encode("utf-8", "ignore").decode("utf-8")
+
         chain_to_try = self._build_execution_chain(selected_model)
         start_time = time.time()
         success = False
