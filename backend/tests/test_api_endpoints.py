@@ -81,3 +81,35 @@ def test_agent_query_endpoint(client):
         assert "clean separation" in data["answer"]
         assert data["route"] == "DOCUMENT_RAG"
         assert len(data["citations"]) == 1
+
+
+def test_index_text_endpoint_success(client):
+    """Verifies that POST /api/index-text indexes arbitrary content and returns ScrapeResponseDto."""
+    resp = client.post(
+        "/api/index-text",
+        json={
+            "content": "Allied Worldwide salaries for Software Engineers range between $95,000 and $130,000 per year.",
+            "title": "Allied Worldwide Salary Overview",
+            "url": "https://www.glassdoor.com/Salary/Allied-Worldwide-Salaries-E471501.htm",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["success"] is True
+    assert data["title"] == "Allied Worldwide Salary Overview"
+    assert data["word_count"] > 5
+    assert data["strategy_used"] == "direct_text_paste"
+    assert data["url"] == "https://www.glassdoor.com/Salary/Allied-Worldwide-Salaries-E471501.htm"
+
+
+def test_index_text_endpoint_empty_content_validation(client):
+    """Verifies that POST /api/index-text rejects empty content with 422 or 400."""
+    resp = client.post(
+        "/api/index-text",
+        json={
+            "content": "   ",
+            "title": "Empty Document",
+        },
+    )
+    assert resp.status_code in (400, 422)
+

@@ -67,3 +67,11 @@ class FileUploadResponseDto(BaseModel):
     virtual_url: str = Field(default="", description="Internal virtual URL used for indexing and session tracking")
     error: Optional[str] = Field(default=None, description="Error message if processing failed")
 
+
+class TextIngestRequestDto(BaseModel):
+    """Payload to index arbitrary pasted text or document into vector store."""
+    content: str = Field(..., description="Raw text or article content to index")
+    title: Optional[str] = Field(default="Custom Document", description="Optional title for the document")
+    url: Optional[str] = Field(default=None, description="Optional reference URL")
+
+

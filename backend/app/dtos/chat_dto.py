@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 
@@ -32,6 +32,14 @@ class ChatRequestDto(BaseModel):
     user_email: Optional[str] = Field(default=None, description="User email for quota & persistent history")
     client_id: Optional[str] = Field(default=None, description="Client/Guest device ID for guest quota tracking")
     session_id: Optional[str] = Field(default=None, description="Target chat session ID")
+
+    @field_validator("query", mode="before")
+    @classmethod
+    def sanitize_query_unicode(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            # Strip lone surrogates that break UTF-8 encoders
+            return v.encode("utf-8", "ignore").decode("utf-8").strip()
+        return v
 
 
 class ChatResponseDto(BaseModel):
