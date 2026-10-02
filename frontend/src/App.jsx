@@ -158,6 +158,16 @@ function normalizeText(text) {
     .trim();
 }
 
+const STOP_WORDS = new Set([
+  "for", "and", "the", "with", "from", "that", "this", "then", "into", "also",
+  "some", "more", "such", "than", "each", "were", "been", "have", "will", "what",
+  "when", "here", "they", "them", "both", "only", "very", "just", "about", "above",
+  "after", "again", "below", "down", "over", "under", "while", "during", "before",
+  "between", "through", "which", "where", "there", "their", "these", "those",
+  "being", "other", "another", "does", "done", "doing", "make", "made", "many",
+  "your", "user", "role", "help", "view", "show", "open", "file", "page",
+]);
+
 /**
  * Extracts real section headings and main topics from the website/document content.
  */
@@ -180,6 +190,7 @@ function extractDocumentTopics(docContent) {
       if (
         title.length >= 4 &&
         title.length <= 65 &&
+        !STOP_WORDS.has(norm) &&
         !seen.has(norm) &&
         !/^(table of contents|contents|introduction|overview|conclusion|summary|references|sources|navigation|footer|menu|share this|related articles|sign in|log in|subscribe)/i.test(
           norm,
@@ -201,6 +212,7 @@ function extractDocumentTopics(docContent) {
       if (
         clean.length >= 4 &&
         clean.length <= 35 &&
+        !STOP_WORDS.has(norm) &&
         !seen.has(norm) &&
         !/^(note|tip|warning|important|caution|step|example|figure|summary|overview)/i.test(
           clean,
@@ -227,10 +239,11 @@ function extractAnswerConcepts(content) {
     const clean = b.replace(/\*\*/g, "").replace(/[$`]/g, "").trim();
     const norm = normalizeText(clean);
     if (
-      clean.length >= 3 &&
+      clean.length >= 4 &&
       clean.length <= 35 &&
+      !STOP_WORDS.has(norm) &&
       !seen.has(norm) &&
-      !/^(note|tip|warning|important|caution|step|example|figure|summary|overview|with constant)/i.test(
+      !/^(note|tip|warning|important|caution|step|example|figure|summary|overview|with constant|key points|sources|references)/i.test(
         clean,
       )
     ) {
@@ -242,21 +255,61 @@ function extractAnswerConcepts(content) {
 }
 
 /**
- * Extracts the core subject from user query by stripping common interrogative phrasing.
+ * Safely strips leading emojis, surrogate code points, and extra whitespace from suggested prompt chips.
+ * Uses Unicode-aware regex (/u) to prevent slicing surrogate pairs (such as \uD83D\uDD0D for 🔍).
+ */
+export function cleanQuestionChip(text) {
+  if (!text) return "";
+  return text
+    .replace(/^[\p{Extended_Pictographic}\u2600-\u27BF\uFE0F\u200D\s]+/u, "")
+    .replace(/[\uD800-\uDFFF]/g, "")
+    .trim();
+}
+
+/**
+ * Safely extracts the leading emoji icon from a suggested question chip.
+ */
+export function getQuestionIcon(text) {
+  if (!text) return "💡";
+  const match = text.match(/^[\p{Extended_Pictographic}\u2600-\u27BF]/u);
+  return match ? match[0] : "💡";
+}
+
+/**
+ * Extracts the core subject from user query by repeatedly stripping common interrogative phrasing.
  */
 function extractQuerySubject(query) {
   if (!query || typeof query !== "string") return "";
-  return query
-    .replace(
-      /^(what is|what are|how does|how do|how can|why is|why are|tell me about|explain|can you explain|summarize|give me an overview of|compare|difference between)\s+/i,
-      "",
-    )
-    .replace(
-      /\s+(work under the hood|operate in this system|operate|work in practice|work|mean|differ|compare)\s*\??$/i,
-      "",
-    )
-    .replace(/[?!.]/g, "")
-    .trim();
+  let clean = cleanQuestionChip(query);
+
+  let prev;
+  // Repeatedly strip leading interrogative phrasing
+  do {
+    prev = clean;
+    clean = clean
+      .replace(
+        /^(what is|what are|how does|how do|how can|why is|why are|tell me about|explain|can you explain|summarize|give me an overview of|compare|difference between)\s+/i,
+        "",
+      )
+      .trim();
+  } while (clean !== prev);
+
+  // Repeatedly strip trailing question clauses
+  do {
+    prev = clean;
+    clean = clean
+      .replace(
+        /\s+(work in practice under the hood|operate in this architecture|work under the hood|operate in this system|operate|work in practice|work|mean|differ|compare)\s*\??$/i,
+        "",
+      )
+      .trim();
+  } while (clean !== prev);
+
+  clean = clean.replace(/[?!.]/g, "").trim();
+  if (clean.length > 50) {
+    clean = clean.substring(0, 45).trim();
+  }
+  return clean;
 }
 
 /**
@@ -302,6 +355,20 @@ function getSuggestedQuestions(activeDoc, messages = []) {
       );
     };
 
+    // If the last assistant response is an error message, provide clean recovery suggestions
+    const isErrorResponse =
+      lastContent.includes("Error:") ||
+      lastContent.includes("exhausted or rate-limited") ||
+      lastContent.includes("Failed to");
+
+    if (isErrorResponse) {
+      return [
+        "🔄 Retry previous question",
+        "📌 Can you summarize the core architectural points?",
+        "⚡ What are the key takeaways from this document?",
+      ];
+    }
+
     const querySubject = extractQuerySubject(lastUserQuery);
     const answerConcepts = extractAnswerConcepts(lastContent);
     const normLastQuery = normalizeText(lastUserQuery);
@@ -329,8 +396,11 @@ function getSuggestedQuestions(activeDoc, messages = []) {
       ];
       q1 = q1Templates[turnIndex % q1Templates.length];
       usedSubjects.add(normalizeText(topConcept));
-    } else if (querySubject) {
-      q1 = `🔍 How does ${querySubject} work in practice under the hood?`;
+    } else if (unaskedDocTopics.length > 0) {
+      q1 = `🔍 What does the document explain regarding "${unaskedDocTopics[0]}"?`;
+      usedSubjects.add(normalizeText(unaskedDocTopics[0]));
+    } else if (querySubject && querySubject.length > 2 && querySubject.length < 40 && !querySubject.toLowerCase().includes("how does")) {
+      q1 = `🔍 How does "${querySubject}" work in practice under the hood?`;
       usedSubjects.add(normalizeText(querySubject));
     } else {
       q1 = `🔍 What are the underlying technical mechanisms?`;
@@ -459,7 +529,12 @@ export default function App() {
   const [sessionSearch, setSessionSearch] = useState("");
 
   // Ingestion State
+  const [ingestMode, setIngestMode] = useState("url"); // "url" | "text"
   const [urlsInput, setUrlsInput] = useState("");
+  const [pastedTitle, setPastedTitle] = useState("");
+  const [pastedUrl, setPastedUrl] = useState("");
+  const [pastedContent, setPastedContent] = useState("");
+  const [protectedSiteError, setProtectedSiteError] = useState(null);
   const [strategy, setStrategy] = useState("auto");
   const [enableCrawl, setEnableCrawl] = useState(false);
   const [crawlMaxPages, setCrawlMaxPages] = useState(5);
@@ -710,7 +785,89 @@ export default function App() {
       // Transition to Chat View cleanly
       setMessages([]);
     } catch (err) {
-      alert("Extraction Error: " + err.message);
+      const errMsg = err.message || "";
+      const isProtected =
+        /cloudflare|turnstile|anti-bot|security challenge|bot management|422|403|unauthorized|forbidden|blocked|challenge/i.test(
+          errMsg,
+        );
+      if (isProtected && validUrls.length > 0) {
+        setProtectedSiteError({
+          url: validUrls[0],
+          message: errMsg,
+        });
+      } else {
+        alert("Extraction Error: " + errMsg);
+      }
+    } finally {
+      setIsIngesting(false);
+      setIngestStatus("");
+    }
+  };
+
+  // Direct Text Ingestion Handler
+  const handleTextIngest = async () => {
+    const trimmedContent = (pastedContent || "").trim();
+    if (!trimmedContent) {
+      alert("Please paste the page text, article, or document content to index.");
+      return;
+    }
+
+    setIsIngesting(true);
+    setIngestStatus("Building vector index and semantic representations...");
+
+    try {
+      let resolvedTitle = pastedTitle.trim();
+      if (!resolvedTitle && pastedUrl.trim()) {
+        try {
+          const parsed = new URL(
+            pastedUrl.trim().startsWith("http")
+              ? pastedUrl.trim()
+              : `https://${pastedUrl.trim()}`,
+          );
+          resolvedTitle =
+            parsed.hostname +
+            (parsed.pathname.length > 1 ? parsed.pathname : "");
+        } catch {
+          resolvedTitle = pastedUrl.trim();
+        }
+      }
+      if (!resolvedTitle) {
+        resolvedTitle = "Pasted Document";
+      }
+
+      const res = await fetch(`${API_BASE}/index-text`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: trimmedContent,
+          title: resolvedTitle,
+          url: pastedUrl.trim() || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(
+          data.detail?.message || data.detail || "Indexing failed",
+        );
+      }
+
+      setActiveDoc({
+        url: data.url,
+        title: data.title || resolvedTitle,
+        content: data.content,
+        wordCount: data.word_count,
+        strategyUsed: data.strategy_used,
+        paywallBypassed: false,
+        pagesCrawled: 1,
+      });
+
+      setCurrentSessionId(null);
+      localStorage.removeItem("webchat_active_session_id");
+      setMessages([]);
+      setProtectedSiteError(null);
+    } catch (err) {
+      alert("Document Indexing Error: " + err.message);
     } finally {
       setIsIngesting(false);
       setIngestStatus("");
@@ -975,6 +1132,10 @@ export default function App() {
     setMessages([]);
     setActiveDoc(null);
     setUrlsInput("");
+    setPastedTitle("");
+    setPastedUrl("");
+    setPastedContent("");
+    setProtectedSiteError(null);
     setInputMessage("");
     setExpandedThinking({});
     setFeedback({});
@@ -1289,110 +1450,288 @@ export default function App() {
                 </p>
               </motion.div>
 
-              {/* Multi-URL Ingestion Card */}
+              {/* Multi-URL and Direct Text Ingestion Card */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full bg-[#18181b] rounded-2xl p-5 border border-zinc-800 shadow-2xl">
-                {/* Header */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800">
-                  <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
-                    <Globe className="w-4 h-4 text-zinc-300" /> Target Website URL(s)
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {urlsInput && (
-                      <button
-                        onClick={() => setUrlsInput("")}
-                        className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
-                        Clear
-                      </button>
-                    )}
-                    {invalidUrls.length > 0 && (
-                      <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3 text-rose-400" />{" "}
-                        {invalidUrls.length} Invalid
-                      </span>
-                    )}
-                    <span
-                      className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1 ${
-                        validUrls.length > 0
-                          ? "bg-zinc-800 text-zinc-200 border border-zinc-700"
-                          : "bg-zinc-800/50 text-zinc-500"
-                      }`}>
-                      {validUrls.length > 0 && (
-                        <CheckCircle2 className="w-3 h-3 text-zinc-300" />
-                      )}
-                      {validUrls.length} valid URL
-                      {validUrls.length !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Textarea */}
-                <textarea
-                  value={urlsInput}
-                  onChange={(e) => setUrlsInput(e.target.value)}
-                  placeholder="Paste website URL(s) here (e.g. example.com, https://docs.python.org)..."
-                  className={`w-full h-32 bg-[#121214] border rounded-xl p-3.5 text-sm text-zinc-100 placeholder:text-zinc-600 resize-none outline-none transition-colors font-mono ${
-                    invalidUrls.length > 0
-                      ? "border-rose-500/40 focus:border-rose-500/60"
-                      : "border-zinc-800 focus:border-zinc-600"
-                  }`}
-                />
-
-                {/* Invalid URL Format Warning Banner */}
-                {invalidUrls.length > 0 && (
-                  <div className="mt-2.5 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
-                    <div>
-                      <span className="font-semibold">
-                        Invalid URL pattern:
-                      </span>{" "}
-                      "{invalidUrls.slice(0, 3).join('", "')}"{" "}
-                      {invalidUrls.length > 3
-                        ? `and ${invalidUrls.length - 3} more`
-                        : ""}
-                      . Enter a valid domain name (e.g.{" "}
-                      <code className="text-white bg-rose-950/60 px-1 py-0.5 rounded font-mono">
-                        example.com
-                      </code>{" "}
-                      or{" "}
-                      <code className="text-white bg-rose-950/60 px-1 py-0.5 rounded font-mono">
-                        https://docs.python.org
-                      </code>
-                      ).
-                    </div>
-                  </div>
-                )}
-
-                {/* Action Submit */}
-                <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-800">
-                  <div className="text-[11px] text-zinc-500">
-                    {invalidUrls.length > 0
-                      ? "⚠️ Correct the invalid URLs above to enable ingestion."
-                      : ingestStatus ||
-                        "Automatic paywall bypass and multi-provider vector indexing."}
-                  </div>
+                {/* Mode Selector Tabs */}
+                <div className="flex items-center gap-1.5 p-1 bg-[#121214] rounded-xl mb-4 border border-zinc-800/80">
                   <button
-                    onClick={handleIngest}
-                    disabled={
-                      isIngesting ||
-                      validUrls.length === 0 ||
-                      invalidUrls.length > 0
-                    }
-                    className="bg-white hover:bg-zinc-200 text-black font-semibold text-xs px-5 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
-                    {isIngesting ? (
-                      <>
-                        <RefreshCcw className="w-4 h-4 animate-spin text-black" />{" "}
-                        Ingesting & Indexing...
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="w-4 h-4 text-black" /> Ingest &amp; Start Chat
-                      </>
-                    )}
+                    type="button"
+                    onClick={() => setIngestMode("url")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+                      ingestMode === "url"
+                        ? "bg-zinc-800 text-white shadow-sm"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    }`}>
+                    <Globe className="w-3.5 h-3.5" />
+                    <span>Website URL(s)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIngestMode("text")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+                      ingestMode === "text"
+                        ? "bg-zinc-800 text-white shadow-sm"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    }`}>
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Paste Text / Document</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono hidden sm:inline">
+                      Bypass Anti-Bot
+                    </span>
                   </button>
                 </div>
+
+                {ingestMode === "url" ? (
+                  <>
+                    {/* Header */}
+                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800">
+                      <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
+                        <Globe className="w-4 h-4 text-zinc-300" /> Target Website URL(s)
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {urlsInput && (
+                          <button
+                            onClick={() => setUrlsInput("")}
+                            className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
+                            Clear
+                          </button>
+                        )}
+                        {invalidUrls.length > 0 && (
+                          <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3 text-rose-400" />{" "}
+                            {invalidUrls.length} Invalid
+                          </span>
+                        )}
+                        <span
+                          className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1 ${
+                            validUrls.length > 0
+                              ? "bg-zinc-800 text-zinc-200 border border-zinc-700"
+                              : "bg-zinc-800/50 text-zinc-500"
+                          }`}>
+                          {validUrls.length > 0 && (
+                            <CheckCircle2 className="w-3 h-3 text-zinc-300" />
+                          )}
+                          {validUrls.length} valid URL
+                          {validUrls.length !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Protected Site Error Fallback Banner */}
+                    {protectedSiteError && (
+                      <div className="mb-3.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-2.5">
+                            <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                            <div>
+                              <div className="font-semibold text-amber-300 text-sm">
+                                Cloudflare / Anti-Bot Security Challenge Detected
+                              </div>
+                              <p className="text-zinc-300 text-xs mt-1 leading-relaxed">
+                                The site (<code className="text-amber-200 bg-amber-950/70 px-1 py-0.5 rounded font-mono break-all">{protectedSiteError.url}</code>) is protected by Cloudflare Turnstile bot challenges that actively block automated server scrapers.
+                              </p>
+                              <p className="text-zinc-400 text-xs mt-1.5">
+                                💡 <strong>Instant Solution:</strong> Open the page in your browser, press <kbd className="bg-zinc-800 px-1.5 py-0.5 rounded text-white border border-zinc-700">Ctrl+A</kbd> + <kbd className="bg-zinc-800 px-1.5 py-0.5 rounded text-white border border-zinc-700">Ctrl+C</kbd>, and paste below to chat with full Hybrid RAG and citations!
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => setProtectedSiteError(null)}
+                            className="text-zinc-400 hover:text-white p-1"
+                            title="Dismiss">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-amber-500/20">
+                          <button
+                            onClick={() => {
+                              setIngestMode("text");
+                              setPastedUrl(protectedSiteError.url);
+                              try {
+                                const u = new URL(
+                                  protectedSiteError.url.startsWith("http")
+                                    ? protectedSiteError.url
+                                    : `https://${protectedSiteError.url}`,
+                                );
+                                setPastedTitle(u.hostname + (u.pathname.length > 1 ? u.pathname : ""));
+                              } catch {
+                                setPastedTitle(protectedSiteError.url);
+                              }
+                              setProtectedSiteError(null);
+                            }}
+                            className="px-3.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
+                            <FileText className="w-3.5 h-3.5 text-black" />
+                            Paste Page Content &amp; Chat
+                          </button>
+                          <button
+                            onClick={() => setProtectedSiteError(null)}
+                            className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs transition-colors">
+                            Dismiss
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Textarea */}
+                    <textarea
+                      value={urlsInput}
+                      onChange={(e) => setUrlsInput(e.target.value)}
+                      placeholder="Paste website URL(s) here (e.g. example.com, https://docs.python.org)..."
+                      className={`w-full h-32 bg-[#121214] border rounded-xl p-3.5 text-sm text-zinc-100 placeholder:text-zinc-600 resize-none outline-none transition-colors font-mono ${
+                        invalidUrls.length > 0
+                          ? "border-rose-500/40 focus:border-rose-500/60"
+                          : "border-zinc-800 focus:border-zinc-600"
+                      }`}
+                    />
+
+                    {/* Invalid URL Format Warning Banner */}
+                    {invalidUrls.length > 0 && (
+                      <div className="mt-2.5 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
+                        <div>
+                          <span className="font-semibold">
+                            Invalid URL pattern:
+                          </span>{" "}
+                          "{invalidUrls.slice(0, 3).join('", "')}"{" "}
+                          {invalidUrls.length > 3
+                            ? `and ${invalidUrls.length - 3} more`
+                            : ""}
+                          . Enter a valid domain name (e.g.{" "}
+                          <code className="text-white bg-rose-950/60 px-1 py-0.5 rounded font-mono">
+                            example.com
+                          </code>{" "}
+                          or{" "}
+                          <code className="text-white bg-rose-950/60 px-1 py-0.5 rounded font-mono">
+                            https://docs.python.org
+                          </code>
+                          ).
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Submit */}
+                    <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-800">
+                      <div className="text-[11px] text-zinc-500">
+                        {invalidUrls.length > 0
+                          ? "⚠️ Correct the invalid URLs above to enable ingestion."
+                          : ingestStatus ||
+                            "Automatic paywall bypass and multi-provider vector indexing."}
+                      </div>
+                      <button
+                        onClick={handleIngest}
+                        disabled={
+                          isIngesting ||
+                          validUrls.length === 0 ||
+                          invalidUrls.length > 0
+                        }
+                        className="bg-white hover:bg-zinc-200 text-black font-semibold text-xs px-5 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
+                        {isIngesting ? (
+                          <>
+                            <RefreshCcw className="w-4 h-4 animate-spin text-black" />{" "}
+                            Ingesting & Indexing...
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-4 h-4 text-black" /> Ingest &amp; Start Chat
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Direct Text Ingestion View */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
+                        <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
+                          <FileText className="w-4 h-4 text-zinc-300" /> Direct Text / Article Ingestion
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {pastedContent && (
+                            <button
+                              onClick={() => {
+                                setPastedContent("");
+                                setPastedTitle("");
+                                setPastedUrl("");
+                              }}
+                              className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
+                              Clear All
+                            </button>
+                          )}
+                          <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-zinc-800 text-zinc-300 border border-zinc-700">
+                            {pastedContent.trim() ? pastedContent.trim().split(/\s+/).length : 0} words
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Document Title & Reference URL Inputs */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div>
+                          <label className="block text-[11px] text-zinc-400 mb-1">
+                            Document Title <span className="text-zinc-600">(Optional)</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={pastedTitle}
+                            onChange={(e) => setPastedTitle(e.target.value)}
+                            placeholder="e.g. Allied Worldwide Glassdoor Salaries"
+                            className="w-full bg-[#121214] border border-zinc-800 focus:border-zinc-600 rounded-xl px-3 py-2 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] text-zinc-400 mb-1">
+                            Source URL <span className="text-zinc-600">(Optional reference link)</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={pastedUrl}
+                            onChange={(e) => setPastedUrl(e.target.value)}
+                            placeholder="e.g. https://www.glassdoor.com/Salary/..."
+                            className="w-full bg-[#121214] border border-zinc-800 focus:border-zinc-600 rounded-xl px-3 py-2 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none transition-colors font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Main Content Area */}
+                      <div>
+                        <label className="block text-[11px] text-zinc-400 mb-1">
+                          Article / Webpage Content <span className="text-rose-400">*</span>
+                        </label>
+                        <textarea
+                          value={pastedContent}
+                          onChange={(e) => setPastedContent(e.target.value)}
+                          placeholder="Paste webpage text, article paragraphs, or raw HTML content here (Ctrl+A & Ctrl+C from any browser tab)..."
+                          className="w-full h-36 bg-[#121214] border border-zinc-800 focus:border-zinc-600 rounded-xl p-3.5 text-xs text-zinc-100 placeholder:text-zinc-600 resize-none outline-none transition-colors font-mono leading-relaxed"
+                        />
+                      </div>
+
+                      {/* Ingestion Submit Footer */}
+                      <div className="flex items-center justify-between pt-3 mt-2 border-t border-zinc-800">
+                        <div className="text-[11px] text-zinc-500">
+                          {ingestStatus || "Indexes text into semantic vector store with full BM25 and citations."}
+                        </div>
+                        <button
+                          onClick={handleTextIngest}
+                          disabled={isIngesting || !pastedContent.trim()}
+                          className="bg-white hover:bg-zinc-200 text-black font-semibold text-xs px-5 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
+                          {isIngesting ? (
+                            <>
+                              <RefreshCcw className="w-4 h-4 animate-spin text-black" />
+                              Indexing Text...
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="w-4 h-4 text-black" /> Index &amp; Start Chat
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </motion.div>
 
               {/* Feature Highlights Grid */}
@@ -1485,9 +1824,7 @@ export default function App() {
                           <button
                             key={qIdx}
                             onClick={() =>
-                              handleSendMessage(
-                                chip.replace(/^[📌🔍⚡📊]\s*/, "").trim(),
-                              )
+                              handleSendMessage(cleanQuestionChip(chip))
                             }
                             disabled={isGenerating}
                             className="p-3.5 rounded-xl bg-[#18181b] hover:bg-[#222226] border border-zinc-800 hover:border-zinc-700 text-xs text-zinc-200 transition-all flex items-center justify-between group shadow-sm">
@@ -1801,16 +2138,14 @@ export default function App() {
                                   <button
                                     key={qIdx}
                                     onClick={() =>
-                                      handleSendMessage(
-                                        chip.replace(/^[📌🔍⚡📊]\s*/, "").trim(),
-                                      )
+                                      handleSendMessage(cleanQuestionChip(chip))
                                     }
                                     className="inline-flex items-center text-left text-xs font-medium bg-[#222226] hover:bg-[#2b2b30] border border-zinc-700/60 hover:border-zinc-500 text-zinc-300 hover:text-white px-3 py-1.5 rounded-xl transition-all shadow-xs cursor-pointer group">
                                     <span className="mr-1.5 opacity-80 group-hover:opacity-100">
-                                      {chip.slice(0, 2)}
+                                      {getQuestionIcon(chip)}
                                     </span>
                                     <span>
-                                      {chip.replace(/^[📌🔍⚡📊]\s*/, "")}
+                                      {cleanQuestionChip(chip)}
                                     </span>
                                   </button>
                                 ),
@@ -1889,25 +2224,6 @@ export default function App() {
         {(activeDoc || messages.length > 0) && (
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#212121] via-[#212121]/95 to-transparent pb-5 shrink-0 z-20">
             <div className="max-w-4xl mx-auto">
-              {/* Dynamic Context-Aware Suggested Prompt Chips */}
-              {messages.length > 0 && !isGenerating && (
-                <div className="flex flex-wrap items-center gap-2 mb-2.5">
-                  {getSuggestedQuestions(activeDoc, messages).map((chip) => (
-                    <button
-                      key={chip}
-                      onClick={() =>
-                        handleSendMessage(
-                          chip.replace(/^[📌🔍⚡📊]\s*/, "").trim(),
-                        )
-                      }
-                      disabled={isGenerating}
-                      className="inline-flex items-center text-left text-xs font-medium bg-[#2a2a2d] hover:bg-[#343438] border border-zinc-700/70 text-zinc-300 hover:text-white px-3.5 py-1.5 rounded-full transition-all disabled:opacity-40 shadow-sm cursor-pointer hover:border-zinc-500">
-                      {chip}
-                    </button>
-                  ))}
-                </div>
-              )}
-
               {/* Input Wrapper */}
               <div className="relative flex items-end gap-2 bg-[#2f2f2f] border border-zinc-700/70 rounded-3xl p-2 shadow-2xl focus-within:border-zinc-500 focus-within:bg-[#333333] transition-all">
                 <textarea
