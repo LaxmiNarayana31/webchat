@@ -587,10 +587,14 @@ class RAGService:
                 f"Answer:"
             )
 
-            return prompt, system_instruction
+            # Strip any lone surrogates from prompt and system instruction
+            safe_prompt = prompt.encode("utf-8", "ignore").decode("utf-8")
+            safe_sys = system_instruction.encode("utf-8", "ignore").decode("utf-8")
+            return safe_prompt, safe_sys
         except Exception as e:
             logger.error(f"Error formatting prompt: {e}", exc_info=True)
-            return query, ""
+            safe_query = query.encode("utf-8", "ignore").decode("utf-8") if isinstance(query, str) else query
+            return safe_query, ""
 
 
 rag_service = RAGService()
