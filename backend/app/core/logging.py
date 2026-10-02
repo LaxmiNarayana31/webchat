@@ -66,6 +66,7 @@ def setup_logging(
             maxBytes=10 * 1024 * 1024,
             backupCount=5,
             encoding="utf-8",
+            errors="replace",
         )
         file_handler.setLevel(level)
         file_handler.setFormatter(formatter)
