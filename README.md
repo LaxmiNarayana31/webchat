@@ -39,10 +39,11 @@ WebChat extracts article contents, processes embedded architectural diagrams, an
 - **Cross-Encoder Reranking**: Uses FlashRank to rerank candidate passages for high context precision.
 - **Parallel Execution**: Gathers sub-query search results concurrently using asynchronous workers.
 
-### Multimodal Diagram Extraction
+### Multimodal Diagram Extraction & Ingestion
 
 - **Inline Architecture Diagrams**: Parses, indexes, and renders diagrams and technical figures directly inside chat answers.
-- **Robust Scraping**: Ingests web pages using Trafilatura, Jina Reader, and BeautifulSoup with automatic paywall and anti-bot bypass.
+- **Robust Scraping**: Ingests web pages using Trafilatura, Jina Reader, and BeautifulSoup with automatic paywall bypass.
+- **Direct Text & Document Ingestion**: Dual-mode ingestion supporting direct text, article, and document pasting with parent-child chunking and vector indexing, bypassing edge Cloudflare Turnstile / anti-bot challenges.
 
 ### High Availability and Model Failover
 
@@ -248,6 +249,7 @@ The dashboard will open at http://localhost:8501.
 | :------------------------ | :----: | :---------------------------------------------- |
 | `/health`                 |  GET   | Service status and database connection check    |
 | `/api/scrape`             |  POST  | Scrapes URL, indexes text and diagrams          |
+| `/api/index-text`         |  POST  | Indexes arbitrary text/markdown with vector embeddings and BM25 |
 | `/api/crawl`              |  POST  | Recursively crawls target domain                |
 | `/api/chat`               |  POST  | Executes RAG query (JSON or SSE streaming)      |
 | `/api/user/identify`      |  POST  | Connects client ID to session history and quota |
