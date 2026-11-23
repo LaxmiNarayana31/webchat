@@ -1,4 +1,7 @@
 import os
+import sys
+from importlib.util import find_spec
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from dotenv import load_dotenv
@@ -9,6 +12,45 @@ import backend.config.database as db
 from backend.app.core.logging import logger
 
 load_dotenv()
+
+
+def _configure_memori_onnxruntime() -> None:
+    """Use the ONNX Runtime library bundled with the installed Python package."""
+    configured_path = os.getenv("ORT_DYLIB_PATH")
+    if configured_path and Path(configured_path).is_file():
+        return
+
+    spec = find_spec("onnxruntime")
+    if spec is None or spec.origin is None:
+        logger.warning("MemoryService: ONNX Runtime Python package is not installed.")
+        return
+
+    capi_dir = Path(spec.origin).parent / "capi"
+    if os.name == "nt":
+        patterns = ("onnxruntime.dll", "onnxruntime*.dll")
+    elif sys.platform == "darwin":
+        patterns = ("libonnxruntime*.dylib",)
+    else:
+        patterns = ("libonnxruntime.so", "libonnxruntime.so.*")
+
+    library_path = next(
+        (
+            candidate
+            for pattern in patterns
+            for candidate in sorted(capi_dir.glob(pattern))
+            if candidate.is_file()
+        ),
+        None,
+    )
+    if library_path is None:
+        logger.warning("MemoryService: ONNX Runtime shared library was not found.")
+        return
+
+    os.environ["ORT_DYLIB_PATH"] = str(library_path)
+    logger.info("MemoryService: Using ONNX Runtime library at %s.", library_path)
+
+
+_configure_memori_onnxruntime()
 
 
 class MemoryService:
